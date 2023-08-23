@@ -1,0 +1,9 @@
+version: 2
+sql:
+  - engine: "mysql"
+    queries: "_sql/query.sql"
+    schema: "_sql/schema.sql"
+    gen:
+      go:
+        package: "rdb"
+        out: "gen/sqlc/rdb"
