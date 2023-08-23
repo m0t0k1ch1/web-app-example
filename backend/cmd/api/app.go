@@ -11,11 +11,11 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
 )
 
-type API struct {
+type App struct {
 	server *http.Server
 }
 
-func NewAPI(conf Config) *API {
+func NewApp(conf Config) *App {
 	h := handler.New()
 
 	grpcMux := http.NewServeMux()
@@ -24,7 +24,7 @@ func NewAPI(conf Config) *API {
 	mux := http.NewServeMux()
 	mux.Handle("/grpc/", http.StripPrefix("/grpc", grpcMux))
 
-	return &API{
+	return &App{
 		server: &http.Server{
 			Addr:    conf.Server.Addr(),
 			Handler: h2c.NewHandler(mux, &http2.Server{}),
@@ -32,10 +32,10 @@ func NewAPI(conf Config) *API {
 	}
 }
 
-func (api *API) Start() error {
+func (api *App) Start() error {
 	return api.server.ListenAndServe()
 }
 
-func (api *API) Shutdown(ctx context.Context) error {
+func (api *App) Shutdown(ctx context.Context) error {
 	return api.server.Shutdown(ctx)
 }

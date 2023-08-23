@@ -29,18 +29,18 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	api := NewAPI(conf)
+	app := NewApp(conf)
 
 	go func() {
-		if err := api.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fatal(errors.Wrap(err, "failed to start server"))
+		if err := app.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			fatal(errors.Wrap(err, "failed to start app"))
 		}
 	}()
 
 	<-ctx.Done()
 
-	if err := api.Shutdown(context.Background()); err != nil {
-		fatal(errors.Wrap(err, "failed to shutdown server"))
+	if err := app.Shutdown(context.Background()); err != nil {
+		fatal(errors.Wrap(err, "failed to shutdown app"))
 	}
 }
 
