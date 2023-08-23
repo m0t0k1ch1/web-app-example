@@ -4,14 +4,12 @@
 
 package rdb
 
-import (
-	"database/sql"
-)
+import ()
 
 type Task struct {
 	ID          uint64
 	Title       string
-	IsCompleted sql.NullBool
+	IsCompleted bool
 	UpdatedAt   uint64
 	CreatedAt   uint64
 }

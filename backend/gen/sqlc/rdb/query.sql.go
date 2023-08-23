@@ -7,7 +7,6 @@ package rdb
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createTask = `-- name: CreateTask :execlastid
@@ -87,7 +86,7 @@ UPDATE ` + "`" + `tasks` + "`" + ` SET ` + "`" + `title` + "`" + ` = ?, ` + "`" 
 
 type UpdateTaskParams struct {
 	Title       string
-	IsCompleted sql.NullBool
+	IsCompleted bool
 	ID          uint64
 }
 
