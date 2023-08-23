@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net/http"
 	"os"
 	"os/signal"
@@ -9,17 +10,20 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
+)
 
-	"github.com/m0t0k1ch1/web-app-sample/backend/config"
+var (
+	confPath = flag.String("config", "config.yaml", "path to config file")
 )
 
 func main() {
+	flag.Parse()
+
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
-	conf := Config{
-		Server: config.ServerConfig{
-			Port: 8080,
-		},
+	conf, err := LoadConfig(*confPath)
+	if err != nil {
+		fatal(errors.Wrap(err, "failed to load config"))
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
