@@ -1,0 +1,12 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/m0t0k1ch1/web-app-sample/backend/gen/buf
+plugins:
+  - plugin: go
+    out: gen/buf
+    opt: paths=source_relative
+  - plugin: connect-go
+    out: gen/buf
+    opt: paths=source_relative
