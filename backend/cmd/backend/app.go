@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1/appv1connect"
-	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
+	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/handler/app/v1"
 )
 
 type App struct {
@@ -16,10 +16,8 @@ type App struct {
 }
 
 func NewApp(conf Config) *App {
-	h := handler.New()
-
 	grpcMux := http.NewServeMux()
-	grpcMux.Handle(appv1connect.NewAppServiceHandler(h))
+	grpcMux.Handle(appv1connect.NewAppServiceHandler(appv1.NewAppServiceHandler()))
 
 	mux := http.NewServeMux()
 	mux.Handle("/grpc/", http.StripPrefix("/grpc", grpcMux))
