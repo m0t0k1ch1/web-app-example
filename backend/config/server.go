@@ -2,12 +2,10 @@ package config
 
 import (
 	"fmt"
-	"time"
 )
 
 type ServerConfig struct {
-	Port            uint16        `json:"port"`
-	ShutdownTimeout time.Duration `json:"shutdownTimeout"`
+	Port uint16 `json:"port"`
 }
 
 func (conf ServerConfig) Addr() string {

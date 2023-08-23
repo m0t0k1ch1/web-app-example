@@ -15,8 +15,7 @@ import (
 func main() {
 	conf := Config{
 		Server: config.ServerConfig{
-			Port:            8080,
-			ShutdownTimeout: 5,
+			Port: 8080,
 		},
 	}
 
@@ -33,10 +32,7 @@ func main() {
 
 	<-ctx.Done()
 
-	ctx, cancel := context.WithTimeout(context.Background(), conf.Server.ShutdownTimeout)
-	defer cancel()
-
-	if err := api.Shutdown(ctx); err != nil {
+	if err := api.Shutdown(context.Background()); err != nil {
 		log.Fatal(errors.Wrap(err, "failed to shutdown server"))
 	}
 }
