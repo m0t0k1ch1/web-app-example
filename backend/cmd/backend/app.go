@@ -30,10 +30,10 @@ func NewApp(conf Config) *App {
 	}
 }
 
-func (api *App) Start() error {
-	return api.server.ListenAndServe()
+func (app *App) Start() error {
+	return app.server.ListenAndServe()
 }
 
-func (api *App) Shutdown(ctx context.Context) error {
-	return api.server.Shutdown(ctx)
+func (app *App) Shutdown(ctx context.Context) error {
+	return app.server.Shutdown(ctx)
 }
