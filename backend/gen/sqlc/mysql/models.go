@@ -4,12 +4,14 @@
 
 package mysql
 
-import ()
+import (
+	"github.com/m0t0k1ch1/web-app-sample/backend/library/timeutil"
+)
 
 type Task struct {
 	ID          uint64
 	Title       string
 	IsCompleted bool
-	UpdatedAt   uint64
-	CreatedAt   uint64
+	UpdatedAt   timeutil.Timestamp
+	CreatedAt   timeutil.Timestamp
 }
