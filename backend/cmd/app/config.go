@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	Server config.ServerConfig `json:"server"`
+	Server config.ServerConfig `yaml:"server"`
+	MySQL  config.MySQLConfig  `yaml:"mysql"`
 }
 
 func LoadConfig(path string) (Config, error) {

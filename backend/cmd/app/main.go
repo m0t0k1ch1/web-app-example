@@ -10,6 +10,8 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
