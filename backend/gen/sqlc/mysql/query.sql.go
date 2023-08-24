@@ -3,7 +3,7 @@
 //   sqlc v1.20.0
 // source: query.sql
 
-package rdb
+package mysql
 
 import (
 	"context"

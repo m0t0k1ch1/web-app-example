@@ -5,5 +5,5 @@ sql:
     schema: "_sql/schema.sql"
     gen:
       go:
-        package: "rdb"
-        out: "gen/sqlc/rdb"
+        package: "mysql"
+        out: "gen/sqlc/mysql"
