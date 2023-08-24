@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package app.v1;
 
-import "buf/validate/validate.proto";
+import "validate/validate.proto";
 
 message Task {
   string id = 1;
@@ -16,11 +16,18 @@ message PingRequest {}
 
 message PingResponse {}
 
-message CreateTaskRequest { string title = 1; }
+message CreateTaskRequest {
+  string title = 1 [
+    (validate.rules).string.min_len = 1,
+    (validate.rules).string.max_len = 32
+  ];
+}
 
 message CreateTaskResponse { Task task = 1; }
 
-message GetTaskRequest { string id = 1; }
+message GetTaskRequest {
+  string id = 1 [ (validate.rules).string.min_len = 1 ];
+}
 
 message GetTaskResponse { Task task = 1; }
 
@@ -29,14 +36,19 @@ message ListTasksRequest {}
 message ListTasksResponse { repeated Task tasks = 1; }
 
 message UpdateTaskRequest {
-  string id = 1;
-  string title = 2;
+  string id = 1 [ (validate.rules).string.min_len = 1 ];
+  string title = 2 [
+    (validate.rules).string.min_len = 1,
+    (validate.rules).string.max_len = 32
+  ];
   bool is_completed = 3;
 }
 
 message UpdateTaskResponse { Task task = 1; }
 
-message DeleteTaskRequest { string id = 1; }
+message DeleteTaskRequest {
+  string id = 1 [ (validate.rules).string.min_len = 1 ];
+}
 
 message DeleteTaskResponse {}
 
