@@ -28,10 +28,13 @@ func main() {
 		fatal(errors.Wrap(err, "failed to load config"))
 	}
 
+	app, err := NewApp(context.Background(), conf)
+	if err != nil {
+		fatal(errors.Wrap(err, "failed to initialize app"))
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
-
-	app := NewApp(conf)
 
 	go func() {
 		if err := app.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {

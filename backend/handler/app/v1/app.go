@@ -1,7 +1,15 @@
 package appv1
 
-type AppServiceHandler struct{}
+import (
+	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
+)
 
-func NewAppServiceHandler() *AppServiceHandler {
-	return &AppServiceHandler{}
+type AppServiceHandler struct {
+	env *handler.Env
+}
+
+func NewAppServiceHandler(env *handler.Env) *AppServiceHandler {
+	return &AppServiceHandler{
+		env: env,
+	}
 }
