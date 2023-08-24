@@ -1,0 +1,9 @@
+version: v1
+deps:
+  - buf.build/bufbuild/protovalidate
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE

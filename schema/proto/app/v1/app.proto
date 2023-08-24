@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package app.v1;
 
+import "buf/validate/validate.proto";
+
 message Task {
   string id = 1;
   string title = 2;
