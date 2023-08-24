@@ -7,6 +7,8 @@ package mysql
 
 import (
 	"context"
+
+	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
 )
 
 const createTask = `-- name: CreateTask :execlastid
@@ -25,7 +27,7 @@ const deleteTask = `-- name: DeleteTask :exec
 DELETE FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
 `
 
-func (q *Queries) DeleteTask(ctx context.Context, id uint64) error {
+func (q *Queries) DeleteTask(ctx context.Context, id idutil.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteTask, id)
 	return err
 }
@@ -34,7 +36,7 @@ const getTask = `-- name: GetTask :one
 SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
 `
 
-func (q *Queries) GetTask(ctx context.Context, id uint64) (Task, error) {
+func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
 	row := q.db.QueryRowContext(ctx, getTask, id)
 	var i Task
 	err := row.Scan(
@@ -51,7 +53,7 @@ const getTaskForUpdate = `-- name: GetTaskForUpdate :one
 SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ? FOR UPDATE
 `
 
-func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error) {
+func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, error) {
 	row := q.db.QueryRowContext(ctx, getTaskForUpdate, id)
 	var i Task
 	err := row.Scan(
@@ -104,7 +106,7 @@ UPDATE ` + "`" + `tasks` + "`" + ` SET ` + "`" + `title` + "`" + ` = ?, ` + "`" 
 type UpdateTaskParams struct {
 	Title       string
 	IsCompleted bool
-	ID          uint64
+	ID          idutil.ID
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
