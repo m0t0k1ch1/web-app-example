@@ -1,0 +1,20 @@
+version: "3"
+services:
+  backend:
+    build: ./backend
+    ports:
+      - 8080:8080
+    environment:
+      APP_MYSQL_HOST: mysql
+      APP_MYSQL_USER: root
+      APP_MYSQL_PASSWORD: my-secret-pw
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - ./schema/sql/:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: web_app_sample
+      TZ: UTC
