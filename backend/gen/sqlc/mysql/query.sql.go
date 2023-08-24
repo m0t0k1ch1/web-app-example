@@ -12,7 +12,7 @@ import (
 )
 
 const createTask = `-- name: CreateTask :execlastid
-INSERT INTO ` + "`" + `tasks` + "`" + ` (` + "`" + `title` + "`" + `) VALUES (?)
+INSERT INTO ` + "`" + `tasks` + "`" + ` (` + "`" + `title` + "`" + `, ` + "`" + `updated_at` + "`" + `, ` + "`" + `created_at` + "`" + `) VALUES (?, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()))
 `
 
 func (q *Queries) CreateTask(ctx context.Context, title string) (int64, error) {
