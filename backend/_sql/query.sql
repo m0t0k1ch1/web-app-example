@@ -4,6 +4,9 @@ INSERT INTO `tasks` (`title`, `updated_at`, `created_at`) VALUES (?, UNIX_TIMEST
 -- name: GetTask :one
 SELECT * FROM `tasks` WHERE `id` = ?;
 
+-- name: GetTaskForUpdate :one
+SELECT * FROM `tasks` WHERE `id` = ? FOR UPDATE;
+
 -- name: ListTasks :many
 SELECT * FROM `tasks` ORDER BY `id` DESC;
 

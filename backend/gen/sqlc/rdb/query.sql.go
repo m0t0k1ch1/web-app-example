@@ -47,6 +47,23 @@ func (q *Queries) GetTask(ctx context.Context, id uint64) (Task, error) {
 	return i, err
 }
 
+const getTaskForUpdate = `-- name: GetTaskForUpdate :one
+SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ? FOR UPDATE
+`
+
+func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error) {
+	row := q.db.QueryRowContext(ctx, getTaskForUpdate, id)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.IsCompleted,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listTasks = `-- name: ListTasks :many
 SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` ORDER BY ` + "`" + `id` + "`" + ` DESC
 `
