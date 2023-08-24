@@ -7,3 +7,8 @@ sql:
       go:
         package: "mysql"
         out: "gen/sqlc/mysql"
+        overrides:
+          - column: "*.updated_at"
+            go_type: "github.com/m0t0k1ch1/web-app-sample/backend/library/timeutil.Timestamp"
+          - column: "*.created_at"
+            go_type: "github.com/m0t0k1ch1/web-app-sample/backend/library/timeutil.Timestamp"
