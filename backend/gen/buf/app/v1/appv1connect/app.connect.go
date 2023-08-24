@@ -35,11 +35,26 @@ const (
 const (
 	// AppServicePingProcedure is the fully-qualified name of the AppService's Ping RPC.
 	AppServicePingProcedure = "/app.v1.AppService/Ping"
+	// AppServiceCreateTaskProcedure is the fully-qualified name of the AppService's CreateTask RPC.
+	AppServiceCreateTaskProcedure = "/app.v1.AppService/CreateTask"
+	// AppServiceGetTaskProcedure is the fully-qualified name of the AppService's GetTask RPC.
+	AppServiceGetTaskProcedure = "/app.v1.AppService/GetTask"
+	// AppServiceListTasksProcedure is the fully-qualified name of the AppService's ListTasks RPC.
+	AppServiceListTasksProcedure = "/app.v1.AppService/ListTasks"
+	// AppServiceUpdateTaskProcedure is the fully-qualified name of the AppService's UpdateTask RPC.
+	AppServiceUpdateTaskProcedure = "/app.v1.AppService/UpdateTask"
+	// AppServiceDeleteTaskProcedure is the fully-qualified name of the AppService's DeleteTask RPC.
+	AppServiceDeleteTaskProcedure = "/app.v1.AppService/DeleteTask"
 )
 
 // AppServiceClient is a client for the app.v1.AppService service.
 type AppServiceClient interface {
 	Ping(context.Context, *connect.Request[v1.PingRequest]) (*connect.Response[v1.PingResponse], error)
+	CreateTask(context.Context, *connect.Request[v1.CreateTaskRequest]) (*connect.Response[v1.CreateTaskResponse], error)
+	GetTask(context.Context, *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error)
+	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
+	UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error)
+	DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error)
 }
 
 // NewAppServiceClient constructs a client for the app.v1.AppService service. By default, it uses
@@ -57,12 +72,42 @@ func NewAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			baseURL+AppServicePingProcedure,
 			opts...,
 		),
+		createTask: connect.NewClient[v1.CreateTaskRequest, v1.CreateTaskResponse](
+			httpClient,
+			baseURL+AppServiceCreateTaskProcedure,
+			opts...,
+		),
+		getTask: connect.NewClient[v1.GetTaskRequest, v1.GetTaskResponse](
+			httpClient,
+			baseURL+AppServiceGetTaskProcedure,
+			opts...,
+		),
+		listTasks: connect.NewClient[v1.ListTasksRequest, v1.ListTasksResponse](
+			httpClient,
+			baseURL+AppServiceListTasksProcedure,
+			opts...,
+		),
+		updateTask: connect.NewClient[v1.UpdateTaskRequest, v1.UpdateTaskResponse](
+			httpClient,
+			baseURL+AppServiceUpdateTaskProcedure,
+			opts...,
+		),
+		deleteTask: connect.NewClient[v1.DeleteTaskRequest, v1.DeleteTaskResponse](
+			httpClient,
+			baseURL+AppServiceDeleteTaskProcedure,
+			opts...,
+		),
 	}
 }
 
 // appServiceClient implements AppServiceClient.
 type appServiceClient struct {
-	ping *connect.Client[v1.PingRequest, v1.PingResponse]
+	ping       *connect.Client[v1.PingRequest, v1.PingResponse]
+	createTask *connect.Client[v1.CreateTaskRequest, v1.CreateTaskResponse]
+	getTask    *connect.Client[v1.GetTaskRequest, v1.GetTaskResponse]
+	listTasks  *connect.Client[v1.ListTasksRequest, v1.ListTasksResponse]
+	updateTask *connect.Client[v1.UpdateTaskRequest, v1.UpdateTaskResponse]
+	deleteTask *connect.Client[v1.DeleteTaskRequest, v1.DeleteTaskResponse]
 }
 
 // Ping calls app.v1.AppService.Ping.
@@ -70,9 +115,39 @@ func (c *appServiceClient) Ping(ctx context.Context, req *connect.Request[v1.Pin
 	return c.ping.CallUnary(ctx, req)
 }
 
+// CreateTask calls app.v1.AppService.CreateTask.
+func (c *appServiceClient) CreateTask(ctx context.Context, req *connect.Request[v1.CreateTaskRequest]) (*connect.Response[v1.CreateTaskResponse], error) {
+	return c.createTask.CallUnary(ctx, req)
+}
+
+// GetTask calls app.v1.AppService.GetTask.
+func (c *appServiceClient) GetTask(ctx context.Context, req *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error) {
+	return c.getTask.CallUnary(ctx, req)
+}
+
+// ListTasks calls app.v1.AppService.ListTasks.
+func (c *appServiceClient) ListTasks(ctx context.Context, req *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error) {
+	return c.listTasks.CallUnary(ctx, req)
+}
+
+// UpdateTask calls app.v1.AppService.UpdateTask.
+func (c *appServiceClient) UpdateTask(ctx context.Context, req *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error) {
+	return c.updateTask.CallUnary(ctx, req)
+}
+
+// DeleteTask calls app.v1.AppService.DeleteTask.
+func (c *appServiceClient) DeleteTask(ctx context.Context, req *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error) {
+	return c.deleteTask.CallUnary(ctx, req)
+}
+
 // AppServiceHandler is an implementation of the app.v1.AppService service.
 type AppServiceHandler interface {
 	Ping(context.Context, *connect.Request[v1.PingRequest]) (*connect.Response[v1.PingResponse], error)
+	CreateTask(context.Context, *connect.Request[v1.CreateTaskRequest]) (*connect.Response[v1.CreateTaskResponse], error)
+	GetTask(context.Context, *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error)
+	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
+	UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error)
+	DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error)
 }
 
 // NewAppServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -86,10 +161,45 @@ func NewAppServiceHandler(svc AppServiceHandler, opts ...connect.HandlerOption) 
 		svc.Ping,
 		opts...,
 	)
+	appServiceCreateTaskHandler := connect.NewUnaryHandler(
+		AppServiceCreateTaskProcedure,
+		svc.CreateTask,
+		opts...,
+	)
+	appServiceGetTaskHandler := connect.NewUnaryHandler(
+		AppServiceGetTaskProcedure,
+		svc.GetTask,
+		opts...,
+	)
+	appServiceListTasksHandler := connect.NewUnaryHandler(
+		AppServiceListTasksProcedure,
+		svc.ListTasks,
+		opts...,
+	)
+	appServiceUpdateTaskHandler := connect.NewUnaryHandler(
+		AppServiceUpdateTaskProcedure,
+		svc.UpdateTask,
+		opts...,
+	)
+	appServiceDeleteTaskHandler := connect.NewUnaryHandler(
+		AppServiceDeleteTaskProcedure,
+		svc.DeleteTask,
+		opts...,
+	)
 	return "/app.v1.AppService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AppServicePingProcedure:
 			appServicePingHandler.ServeHTTP(w, r)
+		case AppServiceCreateTaskProcedure:
+			appServiceCreateTaskHandler.ServeHTTP(w, r)
+		case AppServiceGetTaskProcedure:
+			appServiceGetTaskHandler.ServeHTTP(w, r)
+		case AppServiceListTasksProcedure:
+			appServiceListTasksHandler.ServeHTTP(w, r)
+		case AppServiceUpdateTaskProcedure:
+			appServiceUpdateTaskHandler.ServeHTTP(w, r)
+		case AppServiceDeleteTaskProcedure:
+			appServiceDeleteTaskHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -101,4 +211,24 @@ type UnimplementedAppServiceHandler struct{}
 
 func (UnimplementedAppServiceHandler) Ping(context.Context, *connect.Request[v1.PingRequest]) (*connect.Response[v1.PingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.Ping is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) CreateTask(context.Context, *connect.Request[v1.CreateTaskRequest]) (*connect.Response[v1.CreateTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.CreateTask is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) GetTask(context.Context, *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.GetTask is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.ListTasks is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.UpdateTask is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.DeleteTask is not implemented"))
 }
