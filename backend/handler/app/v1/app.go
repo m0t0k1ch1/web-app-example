@@ -67,11 +67,3 @@ func newInvalidArgumentError(err error) error {
 func newNotFoundError(err error) error {
 	return connect.NewError(connect.CodeNotFound, err)
 }
-
-func (h *AppServiceHandler) UpdateTask(context.Context, *connect.Request[appv1.UpdateTaskRequest]) (*connect.Response[appv1.UpdateTaskResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.UpdateTask is not implemented"))
-}
-
-func (h *AppServiceHandler) DeleteTask(context.Context, *connect.Request[appv1.DeleteTaskRequest]) (*connect.Response[appv1.DeleteTaskResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.DeleteTask is not implemented"))
-}
