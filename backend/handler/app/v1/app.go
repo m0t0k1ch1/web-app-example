@@ -11,6 +11,7 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
 	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
+	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
 )
 
 type AppServiceHandler struct {
@@ -31,6 +32,36 @@ func (h *AppServiceHandler) mustGetTask(ctx context.Context, id idutil.ID) (mysq
 		}
 
 		return mysql.Task{}, newUnknownError(errors.Wrap(err, "failed to get task"))
+	}
+
+	return task, nil
+}
+
+func (h *AppServiceHandler) updateTask(ctx context.Context, params mysql.UpdateTaskParams) (mysql.Task, error) {
+	var task mysql.Task
+
+	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+		qtx := mysql.New(tx)
+
+		if task, txErr = qtx.GetTaskForUpdate(txCtx, params.ID); txErr != nil {
+			if errors.Is(txErr, sql.ErrNoRows) {
+				return newNotFoundError(errors.Wrap(txErr, "task not found"))
+			}
+
+			return newUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+		}
+
+		if txErr = qtx.UpdateTask(txCtx, params); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to update task"))
+		}
+
+		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to get task"))
+		}
+
+		return
+	}); err != nil {
+		return mysql.Task{}, err
 	}
 
 	return task, nil

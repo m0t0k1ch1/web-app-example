@@ -43,6 +43,12 @@ const (
 	AppServiceListTasksProcedure = "/app.v1.AppService/ListTasks"
 	// AppServiceUpdateTaskProcedure is the fully-qualified name of the AppService's UpdateTask RPC.
 	AppServiceUpdateTaskProcedure = "/app.v1.AppService/UpdateTask"
+	// AppServiceMakeTaskCompleteProcedure is the fully-qualified name of the AppService's
+	// MakeTaskComplete RPC.
+	AppServiceMakeTaskCompleteProcedure = "/app.v1.AppService/MakeTaskComplete"
+	// AppServiceMakeTaskIncompleteProcedure is the fully-qualified name of the AppService's
+	// MakeTaskIncomplete RPC.
+	AppServiceMakeTaskIncompleteProcedure = "/app.v1.AppService/MakeTaskIncomplete"
 	// AppServiceDeleteTaskProcedure is the fully-qualified name of the AppService's DeleteTask RPC.
 	AppServiceDeleteTaskProcedure = "/app.v1.AppService/DeleteTask"
 )
@@ -54,6 +60,8 @@ type AppServiceClient interface {
 	GetTask(context.Context, *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error)
 	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
 	UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error)
+	MakeTaskComplete(context.Context, *connect.Request[v1.MakeTaskCompleteRequest]) (*connect.Response[v1.MakeTaskCompleteResponse], error)
+	MakeTaskIncomplete(context.Context, *connect.Request[v1.MakeTaskIncompleteRequest]) (*connect.Response[v1.MakeTaskIncompleteResponse], error)
 	DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error)
 }
 
@@ -92,6 +100,16 @@ func NewAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			baseURL+AppServiceUpdateTaskProcedure,
 			opts...,
 		),
+		makeTaskComplete: connect.NewClient[v1.MakeTaskCompleteRequest, v1.MakeTaskCompleteResponse](
+			httpClient,
+			baseURL+AppServiceMakeTaskCompleteProcedure,
+			opts...,
+		),
+		makeTaskIncomplete: connect.NewClient[v1.MakeTaskIncompleteRequest, v1.MakeTaskIncompleteResponse](
+			httpClient,
+			baseURL+AppServiceMakeTaskIncompleteProcedure,
+			opts...,
+		),
 		deleteTask: connect.NewClient[v1.DeleteTaskRequest, v1.DeleteTaskResponse](
 			httpClient,
 			baseURL+AppServiceDeleteTaskProcedure,
@@ -102,12 +120,14 @@ func NewAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 
 // appServiceClient implements AppServiceClient.
 type appServiceClient struct {
-	ping       *connect.Client[v1.PingRequest, v1.PingResponse]
-	createTask *connect.Client[v1.CreateTaskRequest, v1.CreateTaskResponse]
-	getTask    *connect.Client[v1.GetTaskRequest, v1.GetTaskResponse]
-	listTasks  *connect.Client[v1.ListTasksRequest, v1.ListTasksResponse]
-	updateTask *connect.Client[v1.UpdateTaskRequest, v1.UpdateTaskResponse]
-	deleteTask *connect.Client[v1.DeleteTaskRequest, v1.DeleteTaskResponse]
+	ping               *connect.Client[v1.PingRequest, v1.PingResponse]
+	createTask         *connect.Client[v1.CreateTaskRequest, v1.CreateTaskResponse]
+	getTask            *connect.Client[v1.GetTaskRequest, v1.GetTaskResponse]
+	listTasks          *connect.Client[v1.ListTasksRequest, v1.ListTasksResponse]
+	updateTask         *connect.Client[v1.UpdateTaskRequest, v1.UpdateTaskResponse]
+	makeTaskComplete   *connect.Client[v1.MakeTaskCompleteRequest, v1.MakeTaskCompleteResponse]
+	makeTaskIncomplete *connect.Client[v1.MakeTaskIncompleteRequest, v1.MakeTaskIncompleteResponse]
+	deleteTask         *connect.Client[v1.DeleteTaskRequest, v1.DeleteTaskResponse]
 }
 
 // Ping calls app.v1.AppService.Ping.
@@ -135,6 +155,16 @@ func (c *appServiceClient) UpdateTask(ctx context.Context, req *connect.Request[
 	return c.updateTask.CallUnary(ctx, req)
 }
 
+// MakeTaskComplete calls app.v1.AppService.MakeTaskComplete.
+func (c *appServiceClient) MakeTaskComplete(ctx context.Context, req *connect.Request[v1.MakeTaskCompleteRequest]) (*connect.Response[v1.MakeTaskCompleteResponse], error) {
+	return c.makeTaskComplete.CallUnary(ctx, req)
+}
+
+// MakeTaskIncomplete calls app.v1.AppService.MakeTaskIncomplete.
+func (c *appServiceClient) MakeTaskIncomplete(ctx context.Context, req *connect.Request[v1.MakeTaskIncompleteRequest]) (*connect.Response[v1.MakeTaskIncompleteResponse], error) {
+	return c.makeTaskIncomplete.CallUnary(ctx, req)
+}
+
 // DeleteTask calls app.v1.AppService.DeleteTask.
 func (c *appServiceClient) DeleteTask(ctx context.Context, req *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error) {
 	return c.deleteTask.CallUnary(ctx, req)
@@ -147,6 +177,8 @@ type AppServiceHandler interface {
 	GetTask(context.Context, *connect.Request[v1.GetTaskRequest]) (*connect.Response[v1.GetTaskResponse], error)
 	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
 	UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error)
+	MakeTaskComplete(context.Context, *connect.Request[v1.MakeTaskCompleteRequest]) (*connect.Response[v1.MakeTaskCompleteResponse], error)
+	MakeTaskIncomplete(context.Context, *connect.Request[v1.MakeTaskIncompleteRequest]) (*connect.Response[v1.MakeTaskIncompleteResponse], error)
 	DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error)
 }
 
@@ -181,6 +213,16 @@ func NewAppServiceHandler(svc AppServiceHandler, opts ...connect.HandlerOption) 
 		svc.UpdateTask,
 		opts...,
 	)
+	appServiceMakeTaskCompleteHandler := connect.NewUnaryHandler(
+		AppServiceMakeTaskCompleteProcedure,
+		svc.MakeTaskComplete,
+		opts...,
+	)
+	appServiceMakeTaskIncompleteHandler := connect.NewUnaryHandler(
+		AppServiceMakeTaskIncompleteProcedure,
+		svc.MakeTaskIncomplete,
+		opts...,
+	)
 	appServiceDeleteTaskHandler := connect.NewUnaryHandler(
 		AppServiceDeleteTaskProcedure,
 		svc.DeleteTask,
@@ -198,6 +240,10 @@ func NewAppServiceHandler(svc AppServiceHandler, opts ...connect.HandlerOption) 
 			appServiceListTasksHandler.ServeHTTP(w, r)
 		case AppServiceUpdateTaskProcedure:
 			appServiceUpdateTaskHandler.ServeHTTP(w, r)
+		case AppServiceMakeTaskCompleteProcedure:
+			appServiceMakeTaskCompleteHandler.ServeHTTP(w, r)
+		case AppServiceMakeTaskIncompleteProcedure:
+			appServiceMakeTaskIncompleteHandler.ServeHTTP(w, r)
 		case AppServiceDeleteTaskProcedure:
 			appServiceDeleteTaskHandler.ServeHTTP(w, r)
 		default:
@@ -227,6 +273,14 @@ func (UnimplementedAppServiceHandler) ListTasks(context.Context, *connect.Reques
 
 func (UnimplementedAppServiceHandler) UpdateTask(context.Context, *connect.Request[v1.UpdateTaskRequest]) (*connect.Response[v1.UpdateTaskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.UpdateTask is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) MakeTaskComplete(context.Context, *connect.Request[v1.MakeTaskCompleteRequest]) (*connect.Response[v1.MakeTaskCompleteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.MakeTaskComplete is not implemented"))
+}
+
+func (UnimplementedAppServiceHandler) MakeTaskIncomplete(context.Context, *connect.Request[v1.MakeTaskIncompleteRequest]) (*connect.Response[v1.MakeTaskIncompleteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.MakeTaskIncomplete is not implemented"))
 }
 
 func (UnimplementedAppServiceHandler) DeleteTask(context.Context, *connect.Request[v1.DeleteTaskRequest]) (*connect.Response[v1.DeleteTaskResponse], error) {

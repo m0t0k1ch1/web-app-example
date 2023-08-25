@@ -11,7 +11,7 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
 )
 
-func (h *AppServiceHandler) UpdateTask(ctx context.Context, req *connect.Request[appv1.UpdateTaskRequest]) (*connect.Response[appv1.UpdateTaskResponse], error) {
+func (h *AppServiceHandler) MakeTaskComplete(ctx context.Context, req *connect.Request[appv1.MakeTaskCompleteRequest]) (*connect.Response[appv1.MakeTaskCompleteResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
 		return nil, newInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
@@ -24,14 +24,14 @@ func (h *AppServiceHandler) UpdateTask(ctx context.Context, req *connect.Request
 
 	taskAfter, err := h.updateTask(ctx, mysql.UpdateTaskParams{
 		ID:          id,
-		Title:       req.Msg.Title,
-		IsCompleted: taskBefore.IsCompleted,
+		Title:       taskBefore.Title,
+		IsCompleted: true,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return connect.NewResponse(&appv1.UpdateTaskResponse{
+	return connect.NewResponse(&appv1.MakeTaskCompleteResponse{
 		Task: newTask(taskAfter),
 	}), nil
 }
