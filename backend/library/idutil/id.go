@@ -27,6 +27,9 @@ func (id ID) Encode() string {
 
 func Decode(encoded string) (ID, error) {
 	ids := s.Decode(encoded)
+	if len(ids) == 0 {
+		return 0, errors.New("invalid")
+	}
 	if len(ids) > 1 {
 		return 0, errors.New("out of range")
 	}
