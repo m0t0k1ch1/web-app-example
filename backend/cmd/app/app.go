@@ -16,25 +16,6 @@ import (
 	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/handler/app/v1"
 )
 
-var (
-	validationInterceptor = connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			v, ok := req.Any().(validateAller)
-			if ok {
-				if err := v.ValidateAll(); err != nil {
-					return nil, connect.NewError(connect.CodeInvalidArgument, err)
-				}
-			}
-
-			return next(ctx, req)
-		})
-	})
-)
-
-type validateAller interface {
-	ValidateAll() error
-}
-
 type App struct {
 	config Config
 
@@ -59,7 +40,7 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 		grpcMux := http.NewServeMux()
 		grpcMux.Handle(appv1connect.NewAppServiceHandler(
 			appv1.NewAppServiceHandler(env),
-			connect.WithInterceptors(validationInterceptor),
+			connect.WithInterceptors(ValidationInterceptor),
 			connect.WithCodec(NewJSONCodec()),
 		))
 
