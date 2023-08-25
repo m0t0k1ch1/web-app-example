@@ -27,7 +27,7 @@ func (h *AppServiceHandler) DeleteTask(ctx context.Context, req *connect.Request
 	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
-		if task, txErr = qtx.GetTaskForUpdate(txCtx, id); txErr != nil {
+		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
 				return newNotFoundError(errors.Wrap(txErr, "task not found"))
 			}
