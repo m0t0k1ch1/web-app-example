@@ -41,10 +41,21 @@ message UpdateTaskRequest {
     (validate.rules).string.min_len = 1,
     (validate.rules).string.max_len = 32
   ];
-  bool is_completed = 3;
 }
 
 message UpdateTaskResponse { Task task = 1; }
+
+message MakeTaskCompleteRequest {
+  string id = 1 [ (validate.rules).string.min_len = 1 ];
+}
+
+message MakeTaskCompleteResponse { Task task = 1; }
+
+message MakeTaskIncompleteRequest {
+  string id = 1 [ (validate.rules).string.min_len = 1 ];
+}
+
+message MakeTaskIncompleteResponse { Task task = 1; }
 
 message DeleteTaskRequest {
   string id = 1 [ (validate.rules).string.min_len = 1 ];
@@ -58,5 +69,9 @@ service AppService {
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
   rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {}
   rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse) {}
+  rpc MakeTaskComplete(MakeTaskCompleteRequest)
+      returns (MakeTaskCompleteResponse) {}
+  rpc MakeTaskIncomplete(MakeTaskIncompleteRequest)
+      returns (MakeTaskIncompleteResponse) {}
   rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {}
 }
