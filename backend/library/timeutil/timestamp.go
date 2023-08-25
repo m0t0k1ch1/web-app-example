@@ -21,12 +21,21 @@ func (t Timestamp) Value() (driver.Value, error) {
 }
 
 func (t *Timestamp) Scan(src any) error {
-	i, ok := src.(int64)
-	if !ok {
-		return errors.Errorf("failed to convert %v into type int64", src)
-	}
+	switch v := src.(type) {
+	case int64:
+		t.Time = time.Unix(v, 0).In(time.UTC)
 
-	t.Time = time.Unix(i, 0).In(time.UTC)
+	case []byte:
+		i, err := strconv.ParseInt(string(v), 10, 64)
+		if err != nil {
+			return errors.Wrapf(err, "failed to convert %v into type int64", string(v))
+		}
+
+		t.Time = time.Unix(i, 0).In(time.UTC)
+
+	default:
+		return errors.Errorf("unexpected src type: %T", src)
+	}
 
 	return nil
 }
