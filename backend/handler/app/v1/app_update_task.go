@@ -14,7 +14,7 @@ import (
 func (h *AppServiceHandler) UpdateTask(ctx context.Context, req *connect.Request[appv1.UpdateTaskRequest]) (*connect.Response[appv1.UpdateTaskResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
+		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid UpdateTaskRequest.Id"))
 	}
 
 	taskBefore, err := h.mustGetTask(ctx, id)

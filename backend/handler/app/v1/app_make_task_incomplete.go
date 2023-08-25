@@ -14,7 +14,7 @@ import (
 func (h *AppServiceHandler) MakeTaskIncomplete(ctx context.Context, req *connect.Request[appv1.MakeTaskIncompleteRequest]) (*connect.Response[appv1.MakeTaskIncompleteResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
+		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid MakeTaskIncompleteRequest.Id"))
 	}
 
 	taskBefore, err := h.mustGetTask(ctx, id)

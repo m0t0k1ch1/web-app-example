@@ -16,7 +16,7 @@ import (
 func (h *AppServiceHandler) DeleteTask(ctx context.Context, req *connect.Request[appv1.DeleteTaskRequest]) (*connect.Response[appv1.DeleteTaskResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
+		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid DeleteTaskRequest.Id"))
 	}
 
 	task, err := h.mustGetTask(ctx, id)

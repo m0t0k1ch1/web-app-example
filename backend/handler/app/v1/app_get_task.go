@@ -13,7 +13,7 @@ import (
 func (h *AppServiceHandler) GetTask(ctx context.Context, req *connect.Request[appv1.GetTaskRequest]) (*connect.Response[appv1.GetTaskResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
+		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid GetTaskRequest.Id"))
 	}
 
 	task, err := h.mustGetTask(ctx, id)
