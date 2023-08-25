@@ -21,14 +21,24 @@ func NewAppServiceHandler(env *handler.Env) *AppServiceHandler {
 	}
 }
 
-func newTask(task mysql.Task) *appv1.Task {
+func newTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:          task.ID.Encode(),
-		Title:       task.Title,
-		IsCompleted: task.IsCompleted,
-		UpdatedAt:   task.UpdatedAt.Unix(),
-		CreatedAt:   task.CreatedAt.Unix(),
+		Id:          row.ID.Encode(),
+		Title:       row.Title,
+		IsCompleted: row.IsCompleted,
+		UpdatedAt:   row.UpdatedAt.Unix(),
+		CreatedAt:   row.CreatedAt.Unix(),
 	}
+}
+
+func newTasks(rows []mysql.Task) []*appv1.Task {
+	tasks := make([]*appv1.Task, len(rows))
+
+	for idx, row := range rows {
+		tasks[idx] = newTask(row)
+	}
+
+	return tasks
 }
 
 func newUnknownError(err error) error {
@@ -41,10 +51,6 @@ func newInvalidArgumentError(err error) error {
 
 func newNotFoundError(err error) error {
 	return connect.NewError(connect.CodeNotFound, err)
-}
-
-func (h *AppServiceHandler) ListTasks(context.Context, *connect.Request[appv1.ListTasksRequest]) (*connect.Response[appv1.ListTasksResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.ListTasks is not implemented"))
 }
 
 func (h *AppServiceHandler) UpdateTask(context.Context, *connect.Request[appv1.UpdateTaskRequest]) (*connect.Response[appv1.UpdateTaskResponse], error) {
