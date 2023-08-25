@@ -14,28 +14,23 @@ import (
 )
 
 func (h *AppServiceHandler) CreateTask(ctx context.Context, req *connect.Request[appv1.CreateTaskRequest]) (*connect.Response[appv1.CreateTaskResponse], error) {
-	qdb := mysql.New(h.env.DB)
+	var task mysql.Task
 
-	var id idutil.ID
-
-	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) error {
+	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
-		lastInsertID, err := qtx.CreateTask(txCtx, req.Msg.Title)
-		if err != nil {
-			return errors.Wrap(err, "failed to create task")
+		var id64 int64
+		if id64, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to create task"))
 		}
 
-		id = idutil.ID(lastInsertID)
+		if task, txErr = qtx.GetTask(txCtx, idutil.ID(id64)); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to get task"))
+		}
 
-		return nil
+		return
 	}); err != nil {
-		return nil, newUnknownError(err)
-	}
-
-	task, err := qdb.GetTask(ctx, id)
-	if err != nil {
-		return nil, newUnknownError(err)
+		return nil, err
 	}
 
 	return connect.NewResponse(&appv1.CreateTaskResponse{

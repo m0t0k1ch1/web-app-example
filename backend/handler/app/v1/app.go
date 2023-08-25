@@ -2,13 +2,15 @@ package appv1
 
 import (
 	"context"
-	"errors"
+	"database/sql"
 
 	"connectrpc.com/connect"
+	"github.com/pkg/errors"
 
 	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
 	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
 	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
+	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
 )
 
 type AppServiceHandler struct {
@@ -19,6 +21,19 @@ func NewAppServiceHandler(env *handler.Env) *AppServiceHandler {
 	return &AppServiceHandler{
 		env: env,
 	}
+}
+
+func (h *AppServiceHandler) mustGetTask(ctx context.Context, id idutil.ID) (mysql.Task, error) {
+	task, err := mysql.New(h.env.DB).GetTask(ctx, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return mysql.Task{}, newNotFoundError(errors.Wrap(err, "task not found"))
+		}
+
+		return mysql.Task{}, newUnknownError(errors.Wrap(err, "failed to get task"))
+	}
+
+	return task, nil
 }
 
 func newTask(row mysql.Task) *appv1.Task {
