@@ -12,7 +12,6 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1/appv1connect"
-	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
 	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
 	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/handler/app/v1"
 )
@@ -51,7 +50,7 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 		}
 
 		env = &handler.Env{
-			Queries: mysql.New(db),
+			DB: db,
 		}
 	}
 

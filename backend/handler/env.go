@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
+	"database/sql"
 )
 
 type Env struct {
-	Queries *mysql.Queries
+	DB *sql.DB
 }

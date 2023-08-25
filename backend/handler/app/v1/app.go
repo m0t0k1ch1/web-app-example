@@ -20,10 +20,6 @@ func NewAppServiceHandler(env *handler.Env) *AppServiceHandler {
 	}
 }
 
-func (h *AppServiceHandler) CreateTask(context.Context, *connect.Request[appv1.CreateTaskRequest]) (*connect.Response[appv1.CreateTaskResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.CreateTask is not implemented"))
-}
-
 func (h *AppServiceHandler) GetTask(context.Context, *connect.Request[appv1.GetTaskRequest]) (*connect.Response[appv1.GetTaskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.AppService.GetTask is not implemented"))
 }
