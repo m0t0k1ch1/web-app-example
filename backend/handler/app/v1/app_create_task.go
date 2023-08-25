@@ -30,21 +30,15 @@ func (h *AppServiceHandler) CreateTask(ctx context.Context, req *connect.Request
 
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, newUnknownError(err)
 	}
 
 	task, err := qdb.GetTask(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get task")
+		return nil, newUnknownError(err)
 	}
 
 	return connect.NewResponse(&appv1.CreateTaskResponse{
-		Task: &appv1.Task{
-			Id:          task.ID.Encode(),
-			Title:       task.Title,
-			IsCompleted: task.IsCompleted,
-			UpdatedAt:   task.UpdatedAt.Unix(),
-			CreatedAt:   task.CreatedAt.Unix(),
-		},
+		Task: newTask(task),
 	}), nil
 }
