@@ -61,6 +61,7 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 		grpcMux.Handle(appv1connect.NewAppServiceHandler(
 			appv1.NewAppServiceHandler(env),
 			connect.WithInterceptors(validationInterceptor),
+			connect.WithCodec(NewJSONCodec()),
 		))
 
 		mux := http.NewServeMux()
