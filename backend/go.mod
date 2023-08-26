@@ -1,12 +1,12 @@
 module github.com/m0t0k1ch1/web-app-sample/backend
 
-go 1.21.0
+go 1.21
 
 require (
-	connectrpc.com/connect v1.11.0
+	connectrpc.com/connect v1.11.1
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1
 	github.com/kayac/go-config v0.7.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.9.0
