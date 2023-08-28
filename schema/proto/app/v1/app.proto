@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package app.v1;
 
+import "google/protobuf/field_mask.proto";
 import "validate/validate.proto";
 
 message Task {
@@ -12,66 +13,47 @@ message Task {
   int64 created_at = 5;
 }
 
-message PingRequest {}
-
-message PingResponse {}
-
-message CreateTaskRequest {
+message TaskServiceCreateRequest {
   string title = 1 [
     (validate.rules).string.min_len = 1,
     (validate.rules).string.max_len = 32
   ];
 }
 
-message CreateTaskResponse { Task task = 1; }
+message TaskServiceCreateResponse { Task task = 1; }
 
-message GetTaskRequest {
+message TaskServiceGetRequest {
   string id = 1 [ (validate.rules).string.min_len = 1 ];
 }
 
-message GetTaskResponse { Task task = 1; }
+message TaskServiceGetResponse { Task task = 1; }
 
-message ListTasksRequest {}
+message TaskServiceListRequest {}
 
-message ListTasksResponse { repeated Task tasks = 1; }
+message TaskServiceListResponse { repeated Task tasks = 1; }
 
-message UpdateTaskRequest {
+message TaskServiceUpdateRequest {
   string id = 1 [ (validate.rules).string.min_len = 1 ];
   string title = 2 [
     (validate.rules).string.min_len = 1,
     (validate.rules).string.max_len = 32
   ];
+  bool is_completed = 3;
+  google.protobuf.FieldMask field_mask = 4;
 }
 
-message UpdateTaskResponse { Task task = 1; }
+message TaskServiceUpdateResponse { Task task = 1; }
 
-message MakeTaskCompleteRequest {
+message TaskServiceDeleteRequest {
   string id = 1 [ (validate.rules).string.min_len = 1 ];
 }
 
-message MakeTaskCompleteResponse { Task task = 1; }
+message TaskServiceDeleteResponse {}
 
-message MakeTaskIncompleteRequest {
-  string id = 1 [ (validate.rules).string.min_len = 1 ];
-}
-
-message MakeTaskIncompleteResponse { Task task = 1; }
-
-message DeleteTaskRequest {
-  string id = 1 [ (validate.rules).string.min_len = 1 ];
-}
-
-message DeleteTaskResponse {}
-
-service AppService {
-  rpc Ping(PingRequest) returns (PingResponse) {}
-  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse) {}
-  rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
-  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {}
-  rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse) {}
-  rpc MakeTaskComplete(MakeTaskCompleteRequest)
-      returns (MakeTaskCompleteResponse) {}
-  rpc MakeTaskIncomplete(MakeTaskIncompleteRequest)
-      returns (MakeTaskIncompleteResponse) {}
-  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {}
+service TaskService {
+  rpc Create(TaskServiceCreateRequest) returns (TaskServiceCreateResponse) {}
+  rpc Get(TaskServiceGetRequest) returns (TaskServiceGetResponse) {}
+  rpc List(TaskServiceListRequest) returns (TaskServiceListResponse) {}
+  rpc Update(TaskServiceUpdateRequest) returns (TaskServiceUpdateResponse) {}
+  rpc Delete(TaskServiceDeleteRequest) returns (TaskServiceDeleteResponse) {}
 }
