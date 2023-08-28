@@ -38,8 +38,8 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 	var srv *http.Server
 	{
 		grpcMux := http.NewServeMux()
-		grpcMux.Handle(appv1connect.NewAppServiceHandler(
-			appv1.NewAppServiceHandler(env),
+		grpcMux.Handle(appv1connect.NewTaskServiceHandler(
+			appv1.NewTaskServiceHandler(env),
 			connect.WithInterceptors(ValidationInterceptor),
 			connect.WithCodec(NewJSONCodec()),
 		))

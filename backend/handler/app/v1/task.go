@@ -14,17 +14,17 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
 )
 
-type AppServiceHandler struct {
+type TaskServiceHandler struct {
 	env *handler.Env
 }
 
-func NewAppServiceHandler(env *handler.Env) *AppServiceHandler {
-	return &AppServiceHandler{
+func NewTaskServiceHandler(env *handler.Env) *TaskServiceHandler {
+	return &TaskServiceHandler{
 		env: env,
 	}
 }
 
-func (h *AppServiceHandler) mustGetTask(ctx context.Context, id idutil.ID) (mysql.Task, error) {
+func (h *TaskServiceHandler) mustGetTask(ctx context.Context, id idutil.ID) (mysql.Task, error) {
 	task, err := mysql.New(h.env.DB).GetTask(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -37,7 +37,7 @@ func (h *AppServiceHandler) mustGetTask(ctx context.Context, id idutil.ID) (mysq
 	return task, nil
 }
 
-func (h *AppServiceHandler) updateTask(ctx context.Context, params mysql.UpdateTaskParams) (mysql.Task, error) {
+func (h *TaskServiceHandler) updateTask(ctx context.Context, params mysql.UpdateTaskParams) (mysql.Task, error) {
 	var task mysql.Task
 
 	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {

@@ -13,7 +13,7 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
 )
 
-func (h *AppServiceHandler) CreateTask(ctx context.Context, req *connect.Request[appv1.CreateTaskRequest]) (*connect.Response[appv1.CreateTaskResponse], error) {
+func (h *TaskServiceHandler) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {
 	var task mysql.Task
 
 	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
@@ -33,7 +33,7 @@ func (h *AppServiceHandler) CreateTask(ctx context.Context, req *connect.Request
 		return nil, err
 	}
 
-	return connect.NewResponse(&appv1.CreateTaskResponse{
+	return connect.NewResponse(&appv1.TaskServiceCreateResponse{
 		Task: newTask(task),
 	}), nil
 }

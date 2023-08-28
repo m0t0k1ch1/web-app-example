@@ -13,10 +13,10 @@ import (
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
 )
 
-func (h *AppServiceHandler) DeleteTask(ctx context.Context, req *connect.Request[appv1.DeleteTaskRequest]) (*connect.Response[appv1.DeleteTaskResponse], error) {
+func (h *TaskServiceHandler) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid DeleteTaskRequest.Id"))
+		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceDeleteRequest.Id"))
 	}
 
 	task, err := h.mustGetTask(ctx, id)
@@ -44,5 +44,5 @@ func (h *AppServiceHandler) DeleteTask(ctx context.Context, req *connect.Request
 		return nil, err
 	}
 
-	return connect.NewResponse(&appv1.DeleteTaskResponse{}), nil
+	return connect.NewResponse(&appv1.TaskServiceDeleteResponse{}), nil
 }
