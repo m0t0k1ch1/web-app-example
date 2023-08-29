@@ -60,7 +60,7 @@ func (m *Task) validate(all bool) error {
 
 	// no validation rules for Title
 
-	// no validation rules for IsCompleted
+	// no validation rules for Status
 
 	// no validation rules for UpdatedAt
 
@@ -913,35 +913,15 @@ func (m *TaskServiceUpdateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for IsCompleted
-
-	if all {
-		switch v := interface{}(m.GetFieldMask()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, TaskServiceUpdateRequestValidationError{
-					field:  "FieldMask",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, TaskServiceUpdateRequestValidationError{
-					field:  "FieldMask",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
+	if _, ok := _TaskServiceUpdateRequest_Status_InLookup[m.GetStatus()]; !ok {
+		err := TaskServiceUpdateRequestValidationError{
+			field:  "Status",
+			reason: "value must be in list [TASK_STATUS_UNCOMPLETED TASK_STATUS_COMPLETED]",
 		}
-	} else if v, ok := interface{}(m.GetFieldMask()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TaskServiceUpdateRequestValidationError{
-				field:  "FieldMask",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
+		if !all {
+			return err
 		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -1023,6 +1003,11 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = TaskServiceUpdateRequestValidationError{}
+
+var _TaskServiceUpdateRequest_Status_InLookup = map[TaskStatus]struct{}{
+	1: {},
+	2: {},
+}
 
 // Validate checks the field values on TaskServiceUpdateResponse with the rules
 // defined in the proto definition for this message. If any rules are

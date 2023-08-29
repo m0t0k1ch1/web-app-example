@@ -33,7 +33,7 @@ func (q *Queries) DeleteTask(ctx context.Context, id idutil.ID) error {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
+SELECT id, title, status, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
 `
 
 func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
@@ -42,7 +42,7 @@ func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.IsCompleted,
+		&i.Status,
 		&i.UpdatedAt,
 		&i.CreatedAt,
 	)
@@ -50,7 +50,7 @@ func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
 }
 
 const getTaskForUpdate = `-- name: GetTaskForUpdate :one
-SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ? FOR UPDATE
+SELECT id, title, status, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ? FOR UPDATE
 `
 
 func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, error) {
@@ -59,7 +59,7 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, err
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
-		&i.IsCompleted,
+		&i.Status,
 		&i.UpdatedAt,
 		&i.CreatedAt,
 	)
@@ -67,7 +67,7 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, err
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, title, is_completed, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` ORDER BY ` + "`" + `id` + "`" + ` DESC
+SELECT id, title, status, updated_at, created_at FROM ` + "`" + `tasks` + "`" + ` ORDER BY ` + "`" + `id` + "`" + ` DESC
 `
 
 func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
@@ -82,7 +82,7 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
-			&i.IsCompleted,
+			&i.Status,
 			&i.UpdatedAt,
 			&i.CreatedAt,
 		); err != nil {
@@ -100,16 +100,16 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 }
 
 const updateTask = `-- name: UpdateTask :exec
-UPDATE ` + "`" + `tasks` + "`" + ` SET ` + "`" + `title` + "`" + ` = ?, ` + "`" + `is_completed` + "`" + ` = ?, ` + "`" + `updated_at` + "`" + ` = UNIX_TIMESTAMP(NOW()) WHERE ` + "`" + `id` + "`" + ` = ?
+UPDATE ` + "`" + `tasks` + "`" + ` SET ` + "`" + `title` + "`" + ` = ?, ` + "`" + `status` + "`" + ` = ?, ` + "`" + `updated_at` + "`" + ` = UNIX_TIMESTAMP(NOW()) WHERE ` + "`" + `id` + "`" + ` = ?
 `
 
 type UpdateTaskParams struct {
-	Title       string
-	IsCompleted bool
-	ID          idutil.ID
+	Title  string
+	Status int32
+	ID     idutil.ID
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, updateTask, arg.Title, arg.IsCompleted, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateTask, arg.Title, arg.Status, arg.ID)
 	return err
 }

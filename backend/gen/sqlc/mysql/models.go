@@ -10,9 +10,9 @@ import (
 )
 
 type Task struct {
-	ID          idutil.ID
-	Title       string
-	IsCompleted bool
-	UpdatedAt   timeutil.Timestamp
-	CreatedAt   timeutil.Timestamp
+	ID        idutil.ID
+	Title     string
+	Status    int32
+	UpdatedAt timeutil.Timestamp
+	CreatedAt timeutil.Timestamp
 }

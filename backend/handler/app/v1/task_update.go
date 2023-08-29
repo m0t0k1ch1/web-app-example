@@ -2,14 +2,15 @@ package appv1
 
 import (
 	"context"
+	"database/sql"
 
 	"connectrpc.com/connect"
-	fieldmask_utils "github.com/mennanov/fieldmask-utils"
 	"github.com/pkg/errors"
 
 	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
 	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
 	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
+	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
 )
 
 func (h *TaskServiceHandler) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
@@ -18,33 +19,40 @@ func (h *TaskServiceHandler) Update(ctx context.Context, req *connect.Request[ap
 		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceUpdateRequest.Id"))
 	}
 
-	taskBefore, err := h.mustGetTask(ctx, id)
+	task, err := h.mustGetTask(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	params := mysql.UpdateTaskParams{
-		ID:          taskBefore.ID,
-		Title:       taskBefore.Title,
-		IsCompleted: taskBefore.IsCompleted,
-	}
-	{
-		mask, err := fieldmask_utils.MaskFromPaths(req.Msg.FieldMask.Paths, nil)
-		if err != nil {
-			return nil, newUnknownError(errors.Wrap(err, "failed to create mask"))
+	if err := rdbutil.Transact(ctx, h.env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+		qtx := mysql.New(tx)
+
+		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
+			if errors.Is(txErr, sql.ErrNoRows) {
+				return newNotFoundError(errors.Wrap(txErr, "task not found"))
+			}
+
+			return newUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
-		if err := fieldmask_utils.StructToStruct(mask, req.Msg, &params); err != nil {
-			return nil, newUnknownError(errors.Wrap(err, "failed to apply mask"))
+		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
+			ID:     task.ID,
+			Title:  req.Msg.Title,
+			Status: int32(req.Msg.Status),
+		}); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}
-	}
 
-	taskAfter, err := h.updateTask(ctx, params)
-	if err != nil {
+		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
+			return newUnknownError(errors.Wrap(txErr, "failed to get task"))
+		}
+
+		return
+	}); err != nil {
 		return nil, err
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceUpdateResponse{
-		Task: newTask(taskAfter),
+		Task: newTask(task),
 	}), nil
 }

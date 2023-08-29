@@ -8,7 +8,6 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1
 	github.com/kayac/go-config v0.7.0
-	github.com/mennanov/fieldmask-utils v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.9.0
 	github.com/sqids/sqids-go v0.2.0
@@ -20,6 +19,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
