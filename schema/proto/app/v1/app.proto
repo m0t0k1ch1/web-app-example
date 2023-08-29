@@ -2,13 +2,18 @@ syntax = "proto3";
 
 package app.v1;
 
-import "google/protobuf/field_mask.proto";
 import "validate/validate.proto";
+
+enum TaskStatus {
+  TASK_STATUS_UNKNOWN = 0;
+  TASK_STATUS_UNCOMPLETED = 1;
+  TASK_STATUS_COMPLETED = 2;
+}
 
 message Task {
   string id = 1;
   string title = 2;
-  bool is_completed = 3;
+  TaskStatus status = 3;
   int64 updated_at = 4;
   int64 created_at = 5;
 }
@@ -38,8 +43,7 @@ message TaskServiceUpdateRequest {
     (validate.rules).string.min_len = 1,
     (validate.rules).string.max_len = 32
   ];
-  bool is_completed = 3;
-  google.protobuf.FieldMask field_mask = 4;
+  TaskStatus status = 3 [ (validate.rules).enum = {in : [ 1, 2 ]} ];
 }
 
 message TaskServiceUpdateResponse { Task task = 1; }

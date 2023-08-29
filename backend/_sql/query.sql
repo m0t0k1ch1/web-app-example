@@ -11,7 +11,7 @@ SELECT * FROM `tasks` WHERE `id` = ? FOR UPDATE;
 SELECT * FROM `tasks` ORDER BY `id` DESC;
 
 -- name: UpdateTask :exec
-UPDATE `tasks` SET `title` = ?, `is_completed` = ?, `updated_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = ?;
+UPDATE `tasks` SET `title` = ?, `status` = ?, `updated_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = ?;
 
 -- name: DeleteTask :exec
 DELETE FROM `tasks` WHERE `id` = ?;
