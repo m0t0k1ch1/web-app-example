@@ -5,7 +5,7 @@ import (
 )
 
 type ServerConfig struct {
-	Port uint16 `yaml:"port"`
+	Port uint16 `yaml:"port" validate:"required"`
 }
 
 func (conf ServerConfig) Addr() string {

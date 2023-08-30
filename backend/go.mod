@@ -5,6 +5,7 @@ go 1.21
 require (
 	connectrpc.com/connect v1.11.1
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
+	github.com/go-playground/validator/v10 v10.15.3
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1
 	github.com/kayac/go-config v0.7.0
@@ -18,9 +19,14 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
 	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d // indirect
