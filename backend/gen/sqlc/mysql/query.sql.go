@@ -12,7 +12,7 @@ import (
 )
 
 const createTask = `-- name: CreateTask :execlastid
-INSERT INTO ` + "`" + `task` + "`" + ` (` + "`" + `title` + "`" + `, ` + "`" + `updated_at` + "`" + `, ` + "`" + `created_at` + "`" + `) VALUES (?, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()))
+INSERT INTO task (title, updated_at, created_at) VALUES (?, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()))
 `
 
 func (q *Queries) CreateTask(ctx context.Context, title string) (int64, error) {
@@ -24,7 +24,7 @@ func (q *Queries) CreateTask(ctx context.Context, title string) (int64, error) {
 }
 
 const deleteTask = `-- name: DeleteTask :exec
-DELETE FROM ` + "`" + `task` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
+DELETE FROM task WHERE id = ?
 `
 
 func (q *Queries) DeleteTask(ctx context.Context, id idutil.ID) error {
@@ -33,7 +33,7 @@ func (q *Queries) DeleteTask(ctx context.Context, id idutil.ID) error {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, title, status, updated_at, created_at FROM ` + "`" + `task` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ?
+SELECT id, title, status, updated_at, created_at FROM task WHERE id = ?
 `
 
 func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
@@ -50,7 +50,7 @@ func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
 }
 
 const getTaskForUpdate = `-- name: GetTaskForUpdate :one
-SELECT id, title, status, updated_at, created_at FROM ` + "`" + `task` + "`" + ` WHERE ` + "`" + `id` + "`" + ` = ? FOR UPDATE
+SELECT id, title, status, updated_at, created_at FROM task WHERE id = ? FOR UPDATE
 `
 
 func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, error) {
@@ -67,7 +67,7 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, err
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, title, status, updated_at, created_at FROM ` + "`" + `task` + "`" + ` ORDER BY ` + "`" + `id` + "`" + ` DESC
+SELECT id, title, status, updated_at, created_at FROM task ORDER BY id DESC
 `
 
 func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
@@ -100,7 +100,7 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 }
 
 const updateTask = `-- name: UpdateTask :exec
-UPDATE ` + "`" + `task` + "`" + ` SET ` + "`" + `title` + "`" + ` = ?, ` + "`" + `status` + "`" + ` = ?, ` + "`" + `updated_at` + "`" + ` = UNIX_TIMESTAMP(NOW()) WHERE ` + "`" + `id` + "`" + ` = ?
+UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE id = ?
 `
 
 type UpdateTaskParams struct {
