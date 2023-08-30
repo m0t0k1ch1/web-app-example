@@ -11,9 +11,9 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1/appv1connect"
-	"github.com/m0t0k1ch1/web-app-sample/backend/handler"
-	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/handler/app/v1"
+	"backend/gen/buf/app/v1/appv1connect"
+	"backend/handler"
+	appv1 "backend/handler/app/v1"
 )
 
 type App struct {

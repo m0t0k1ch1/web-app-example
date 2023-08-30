@@ -6,8 +6,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
-	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
+	appv1 "backend/gen/buf/app/v1"
+	"backend/library/idutil"
 )
 
 func (h *TaskServiceHandler) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {

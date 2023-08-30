@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/m0t0k1ch1/web-app-sample/backend/gen/buf
+    default: backend/gen/buf
     except:
       - buf.build/envoyproxy/protoc-gen-validate
 plugins:

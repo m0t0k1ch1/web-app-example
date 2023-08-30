@@ -3,7 +3,7 @@ package main
 import (
 	kayac_config "github.com/kayac/go-config"
 
-	"github.com/m0t0k1ch1/web-app-sample/backend/config"
+	"backend/config"
 )
 
 type Config struct {

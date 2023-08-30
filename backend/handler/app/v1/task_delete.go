@@ -7,10 +7,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
-	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
-	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
-	"github.com/m0t0k1ch1/web-app-sample/backend/library/rdbutil"
+	appv1 "backend/gen/buf/app/v1"
+	"backend/gen/sqlc/mysql"
+	"backend/library/idutil"
+	"backend/library/rdbutil"
 )
 
 func (h *TaskServiceHandler) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {

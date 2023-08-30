@@ -9,8 +9,8 @@ sql:
         out: "gen/sqlc/mysql"
         overrides:
           - column: "*.id"
-            go_type: "github.com/m0t0k1ch1/web-app-sample/backend/library/idutil.ID"
+            go_type: "backend/library/idutil.ID"
           - column: "*.updated_at"
-            go_type: "github.com/m0t0k1ch1/web-app-sample/backend/library/timeutil.Timestamp"
+            go_type: "backend/library/timeutil.Timestamp"
           - column: "*.created_at"
-            go_type: "github.com/m0t0k1ch1/web-app-sample/backend/library/timeutil.Timestamp"
+            go_type: "backend/library/timeutil.Timestamp"

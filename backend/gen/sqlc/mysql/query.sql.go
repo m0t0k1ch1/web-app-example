@@ -8,7 +8,7 @@ package mysql
 import (
 	"context"
 
-	"github.com/m0t0k1ch1/web-app-sample/backend/library/idutil"
+	"backend/library/idutil"
 )
 
 const createTask = `-- name: CreateTask :execlastid

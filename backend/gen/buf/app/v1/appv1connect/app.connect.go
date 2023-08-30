@@ -5,10 +5,10 @@
 package appv1connect
 
 import (
+	v1 "backend/gen/buf/app/v1"
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
 	http "net/http"
 	strings "strings"
 )

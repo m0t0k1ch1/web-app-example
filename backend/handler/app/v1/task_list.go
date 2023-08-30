@@ -6,8 +6,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	appv1 "github.com/m0t0k1ch1/web-app-sample/backend/gen/buf/app/v1"
-	"github.com/m0t0k1ch1/web-app-sample/backend/gen/sqlc/mysql"
+	appv1 "backend/gen/buf/app/v1"
+	"backend/gen/sqlc/mysql"
 )
 
 func (h *TaskServiceHandler) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
