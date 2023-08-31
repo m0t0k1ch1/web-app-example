@@ -27,7 +27,7 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 	{
 		db, err := sql.Open("mysql", conf.MySQL.DSN())
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to connect to MySQL")
+			return nil, errors.Wrapf(err, "failed to connect to db: %s", conf.MySQL.DBName)
 		}
 
 		env = &handler.Env{
