@@ -51,9 +51,11 @@ func (app *App) initEnv() error {
 }
 
 func (app *App) initServer() {
+	handlerBase := handler.NewHandlerBase(app.env)
+
 	grpcMux := http.NewServeMux()
 	grpcMux.Handle(appv1connect.NewTaskServiceHandler(
-		appv1.NewTaskServiceHandler(app.env),
+		appv1.NewTaskServiceHandler(handlerBase),
 		connect.WithInterceptors(ValidationInterceptor),
 		connect.WithCodec(NewJSONCodec()),
 	))

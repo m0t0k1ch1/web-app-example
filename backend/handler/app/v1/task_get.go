@@ -6,22 +6,24 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
+	"backend/converter"
 	appv1 "backend/gen/buf/app/v1"
+	"backend/handler"
 	"backend/library/idutil"
 )
 
 func (h *TaskServiceHandler) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, newInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceGetRequest.Id"))
+		return nil, handler.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceGetRequest.Id"))
 	}
 
-	task, err := h.mustGetTask(ctx, id)
+	task, err := h.MustGetTask(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceGetResponse{
-		Task: newTask(task),
+		Task: converter.Task(task),
 	}), nil
 }
