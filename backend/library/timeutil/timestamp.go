@@ -28,7 +28,7 @@ func (t *Timestamp) Scan(src any) error {
 	case []byte:
 		i, err := strconv.ParseInt(string(v), 10, 64)
 		if err != nil {
-			return errors.Wrapf(err, "failed to convert %v into type int64", string(v))
+			return errors.Wrapf(err, "failed to convert %s into type int64", string(v))
 		}
 
 		t.Time = time.Unix(i, 0).In(time.UTC)
@@ -47,7 +47,7 @@ func (t Timestamp) MarshalJSON() ([]byte, error) {
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	i, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		return errors.Wrapf(err, "failed to convert %v into type int64", string(b))
+		return errors.Wrapf(err, "failed to convert %s into type int64", string(b))
 	}
 
 	t.Time = time.Unix(i, 0).In(time.UTC)
