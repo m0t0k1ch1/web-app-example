@@ -17,7 +17,9 @@ func TestMain(m *testing.M) {
 func TestApp(t *testing.T) {
 	ctx := context.Background()
 
-	if _, err := testutil.OpenDB(ctx); err != nil {
-		t.Fatal(errors.Wrap(err, "failed to open db"))
+	_, teardown, err := testutil.SetupMySQL(ctx, "test")
+	if err != nil {
+		t.Fatal(errors.Wrap(err, "failed to setup mysql"))
 	}
+	defer teardown()
 }
