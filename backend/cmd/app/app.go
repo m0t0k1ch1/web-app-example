@@ -38,6 +38,10 @@ func NewApp(ctx context.Context, conf config.App) (*App, error) {
 	}, nil
 }
 
+func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	app.srv.Handler.ServeHTTP(w, r)
+}
+
 func (app *App) Start() error {
 	return app.srv.ListenAndServe()
 }
