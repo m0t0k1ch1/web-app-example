@@ -57,7 +57,7 @@ func (app *App) initServer() {
 	{
 		r := chi.NewRouter()
 
-		base := handler.NewHandlerBase(app.env)
+		base := handler.NewBase(app.env)
 
 		path, h := appv1connect.NewTaskServiceHandler(
 			appv1.NewTaskServiceHandler(base),

@@ -5,11 +5,11 @@ import (
 )
 
 type TaskServiceHandler struct {
-	*handler.HandlerBase
+	*handler.Base
 }
 
-func NewTaskServiceHandler(base *handler.HandlerBase) *TaskServiceHandler {
+func NewTaskServiceHandler(base *handler.Base) *TaskServiceHandler {
 	return &TaskServiceHandler{
-		HandlerBase: base,
+		Base: base,
 	}
 }
