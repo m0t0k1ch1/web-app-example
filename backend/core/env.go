@@ -2,8 +2,11 @@ package core
 
 import (
 	"database/sql"
+
+	"backend/config"
 )
 
 type Env struct {
-	DB *sql.DB
+	Config config.App
+	DB     *sql.DB
 }

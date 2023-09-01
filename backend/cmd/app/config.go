@@ -1,29 +1,24 @@
 package main
 
 import (
+	"backend/config"
+
 	"github.com/go-playground/validator/v10"
 	kayac_config "github.com/kayac/go-config"
 	"github.com/pkg/errors"
-
-	"backend/config"
 )
 
-type Config struct {
-	Server config.ServerConfig `yaml:"server" validate:"required"`
-	MySQL  config.MySQLConfig  `yaml:"mysql" validate:"required"`
-}
-
-func LoadConfig(path string) (Config, error) {
+func LoadConfig(path string) (config.App, error) {
 	kayac_config.Delims("<%", "%>")
 
-	var conf Config
+	var conf config.App
 	if err := kayac_config.LoadWithEnv(&conf, path); err != nil {
-		return Config{}, err
+		return config.App{}, err
 	}
 
 	v := validator.New(validator.WithRequiredStructEnabled())
 	if err := v.Struct(conf); err != nil {
-		return Config{}, errors.Wrap(err, "invalid config")
+		return config.App{}, errors.Wrap(err, "invalid config")
 	}
 
 	return conf, nil

@@ -12,6 +12,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"backend/config"
 	"backend/core"
 	"backend/gen/buf/app/v1/appv1connect"
 	"backend/handler"
@@ -19,18 +20,14 @@ import (
 )
 
 type App struct {
-	config Config
-
 	env    *core.Env
 	server *http.Server
 }
 
-func NewApp(ctx context.Context, conf Config) (*App, error) {
-	app := &App{
-		config: conf,
-	}
+func NewApp(ctx context.Context, conf config.App) (*App, error) {
+	app := &App{}
 
-	if err := app.initEnv(); err != nil {
+	if err := app.initEnv(conf); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize env")
 	}
 
@@ -39,14 +36,15 @@ func NewApp(ctx context.Context, conf Config) (*App, error) {
 	return app, nil
 }
 
-func (app *App) initEnv() error {
-	db, err := sql.Open("mysql", app.config.MySQL.DSN())
+func (app *App) initEnv(conf config.App) error {
+	db, err := sql.Open("mysql", conf.MySQL.DSN())
 	if err != nil {
-		return errors.Wrapf(err, "failed to connect to db: %s", app.config.MySQL.DBName)
+		return errors.Wrapf(err, "failed to connect to db: %s", conf.MySQL.DBName)
 	}
 
 	app.env = &core.Env{
-		DB: db,
+		Config: conf,
+		DB:     db,
 	}
 
 	return nil
@@ -99,7 +97,7 @@ func (app *App) initServer() {
 	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
 
 	app.server = &http.Server{
-		Addr:    app.config.Server.Addr(),
+		Addr:    app.env.Config.Server.Addr(),
 		Handler: r,
 	}
 }

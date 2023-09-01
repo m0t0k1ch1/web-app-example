@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-type ServerConfig struct {
+type Server struct {
 	Port uint16 `yaml:"port" validate:"required"`
 }
 
-func (conf ServerConfig) Addr() string {
+func (conf Server) Addr() string {
 	return fmt.Sprintf(":%d", conf.Port)
 }
