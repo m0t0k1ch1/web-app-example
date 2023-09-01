@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,7 +17,7 @@ import (
 )
 
 var (
-	mysqlContainer MySQLContainer
+	mysqlCtr *mysqlContainer
 )
 
 func Run(m *testing.M) int {
@@ -33,24 +34,44 @@ func Run(m *testing.M) int {
 	return m.Run()
 }
 
-func setup(ctx context.Context) (func(), error) {
-	{
-		container, err := newMySQLContainer(ctx, "test")
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to setup mysql container")
-		}
-
-		mysqlContainer = MySQLContainer{
-			Container: container,
-		}
+func setup(ctx context.Context) (teardown func(), err error) {
+	mysqlCtr, err = newMySQLContainer(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to setup mysql container")
 	}
 
-	return func() {
-		mysqlContainer.Terminate(ctx)
-	}, nil
+	teardown = func() {
+		mysqlCtr.Terminate(ctx)
+	}
+
+	return
 }
 
-func newMySQLContainer(ctx context.Context, dbName string) (testcontainers.Container, error) {
+func OpenDB(ctx context.Context) (*sql.DB, error) {
+	port, err := mysqlCtr.MappedPort(ctx, "3306")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get mapped port")
+	}
+
+	return sql.Open("mysql", config.MySQL{
+		Host:     "127.0.0.1",
+		Port:     port.Int(),
+		User:     "root",
+		Password: "",
+		DBName:   "test",
+	}.DSN())
+}
+
+func fatal(err error) {
+	slog.Error(err.Error())
+	os.Exit(1)
+}
+
+type mysqlContainer struct {
+	testcontainers.Container
+}
+
+func newMySQLContainer(ctx context.Context) (*mysqlContainer, error) {
 	pathToBeMounted, err := filepath.Abs("../../_schema/sql/")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to prepare absolute path for dir to be mounted")
@@ -64,20 +85,22 @@ func newMySQLContainer(ctx context.Context, dbName string) (testcontainers.Conta
 		},
 		Env: map[string]string{
 			"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
-			"MYSQL_DATABASE":             dbName,
+			"MYSQL_DATABASE":             "test",
 		},
-		WaitingFor: wait.ForSQL(nat.Port("3306"), "mysql", func(host string, port nat.Port) string {
+		WaitingFor: wait.ForSQL("3306", "mysql", func(host string, port nat.Port) string {
+			slog.Info(host)
+
 			return config.MySQL{
 				Host:     host,
 				Port:     port.Int(),
 				User:     "root",
 				Password: "",
-				DBName:   dbName,
+				DBName:   "test",
 			}.DSN()
 		}),
 	}
 
-	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+	ctr, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
 	})
@@ -85,10 +108,7 @@ func newMySQLContainer(ctx context.Context, dbName string) (testcontainers.Conta
 		return nil, errors.Wrap(err, "failed to create container")
 	}
 
-	return container, nil
-}
-
-func fatal(err error) {
-	slog.Error(err.Error())
-	os.Exit(1)
+	return &mysqlContainer{
+		Container: ctr,
+	}, nil
 }
