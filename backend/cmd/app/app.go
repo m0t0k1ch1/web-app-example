@@ -20,42 +20,50 @@ import (
 )
 
 type App struct {
-	env    *core.Env
-	server *http.Server
+	env *core.Env
+	srv *http.Server
 }
 
 func NewApp(ctx context.Context, conf config.App) (*App, error) {
-	app := &App{}
-
-	if err := app.initEnv(conf); err != nil {
+	env, err := newEnv(conf)
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to initialize env")
 	}
 
-	app.initServer()
+	srv := newServer(env)
 
-	return app, nil
+	return &App{
+		env: env,
+		srv: srv,
+	}, nil
 }
 
-func (app *App) initEnv(conf config.App) error {
+func (app *App) Start() error {
+	return app.srv.ListenAndServe()
+}
+
+func (app *App) Shutdown(ctx context.Context) error {
+	return app.srv.Shutdown(ctx)
+}
+
+func newEnv(conf config.App) (*core.Env, error) {
 	db, err := sql.Open("mysql", conf.MySQL.DSN())
 	if err != nil {
-		return errors.Wrapf(err, "failed to connect to db: %s", conf.MySQL.DBName)
+		return nil, errors.Wrapf(err, "failed to connect to db: %s", conf.MySQL.DBName)
 	}
 
-	app.env = &core.Env{
+	return &core.Env{
 		Config: conf,
 		DB:     db,
-	}
-
-	return nil
+	}, nil
 }
 
-func (app *App) initServer() {
+func newServer(env *core.Env) *http.Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
 
-		base := handler.NewBase(app.env)
+		base := handler.NewBase(env)
 
 		path, h := appv1connect.NewTaskServiceHandler(
 			appv1.NewTaskService(base),
@@ -96,16 +104,8 @@ func (app *App) initServer() {
 	r := chi.NewRouter()
 	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
 
-	app.server = &http.Server{
-		Addr:    app.env.Config.Server.Addr(),
+	return &http.Server{
+		Addr:    env.Config.Server.Addr(),
 		Handler: r,
 	}
-}
-
-func (app *App) Start() error {
-	return app.server.ListenAndServe()
-}
-
-func (app *App) Shutdown(ctx context.Context) error {
-	return app.server.Shutdown(ctx)
 }
