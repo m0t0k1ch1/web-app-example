@@ -12,8 +12,8 @@ import (
 	"backend/handler"
 )
 
-func (h *TaskServiceHandler) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
-	qdb := mysql.New(h.Env.DB)
+func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
+	qdb := mysql.New(s.Env.DB)
 
 	tasks, err := qdb.ListTasks(ctx)
 	if err != nil {

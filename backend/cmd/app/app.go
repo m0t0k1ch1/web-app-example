@@ -58,7 +58,7 @@ func (app *App) initServer() {
 		base := handler.NewBase(app.env)
 
 		path, h := appv1connect.NewTaskServiceHandler(
-			appv1.NewTaskServiceHandler(base),
+			appv1.NewTaskService(base),
 			connect.WithInterceptors(ValidationInterceptor),
 			connect.WithCodec(NewJSONCodec()),
 		)

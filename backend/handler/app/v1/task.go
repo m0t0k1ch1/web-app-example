@@ -4,12 +4,12 @@ import (
 	"backend/handler"
 )
 
-type TaskServiceHandler struct {
+type TaskService struct {
 	*handler.Base
 }
 
-func NewTaskServiceHandler(base *handler.Base) *TaskServiceHandler {
-	return &TaskServiceHandler{
+func NewTaskService(base *handler.Base) *TaskService {
+	return &TaskService{
 		Base: base,
 	}
 }

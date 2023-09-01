@@ -15,10 +15,10 @@ import (
 	"backend/library/rdbutil"
 )
 
-func (h *TaskServiceHandler) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {
+func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {
 	var task mysql.Task
 
-	if err := rdbutil.Transact(ctx, h.Env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := rdbutil.Transact(ctx, s.Env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		var id64 int64

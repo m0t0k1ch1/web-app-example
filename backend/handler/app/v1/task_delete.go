@@ -14,18 +14,18 @@ import (
 	"backend/library/rdbutil"
 )
 
-func (h *TaskServiceHandler) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
+func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
 		return nil, handler.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceDeleteRequest.Id"))
 	}
 
-	task, err := h.MustGetTask(ctx, id)
+	task, err := s.MustGetTask(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := rdbutil.Transact(ctx, h.Env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := rdbutil.Transact(ctx, s.Env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
