@@ -11,6 +11,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"backend/core"
 	"backend/gen/buf/app/v1/appv1connect"
 	"backend/handler"
 	appv1 "backend/handler/app/v1"
@@ -19,7 +20,7 @@ import (
 type App struct {
 	config Config
 
-	env    *handler.Env
+	env    *core.Env
 	server *http.Server
 }
 
@@ -43,7 +44,7 @@ func (app *App) initEnv() error {
 		return errors.Wrapf(err, "failed to connect to db: %s", app.config.MySQL.DBName)
 	}
 
-	app.env = &handler.Env{
+	app.env = &core.Env{
 		DB: db,
 	}
 

@@ -6,15 +6,16 @@ import (
 
 	"github.com/pkg/errors"
 
+	"backend/core"
 	"backend/gen/sqlc/mysql"
 	"backend/library/idutil"
 )
 
 type HandlerBase struct {
-	Env *Env
+	Env *core.Env
 }
 
-func NewHandlerBase(env *Env) *HandlerBase {
+func NewHandlerBase(env *core.Env) *HandlerBase {
 	return &HandlerBase{
 		Env: env,
 	}
