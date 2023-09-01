@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
@@ -52,46 +53,54 @@ func (app *App) initEnv() error {
 }
 
 func (app *App) initServer() {
-	handlerBase := handler.NewHandlerBase(app.env)
+	var grpcHandler http.Handler
+	{
+		r := chi.NewRouter()
 
-	grpcMux := http.NewServeMux()
-	grpcMux.Handle(appv1connect.NewTaskServiceHandler(
-		appv1.NewTaskServiceHandler(handlerBase),
-		connect.WithInterceptors(ValidationInterceptor),
-		connect.WithCodec(NewJSONCodec()),
-	))
+		base := handler.NewHandlerBase(app.env)
 
-	mux := http.NewServeMux()
-	mux.Handle("/grpc/", http.StripPrefix("/grpc", grpcMux))
+		path, h := appv1connect.NewTaskServiceHandler(
+			appv1.NewTaskServiceHandler(base),
+			connect.WithInterceptors(ValidationInterceptor),
+			connect.WithCodec(NewJSONCodec()),
+		)
 
-	c := cors.New(cors.Options{
-		AllowedMethods: []string{
-			http.MethodGet,
-			http.MethodPost,
-		},
-		AllowedHeaders: []string{
-			"Accept-Encoding",
-			"Content-Encoding",
-			"Content-Type",
-			"Connect-Protocol-Version",
-			"Connect-Timeout-Ms",
-			"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
-			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-			"Grpc-Timeout",             // Used for gRPC-web
-			"X-Grpc-Web",               // Used for gRPC-web
-			"X-User-Agent",             // Used for gRPC-web
-		},
-		ExposedHeaders: []string{
-			"Content-Encoding",         // Unused in web browsers, but added for future-proofing
-			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-			"Grpc-Status",              // Required for gRPC-web
-			"Grpc-Message",             // Required for gRPC-web
-		},
-	})
+		c := cors.New(cors.Options{
+			AllowedMethods: []string{
+				http.MethodGet,
+				http.MethodPost,
+			},
+			AllowedHeaders: []string{
+				"Accept-Encoding",
+				"Content-Encoding",
+				"Content-Type",
+				"Connect-Protocol-Version",
+				"Connect-Timeout-Ms",
+				"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
+				"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+				"Grpc-Timeout",             // Used for gRPC-web
+				"X-Grpc-Web",               // Used for gRPC-web
+				"X-User-Agent",             // Used for gRPC-web
+			},
+			ExposedHeaders: []string{
+				"Content-Encoding",         // Unused in web browsers, but added for future-proofing
+				"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+				"Grpc-Status",              // Required for gRPC-web
+				"Grpc-Message",             // Required for gRPC-web
+			},
+		})
+
+		r.Handle(path+"*", h2c.NewHandler(c.Handler(h), &http2.Server{}))
+
+		grpcHandler = r
+	}
+
+	r := chi.NewRouter()
+	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
 
 	app.server = &http.Server{
 		Addr:    app.config.Server.Addr(),
-		Handler: c.Handler(h2c.NewHandler(mux, &http2.Server{})),
+		Handler: r,
 	}
 }
 

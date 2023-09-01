@@ -5,6 +5,7 @@ go 1.21
 require (
 	connectrpc.com/connect v1.11.1
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1
