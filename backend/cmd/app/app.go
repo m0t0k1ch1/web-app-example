@@ -49,7 +49,7 @@ func (app *App) Shutdown(ctx context.Context) error {
 func newEnv(conf config.App) (*core.Env, error) {
 	db, err := sql.Open("mysql", conf.MySQL.DSN())
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to db: %s", conf.MySQL.DBName)
+		return nil, errors.Wrapf(err, "failed to open db: %s", conf.MySQL.DBName)
 	}
 
 	return &core.Env{

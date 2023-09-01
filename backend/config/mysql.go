@@ -6,7 +6,7 @@ import (
 
 type MySQL struct {
 	Host     string `yaml:"host" validate:"required,hostname_rfc1123"`
-	Port     uint16 `yaml:"port" validate:"required"`
+	Port     int    `yaml:"port" validate:"required,gte=0,lte=65535"`
 	User     string `yaml:"user" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
 	DBName   string `yaml:"db_name" validate:"required"`

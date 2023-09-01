@@ -2,7 +2,6 @@ package testutil
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,6 +11,12 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"golang.org/x/exp/slog"
+
+	"backend/config"
+)
+
+var (
+	mysqlContainer MySQLContainer
 )
 
 func Run(m *testing.M) int {
@@ -29,9 +34,15 @@ func Run(m *testing.M) int {
 }
 
 func setup(ctx context.Context) (func(), error) {
-	mysqlContainer, err := setupMySQLContainer(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to setup mysql container")
+	{
+		container, err := newMySQLContainer(ctx, "test")
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to setup mysql container")
+		}
+
+		mysqlContainer = MySQLContainer{
+			Container: container,
+		}
 	}
 
 	return func() {
@@ -39,7 +50,7 @@ func setup(ctx context.Context) (func(), error) {
 	}, nil
 }
 
-func setupMySQLContainer(ctx context.Context) (testcontainers.Container, error) {
+func newMySQLContainer(ctx context.Context, dbName string) (testcontainers.Container, error) {
 	pathToBeMounted, err := filepath.Abs("../../_schema/sql/")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to prepare absolute path for dir to be mounted")
@@ -53,13 +64,16 @@ func setupMySQLContainer(ctx context.Context) (testcontainers.Container, error) 
 		},
 		Env: map[string]string{
 			"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
-			"MYSQL_DATABASE":             "test",
+			"MYSQL_DATABASE":             dbName,
 		},
 		WaitingFor: wait.ForSQL(nat.Port("3306"), "mysql", func(host string, port nat.Port) string {
-			return fmt.Sprintf(
-				"root:@tcp(%s:%s)/test",
-				host, port.Port(),
-			)
+			return config.MySQL{
+				Host:     host,
+				Port:     port.Int(),
+				User:     "root",
+				Password: "",
+				DBName:   dbName,
+			}.DSN()
 		}),
 	}
 
