@@ -12,14 +12,15 @@ import (
 	"backend/config"
 	appv1 "backend/gen/buf/app/v1"
 	"backend/internal/testutil"
+	"backend/library/timeutil"
 )
 
 type Task struct {
 	ID        string `json:"id"`
 	Title     string `json:"title"`
 	Status    string `json:"status"`
-	UpdatedAt int64  `json:"updated_at"`
-	CreatedAt int64  `json:"created_at"`
+	UpdatedAt string `json:"updatedAt"`
+	CreatedAt string `json:"createdAt"`
 }
 
 type ErrorResponse struct {
@@ -84,6 +85,10 @@ func TestApp(t *testing.T) {
 	})
 
 	t.Run("success: create task1", func(t *testing.T) {
+		now := timeutil.Now()
+		timeutil.Lock(now)
+		defer timeutil.Unlock()
+
 		{
 			title := "task1"
 
@@ -107,6 +112,8 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, http.StatusOK, statusCode)
 			testutil.Equal(t, title, resp.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED.String(), resp.Task.Status)
+			testutil.Equal(t, now.String(), resp.Task.UpdatedAt)
+			testutil.Equal(t, now.String(), resp.Task.CreatedAt)
 
 			task1 = resp.Task
 		}
@@ -132,6 +139,8 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, task1.ID, resp.Task.ID)
 			testutil.Equal(t, task1.Title, resp.Task.Title)
 			testutil.Equal(t, task1.Status, resp.Task.Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Task.UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Task.CreatedAt)
 		}
 		{
 			var resp struct {
@@ -152,10 +161,16 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, task1.ID, resp.Tasks[0].ID)
 			testutil.Equal(t, task1.Title, resp.Tasks[0].Title)
 			testutil.Equal(t, task1.Status, resp.Tasks[0].Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Tasks[0].UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Tasks[0].CreatedAt)
 		}
 	})
 
 	t.Run("success: create task2", func(t *testing.T) {
+		now := timeutil.Now()
+		timeutil.Lock(now)
+		defer timeutil.Unlock()
+
 		{
 			title := "task2"
 
@@ -179,6 +194,8 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, http.StatusOK, statusCode)
 			testutil.Equal(t, title, resp.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED.String(), resp.Task.Status)
+			testutil.Equal(t, now.String(), resp.Task.UpdatedAt)
+			testutil.Equal(t, now.String(), resp.Task.CreatedAt)
 
 			task2 = resp.Task
 		}
@@ -204,6 +221,8 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, task2.ID, resp.Task.ID)
 			testutil.Equal(t, task2.Title, resp.Task.Title)
 			testutil.Equal(t, task2.Status, resp.Task.Status)
+			testutil.Equal(t, task2.UpdatedAt, resp.Task.UpdatedAt)
+			testutil.Equal(t, task2.CreatedAt, resp.Task.CreatedAt)
 		}
 		{
 			var resp struct {
@@ -224,9 +243,13 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, task2.ID, resp.Tasks[0].ID)
 			testutil.Equal(t, task2.Title, resp.Tasks[0].Title)
 			testutil.Equal(t, task2.Status, resp.Tasks[0].Status)
+			testutil.Equal(t, task2.UpdatedAt, resp.Tasks[0].UpdatedAt)
+			testutil.Equal(t, task2.CreatedAt, resp.Tasks[0].CreatedAt)
 			testutil.Equal(t, task1.ID, resp.Tasks[1].ID)
 			testutil.Equal(t, task1.Title, resp.Tasks[1].Title)
 			testutil.Equal(t, task1.Status, resp.Tasks[1].Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Tasks[1].UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Tasks[1].CreatedAt)
 		}
 	})
 
