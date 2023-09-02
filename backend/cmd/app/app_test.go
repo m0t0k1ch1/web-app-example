@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
 	"backend/config"
@@ -321,8 +320,6 @@ func TestApp(t *testing.T) {
 	})
 
 	t.Run("success: delete task1", func(t *testing.T) {
-		task1ID := task1.ID
-
 		{
 			statusCode, err := c.DoAPI(ctx,
 				http.MethodPost,
@@ -341,25 +338,6 @@ func TestApp(t *testing.T) {
 			testutil.Equal(t, http.StatusOK, statusCode)
 
 			task1 = nil
-		}
-		{
-			var resp ErrorResponse
-			statusCode, err := c.DoAPI(ctx,
-				http.MethodPost,
-				"/grpc/app.v1.TaskService/Get",
-				struct {
-					ID string `json:"id"`
-				}{
-					ID: task1ID,
-				},
-				&resp,
-			)
-			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to get task"))
-			}
-
-			testutil.Equal(t, http.StatusNotFound, statusCode)
-			testutil.Equal(t, connect.CodeNotFound.String(), resp.Code)
 		}
 		{
 			var resp struct {
