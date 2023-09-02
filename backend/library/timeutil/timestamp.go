@@ -8,12 +8,24 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	locked Timestamp
+)
+
 type Timestamp struct {
 	time.Time
 }
 
 func Now() Timestamp {
+	if !locked.IsZero() {
+		return locked
+	}
+
 	return Timestamp{time.Now()}
+}
+
+func (t Timestamp) String() string {
+	return strconv.FormatInt(t.Unix(), 10)
 }
 
 func (t Timestamp) Value() (driver.Value, error) {
@@ -53,4 +65,12 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	t.Time = time.Unix(i, 0).In(time.UTC)
 
 	return nil
+}
+
+func Lock(t Timestamp) {
+	locked = t
+}
+
+func Unlock() {
+	locked = Timestamp{}
 }
