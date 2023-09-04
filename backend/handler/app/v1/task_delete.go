@@ -7,11 +7,11 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	appv1 "backend/gen/buf/app/v1"
-	"backend/gen/sqlc/mysql"
-	"backend/handler"
-	"backend/library/idutil"
-	"backend/library/rdbutil"
+	appv1 "app/gen/buf/app/v1"
+	"app/gen/sqlc/mysql"
+	"app/handler"
+	"app/library/idutil"
+	"app/library/rdbutil"
 )
 
 func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {

@@ -3,7 +3,7 @@ package core
 import (
 	"database/sql"
 
-	"backend/config"
+	"app/config"
 )
 
 type Env struct {

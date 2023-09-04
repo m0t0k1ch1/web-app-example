@@ -6,10 +6,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"backend/converter"
-	appv1 "backend/gen/buf/app/v1"
-	"backend/handler"
-	"backend/library/idutil"
+	"app/converter"
+	appv1 "app/gen/buf/app/v1"
+	"app/handler"
+	"app/library/idutil"
 )
 
 func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {

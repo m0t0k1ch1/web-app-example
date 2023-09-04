@@ -9,7 +9,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"backend/config"
+	"app/config"
 )
 
 func SetupMySQL(ctx context.Context, dbName string) (config.MySQL, func(), error) {

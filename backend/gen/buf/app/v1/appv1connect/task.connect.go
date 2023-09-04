@@ -5,7 +5,7 @@
 package appv1connect
 
 import (
-	v1 "backend/gen/buf/app/v1"
+	v1 "app/gen/buf/app/v1"
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"

@@ -12,11 +12,11 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"backend/config"
-	"backend/core"
-	"backend/gen/buf/app/v1/appv1connect"
-	"backend/handler"
-	appv1 "backend/handler/app/v1"
+	"app/config"
+	"app/core"
+	"app/gen/buf/app/v1/appv1connect"
+	"app/handler"
+	appv1 "app/handler/app/v1"
 )
 
 type App struct {

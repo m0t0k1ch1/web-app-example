@@ -1,7 +1,7 @@
 package appv1
 
 import (
-	"backend/handler"
+	"app/handler"
 )
 
 type TaskService struct {

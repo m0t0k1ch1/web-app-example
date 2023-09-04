@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
 
-	"backend/config"
+	"app/config"
 )
 
 var (

@@ -5,8 +5,8 @@
 package mysql
 
 import (
-	"backend/library/idutil"
-	"backend/library/timeutil"
+	"app/library/idutil"
+	"app/library/timeutil"
 )
 
 type Task struct {

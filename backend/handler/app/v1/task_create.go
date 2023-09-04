@@ -7,12 +7,12 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"backend/converter"
-	appv1 "backend/gen/buf/app/v1"
-	"backend/gen/sqlc/mysql"
-	"backend/handler"
-	"backend/library/idutil"
-	"backend/library/rdbutil"
+	"app/converter"
+	appv1 "app/gen/buf/app/v1"
+	"app/gen/sqlc/mysql"
+	"app/handler"
+	"app/library/idutil"
+	"app/library/rdbutil"
 )
 
 func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {

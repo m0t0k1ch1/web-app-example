@@ -1,8 +1,8 @@
 package converter
 
 import (
-	appv1 "backend/gen/buf/app/v1"
-	"backend/gen/sqlc/mysql"
+	appv1 "app/gen/buf/app/v1"
+	"app/gen/sqlc/mysql"
 )
 
 func Task(row mysql.Task) *appv1.Task {

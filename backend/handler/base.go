@@ -6,9 +6,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"backend/core"
-	"backend/gen/sqlc/mysql"
-	"backend/library/idutil"
+	"app/core"
+	"app/gen/sqlc/mysql"
+	"app/library/idutil"
 )
 
 type Base struct {

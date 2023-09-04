@@ -9,10 +9,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"backend/config"
-	appv1 "backend/gen/buf/app/v1"
-	"backend/internal/testutil"
-	"backend/library/timeutil"
+	"app/config"
+	appv1 "app/gen/buf/app/v1"
+	"app/internal/testutil"
+	"app/library/timeutil"
 )
 
 type Task struct {
