@@ -58,13 +58,15 @@ func main() {
 		if err := app.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			fatal(errors.Wrap(err, "failed to start app"))
 		}
+		slog.Info("app started")
 	}()
 
 	<-ctx.Done()
 
 	if err := app.Stop(context.Background()); err != nil {
-		fatal(errors.Wrap(err, "failed to shutdown app"))
+		fatal(errors.Wrap(err, "failed to stop app"))
 	}
+	slog.Info("app stopped")
 }
 
 func fatal(err error) {
