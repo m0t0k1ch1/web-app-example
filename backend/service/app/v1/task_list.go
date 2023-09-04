@@ -9,7 +9,7 @@ import (
 	"app/converter"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/handler"
+	"app/service"
 )
 
 func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
@@ -17,7 +17,7 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 
 	tasks, err := qdb.ListTasks(ctx)
 	if err != nil {
-		return nil, handler.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
+		return nil, service.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceListResponse{

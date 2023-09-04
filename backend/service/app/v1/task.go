@@ -1,14 +1,14 @@
 package appv1
 
 import (
-	"app/handler"
+	"app/service"
 )
 
 type TaskService struct {
-	*handler.Base
+	*service.Base
 }
 
-func NewTaskService(base *handler.Base) *TaskService {
+func NewTaskService(base *service.Base) *TaskService {
 	return &TaskService{
 		Base: base,
 	}

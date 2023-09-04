@@ -10,15 +10,15 @@ import (
 	"app/converter"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/handler"
 	"app/library/idutil"
 	"app/library/rdbutil"
+	"app/service"
 )
 
 func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
 	id, err := idutil.Decode(req.Msg.Id)
 	if err != nil {
-		return nil, handler.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceUpdateRequest.Id"))
+		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceUpdateRequest.Id"))
 	}
 
 	task, err := s.MustGetTask(ctx, id)
@@ -31,10 +31,10 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
-				return handler.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+				return service.NewNotFoundError(errors.Wrap(txErr, "task not found"))
 			}
 
-			return handler.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
 		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
@@ -42,11 +42,11 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 			Title:  req.Msg.Title,
 			Status: int32(req.Msg.Status),
 		}); txErr != nil {
-			return handler.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
+			return service.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}
 
 		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
-			return handler.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
+			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
 		}
 
 		return

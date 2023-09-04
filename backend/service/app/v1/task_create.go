@@ -10,9 +10,9 @@ import (
 	"app/converter"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/handler"
 	"app/library/idutil"
 	"app/library/rdbutil"
+	"app/service"
 )
 
 func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {
@@ -23,11 +23,11 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 
 		var id64 int64
 		if id64, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
-			return handler.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
+			return service.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
 		}
 
 		if task, txErr = qtx.GetTask(txCtx, idutil.ID(id64)); txErr != nil {
-			return handler.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
+			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
 		}
 
 		return

@@ -15,8 +15,8 @@ import (
 	"app/config"
 	"app/core"
 	"app/gen/buf/app/v1/appv1connect"
-	"app/handler"
-	appv1 "app/handler/app/v1"
+	"app/service"
+	appv1 "app/service/app/v1"
 )
 
 type App struct {
@@ -67,7 +67,7 @@ func newServer(env *core.Env) *http.Server {
 	{
 		r := chi.NewRouter()
 
-		base := handler.NewBase(env)
+		base := service.NewBase(env)
 
 		path, h := appv1connect.NewTaskServiceHandler(
 			appv1.NewTaskService(base),
