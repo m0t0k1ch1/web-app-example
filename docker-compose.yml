@@ -8,7 +8,8 @@ services:
       APP_MYSQL_HOST: mysql
       APP_MYSQL_PASSWORD: my-secret-pw
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
   mysql:
     image: mysql:8.0
     volumes:
@@ -17,3 +18,8 @@ services:
       MYSQL_ROOT_PASSWORD: my-secret-pw
       MYSQL_DATABASE: app
       TZ: UTC
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1;'"]
+      interval: 1s
+      start_period: 30s
+      retries: 30
