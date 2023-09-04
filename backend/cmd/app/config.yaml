@@ -5,4 +5,4 @@ mysql:
   port: <% env `APP_MYSQL_PORT` `3306` %>
   user: "<% env `APP_MYSQL_USER` `root` %>"
   password: "<% must_env `APP_MYSQL_PASSWORD` %>"
-  db_name: "<% env `APP_MYSQL_DB_NAME` `web_app_sample` %>"
+  db_name: "<% env `APP_MYSQL_DB_NAME` `app` %>"

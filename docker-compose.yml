@@ -15,5 +15,5 @@ services:
       - ./schema/sql/:/docker-entrypoint-initdb.d/
     environment:
       MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: web_app_sample
+      MYSQL_DATABASE: app
       TZ: UTC
