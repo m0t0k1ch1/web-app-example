@@ -21,8 +21,8 @@ func NewBase(env *core.Env) *Base {
 	}
 }
 
-func (base *Base) MustGetTask(ctx context.Context, id idutil.ID) (mysql.Task, error) {
-	task, err := mysql.New(base.Env.DB).GetTask(ctx, id)
+func GetTaskOrError(ctx context.Context, db mysql.DBTX, id idutil.ID) (mysql.Task, error) {
+	task, err := mysql.New(db).GetTask(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return mysql.Task{}, NewNotFoundError(errors.Wrap(err, "task not found"))

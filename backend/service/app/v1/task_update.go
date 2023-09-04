@@ -21,7 +21,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceUpdateRequest.Id"))
 	}
 
-	task, err := s.MustGetTask(ctx, id)
+	task, err := service.GetTaskOrError(ctx, s.Env.DB, id)
 	if err != nil {
 		return nil, err
 	}

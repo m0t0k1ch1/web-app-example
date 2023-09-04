@@ -18,7 +18,7 @@ func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskSe
 		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceGetRequest.Id"))
 	}
 
-	task, err := s.MustGetTask(ctx, id)
+	task, err := service.GetTaskOrError(ctx, s.Env.DB, id)
 	if err != nil {
 		return nil, err
 	}

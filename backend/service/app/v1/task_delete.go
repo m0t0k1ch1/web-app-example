@@ -20,7 +20,7 @@ func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceDeleteRequest.Id"))
 	}
 
-	task, err := s.MustGetTask(ctx, id)
+	task, err := service.GetTaskOrError(ctx, s.Env.DB, id)
 	if err != nil {
 		return nil, err
 	}
