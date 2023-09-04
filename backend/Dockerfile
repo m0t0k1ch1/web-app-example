@@ -7,8 +7,6 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-WORKDIR /usr/src/app/cmd/app
+RUN go build -v -o /usr/local/bin/app ./cmd/app
 
-RUN go build -v -o /usr/local/bin/app
-
-CMD ["app"]
+CMD ["app", "--config", "./_config/app.yaml"]

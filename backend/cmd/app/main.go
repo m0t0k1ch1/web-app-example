@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	confPath = flag.String("config", "config.yaml", "path to config file")
+	confPath = flag.String("config", "app.yaml", "path to config file")
 )
 
 func loadConfig(path string) (config.App, error) {
