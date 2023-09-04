@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	confPath = flag.String("config", "app.yaml", "path to config file")
+	confPath = flag.String("config", "config.yaml", "path to config file")
 )
 
 func loadConfig(path string) (config.App, error) {
@@ -58,7 +58,6 @@ func main() {
 		if err := app.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			fatal(errors.Wrap(err, "failed to start app"))
 		}
-		slog.Info("app started")
 	}()
 
 	<-ctx.Done()
@@ -66,7 +65,6 @@ func main() {
 	if err := app.Stop(context.Background()); err != nil {
 		fatal(errors.Wrap(err, "failed to stop app"))
 	}
-	slog.Info("app stopped")
 }
 
 func fatal(err error) {
