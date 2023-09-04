@@ -29,8 +29,7 @@ func loadConfig(path string) (config.App, error) {
 		return config.App{}, err
 	}
 
-	v := validator.New(validator.WithRequiredStructEnabled())
-	if err := v.Struct(conf); err != nil {
+	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(conf); err != nil {
 		return config.App{}, errors.Wrap(err, "invalid config")
 	}
 
@@ -63,7 +62,7 @@ func main() {
 
 	<-ctx.Done()
 
-	if err := app.Shutdown(context.Background()); err != nil {
+	if err := app.Stop(context.Background()); err != nil {
 		fatal(errors.Wrap(err, "failed to shutdown app"))
 	}
 }

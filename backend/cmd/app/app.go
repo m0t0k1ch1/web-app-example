@@ -46,7 +46,7 @@ func (app *App) Start() error {
 	return app.srv.ListenAndServe()
 }
 
-func (app *App) Shutdown(ctx context.Context) error {
+func (app *App) Stop(ctx context.Context) error {
 	return app.srv.Shutdown(ctx)
 }
 
