@@ -24,23 +24,26 @@ func TestMain(m *testing.M) {
 func TestTaskService(t *testing.T) {
 	ctx := context.Background()
 
-	schemaPath, err := filepath.Abs("../../../_schema")
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed to prepare schema path"))
-	}
+	var s *TaskService
+	{
+		schemaPath, err := filepath.Abs("../../../_schema")
+		if err != nil {
+			t.Fatal(errors.Wrap(err, "failed to prepare schema path"))
+		}
 
-	dbConf, dbTeardown, err := testutil.SetupDB(ctx, schemaPath)
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed to setup db"))
-	}
-	defer dbTeardown()
+		dbConf, dbTeardown, err := testutil.SetupDB(ctx, schemaPath)
+		if err != nil {
+			t.Fatal(errors.Wrap(err, "failed to setup db"))
+		}
+		defer dbTeardown()
 
-	db, err := db.NewContainer(dbConf)
-	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed to initialize db container"))
-	}
+		db, err := db.NewContainer(dbConf)
+		if err != nil {
+			t.Fatal(errors.Wrap(err, "failed to initialize db container"))
+		}
 
-	s := NewTaskService(service.NewBase(env.NewContainer(db)))
+		s = NewTaskService(service.NewBase(env.NewContainer(db)))
+	}
 
 	var (
 		task1 *appv1.Task
