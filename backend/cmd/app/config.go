@@ -1,16 +1,26 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	configloader "github.com/kayac/go-config"
 	"github.com/pkg/errors"
 
-	"app/config"
+	"app/db"
 )
 
 type Config struct {
-	Server config.Server `yaml:"server" validate:"required"`
-	MySQL  config.MySQL  `yaml:"mysql" validate:"required"`
+	DB     db.Config    `yaml:"db" validate:"required"`
+	Server ServerConfig `yaml:"server" validate:"required"`
+}
+
+type ServerConfig struct {
+	Port int `yaml:"port" validate:"required,gte=0,lte=65535"`
+}
+
+func (conf ServerConfig) Addr() string {
+	return fmt.Sprintf(":%d", conf.Port)
 }
 
 func LoadConfig(path string) (Config, error) {

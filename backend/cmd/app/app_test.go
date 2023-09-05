@@ -34,14 +34,14 @@ func TestMain(m *testing.M) {
 func TestApp(t *testing.T) {
 	ctx := context.Background()
 
-	mysqlConf, teardown, err := testutil.SetupMySQL(ctx, "test")
+	dbConf, dbTeardown, err := testutil.SetupDB(ctx)
 	if err != nil {
-		t.Fatal(errors.Wrap(err, "failed to setup mysql"))
+		t.Fatal(errors.Wrap(err, "failed to setup db"))
 	}
-	defer teardown()
+	defer dbTeardown()
 
 	app, err := InitializeApp(ctx, Config{
-		MySQL: mysqlConf,
+		DB: dbConf,
 	})
 	if err != nil {
 		t.Fatal(errors.Wrap(err, "failed to initialize app"))

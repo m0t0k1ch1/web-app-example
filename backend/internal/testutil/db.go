@@ -9,16 +9,32 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"app/config"
+	"app/db"
 )
 
-func SetupMySQL(ctx context.Context, dbName string) (config.MySQL, func(), error) {
-	pathToBeMounted, err := filepath.Abs("../../_schema/sql/")
+func SetupDB(ctx context.Context) (db.Config, func(), error) {
+	mysqlCtr, mysqlConf, err := setupMySQL(ctx)
 	if err != nil {
-		return config.MySQL{}, nil, errors.Wrap(err, "failed to prepare absolute path for dir to be mounted")
+		return db.Config{}, nil, errors.Wrap(err, "failed to setup mysql")
 	}
 
-	var conf config.MySQL
+	return db.Config{
+			MySQL: mysqlConf,
+		}, func() {
+			mysqlCtr.Terminate(ctx)
+		}, nil
+}
+
+func setupMySQL(ctx context.Context) (testcontainers.Container, db.MySQLConfig, error) {
+	conf := db.MySQLConfig{
+		User:   "root",
+		DBName: "test",
+	}
+
+	pathToBeMounted, err := filepath.Abs("../../_schema/sql/")
+	if err != nil {
+		return nil, db.MySQLConfig{}, errors.Wrap(err, "failed to prepare absolute path for dir to be mounted")
+	}
 
 	req := testcontainers.ContainerRequest{
 		Image:        "mysql:8.0",
@@ -28,16 +44,12 @@ func SetupMySQL(ctx context.Context, dbName string) (config.MySQL, func(), error
 		},
 		Env: map[string]string{
 			"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
-			"MYSQL_DATABASE":             dbName,
+			"MYSQL_DATABASE":             conf.DBName,
 		},
 		WaitingFor: wait.ForSQL("3306", "mysql", func(host string, port nat.Port) string {
-			conf = config.MySQL{
-				Host:     host,
-				Port:     port.Int(),
-				User:     "root",
-				Password: "",
-				DBName:   dbName,
-			}
+			conf.Host = host
+			conf.Port = port.Int()
+
 			return conf.DSN()
 		}),
 	}
@@ -47,10 +59,8 @@ func SetupMySQL(ctx context.Context, dbName string) (config.MySQL, func(), error
 		Started:          true,
 	})
 	if err != nil {
-		return config.MySQL{}, nil, errors.Wrap(err, "failed to create container")
+		return nil, db.MySQLConfig{}, errors.Wrap(err, "failed to create container")
 	}
 
-	return conf, func() {
-		ctr.Terminate(ctx)
-	}, nil
+	return ctr, conf, nil
 }

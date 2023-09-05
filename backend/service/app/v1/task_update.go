@@ -20,12 +20,12 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceUpdateRequest.Id"))
 	}
 
-	task, err := service.GetTaskOrError(ctx, s.Env.DB, id)
+	task, err := service.GetTaskOrError(ctx, s.Env.DB.MySQL, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := rdbutil.Transact(ctx, s.Env.DB, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := rdbutil.Transact(ctx, s.Env.DB.MySQL, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {

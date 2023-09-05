@@ -16,7 +16,7 @@ import (
 
 func InitializeApp(ctx context.Context, conf Config) (*App, error) {
 	wire.Build(
-		wire.FieldsOf(new(Config), "MySQL", "Server"),
+		wire.FieldsOf(new(Config), "DB", "Server"),
 
 		db.NewConnection,
 		env.NewContainer,

@@ -21,16 +21,16 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, conf Config) (*App, error) {
-	server := conf.Server
-	mySQL := conf.MySQL
-	connection, err := db.NewConnection(mySQL)
+	serverConfig := conf.Server
+	config := conf.DB
+	connection, err := db.NewConnection(config)
 	if err != nil {
 		return nil, err
 	}
 	container := env.NewContainer(connection)
 	base := service.NewBase(container)
 	taskService := appv1.NewTaskService(base)
-	mainServer := NewServer(server, taskService)
-	app := NewApp(mainServer)
+	server := NewServer(serverConfig, taskService)
+	app := NewApp(server)
 	return app, nil
 }

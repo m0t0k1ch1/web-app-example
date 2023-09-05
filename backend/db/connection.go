@@ -4,21 +4,22 @@ import (
 	"database/sql"
 
 	"github.com/pkg/errors"
-
-	"app/config"
 )
 
 type Connection struct {
-	*sql.DB
+	MySQL *sql.DB
 }
 
-func NewConnection(conf config.MySQL) (*Connection, error) {
-	db, err := sql.Open("mysql", conf.DSN())
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to open db: %s", conf.DBName)
+func NewConnection(conf Config) (*Connection, error) {
+	conn := &Connection{}
+	{
+		db, err := sql.Open("mysql", conf.MySQL.DSN())
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to open db: %s", conf.MySQL.DBName)
+		}
+
+		conn.MySQL = db
 	}
 
-	return &Connection{
-		DB: db,
-	}, nil
+	return conn, nil
 }
