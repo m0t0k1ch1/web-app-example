@@ -7,9 +7,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Transact(ctx context.Context, db *sql.DB, f func(context.Context, *sql.Tx) error) (err error) {
+type TxStarter interface {
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+}
+
+func Transact(ctx context.Context, starter TxStarter, f func(context.Context, *sql.Tx) error) (err error) {
 	var tx *sql.Tx
-	if tx, err = db.BeginTx(ctx, nil); err != nil {
+	if tx, err = starter.BeginTx(ctx, nil); err != nil {
 		return errors.Wrap(err, "failed to begin transaction")
 	}
 

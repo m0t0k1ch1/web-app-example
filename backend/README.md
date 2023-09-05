@@ -5,11 +5,11 @@
 ## Code generation
 
 ```sh
-$ make generate
+make generate
 ```
 
 ## Test
 
 ```sh
-$ make test
+make test
 ```

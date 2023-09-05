@@ -6,16 +6,16 @@ import (
 
 	"github.com/pkg/errors"
 
-	"app/core"
+	"app/env"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
 )
 
 type Base struct {
-	Env *core.Env
+	Env *env.Container
 }
 
-func NewBase(env *core.Env) *Base {
+func NewBase(env *env.Container) *Base {
 	return &Base{
 		Env: env,
 	}

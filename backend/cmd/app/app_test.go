@@ -9,7 +9,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"app/config"
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
 	"app/library/timeutil"
@@ -35,18 +34,15 @@ func TestMain(m *testing.M) {
 func TestApp(t *testing.T) {
 	ctx := context.Background()
 
-	conf := config.App{}
-	{
-		mysqlConf, teardown, err := testutil.SetupMySQL(ctx, "test")
-		if err != nil {
-			t.Fatal(errors.Wrap(err, "failed to setup mysql"))
-		}
-		defer teardown()
-
-		conf.MySQL = mysqlConf
+	mysqlConf, teardown, err := testutil.SetupMySQL(ctx, "test")
+	if err != nil {
+		t.Fatal(errors.Wrap(err, "failed to setup mysql"))
 	}
+	defer teardown()
 
-	app, err := NewApp(ctx, conf)
+	app, err := InitializeApp(ctx, Config{
+		MySQL: mysqlConf,
+	})
 	if err != nil {
 		t.Fatal(errors.Wrap(err, "failed to initialize app"))
 	}

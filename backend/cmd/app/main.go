@@ -8,43 +8,24 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
-	kayac_config "github.com/kayac/go-config"
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
-
-	"app/config"
 )
 
 var (
 	confPath = flag.String("config", "app.yaml", "path to config file")
 )
 
-func loadConfig(path string) (config.App, error) {
-	kayac_config.Delims("<%", "%>")
-
-	var conf config.App
-	if err := kayac_config.LoadWithEnv(&conf, path); err != nil {
-		return config.App{}, err
-	}
-
-	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(conf); err != nil {
-		return config.App{}, errors.Wrap(err, "invalid config")
-	}
-
-	return conf, nil
-}
-
 func main() {
 	flag.Parse()
 
-	conf, err := loadConfig(*confPath)
+	conf, err := LoadConfig(*confPath)
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to load config"))
 	}
 
-	app, err := NewApp(context.Background(), conf)
+	app, err := InitializeApp(context.Background(), conf)
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to initialize app"))
 	}
