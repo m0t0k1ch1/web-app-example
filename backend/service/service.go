@@ -4,22 +4,12 @@ import (
 	"context"
 	"database/sql"
 
+	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"app/env"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
 )
-
-type Base struct {
-	Env *env.Container
-}
-
-func NewBase(env *env.Container) *Base {
-	return &Base{
-		Env: env,
-	}
-}
 
 func GetTaskOrError(ctx context.Context, db mysql.DBTX, id idutil.ID) (mysql.Task, error) {
 	task, err := mysql.New(db).GetTask(ctx, id)
@@ -32,4 +22,16 @@ func GetTaskOrError(ctx context.Context, db mysql.DBTX, id idutil.ID) (mysql.Tas
 	}
 
 	return task, nil
+}
+
+func NewUnknownError(err error) error {
+	return connect.NewError(connect.CodeUnknown, err)
+}
+
+func NewInvalidArgumentError(err error) error {
+	return connect.NewError(connect.CodeInvalidArgument, err)
+}
+
+func NewNotFoundError(err error) error {
+	return connect.NewError(connect.CodeNotFound, err)
 }

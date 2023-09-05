@@ -6,7 +6,6 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"app/converter"
 	appv1 "app/gen/buf/app/v1"
 	"app/library/idutil"
 	"app/service"
@@ -24,6 +23,6 @@ func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskSe
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceGetResponse{
-		Task: converter.Task(task),
+		Task: NewTask(task),
 	}), nil
 }

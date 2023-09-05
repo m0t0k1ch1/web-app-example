@@ -6,7 +6,6 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"app/converter"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/service"
@@ -21,6 +20,6 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceListResponse{
-		Tasks: converter.Tasks(tasks),
+		Tasks: NewTasks(tasks),
 	}), nil
 }
