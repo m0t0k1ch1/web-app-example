@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/docker/go-connections/nat"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -12,8 +13,12 @@ import (
 	"app/db"
 )
 
-func SetupDB(ctx context.Context) (db.Config, func(), error) {
-	mysqlCtr, mysqlConf, err := setupMySQL(ctx)
+func SetupDB(ctx context.Context, schemaPath string) (db.Config, func(), error) {
+	if !filepath.IsAbs(schemaPath) {
+		return db.Config{}, nil, errors.New("schema path must be absolute")
+	}
+
+	mysqlCtr, mysqlConf, err := setupMySQL(ctx, schemaPath)
 	if err != nil {
 		return db.Config{}, nil, errors.Wrap(err, "failed to setup mysql")
 	}
@@ -25,22 +30,17 @@ func SetupDB(ctx context.Context) (db.Config, func(), error) {
 		}, nil
 }
 
-func setupMySQL(ctx context.Context) (testcontainers.Container, db.MySQLConfig, error) {
+func setupMySQL(ctx context.Context, schemaPath string) (testcontainers.Container, db.MySQLConfig, error) {
 	conf := db.MySQLConfig{
 		User:   "root",
 		DBName: "test",
-	}
-
-	pathToBeMounted, err := filepath.Abs("../../_schema/sql/")
-	if err != nil {
-		return nil, db.MySQLConfig{}, errors.Wrap(err, "failed to prepare absolute path for dir to be mounted")
 	}
 
 	req := testcontainers.ContainerRequest{
 		Image:        "mysql:8.0",
 		ExposedPorts: []string{"3306/tcp"},
 		Mounts: testcontainers.ContainerMounts{
-			testcontainers.BindMount(pathToBeMounted, "/docker-entrypoint-initdb.d/"),
+			testcontainers.BindMount(filepath.Join(schemaPath, "sql"), "/docker-entrypoint-initdb.d"),
 		},
 		Env: map[string]string{
 			"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
