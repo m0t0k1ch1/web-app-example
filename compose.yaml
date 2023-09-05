@@ -13,7 +13,7 @@ services:
   mysql:
     image: mysql:8.0
     configs:
-      - source: mysql_schema_sql
+      - source: mysql_schema
         target: /docker-entrypoint-initdb.d/schema.sql
     environment:
       MYSQL_ROOT_PASSWORD: my-secret-pw
@@ -29,5 +29,5 @@ services:
       start_period: 30s
       retries: 30
 configs:
-  mysql_schema_sql:
+  mysql_schema:
     file: ./schema/sql/schema.sql
