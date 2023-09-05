@@ -18,11 +18,3 @@ func (conf MySQL) DSN() string {
 		conf.User, conf.Password, conf.Host, conf.Port, conf.DBName,
 	)
 }
-
-type Server struct {
-	Port uint16 `yaml:"port" validate:"required"`
-}
-
-func (conf Server) Addr() string {
-	return fmt.Sprintf(":%d", conf.Port)
-}
