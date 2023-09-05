@@ -1,4 +1,4 @@
-package rdbutil
+package sqlutil
 
 import (
 	"context"

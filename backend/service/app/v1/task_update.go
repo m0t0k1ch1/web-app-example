@@ -10,7 +10,7 @@ import (
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
-	"app/library/rdbutil"
+	"app/library/sqlutil"
 	"app/service"
 )
 
@@ -25,7 +25,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, err
 	}
 
-	if err := rdbutil.Transact(ctx, s.Env.DB.MySQL, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := sqlutil.Transact(ctx, s.Env.DB.MySQL, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
