@@ -5,10 +5,10 @@ import (
 )
 
 type Container struct {
-	DB *db.Connection
+	DB *db.Container
 }
 
-func NewContainer(db *db.Connection) *Container {
+func NewContainer(db *db.Container) *Container {
 	return &Container{
 		DB: db,
 	}

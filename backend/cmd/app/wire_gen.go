@@ -23,12 +23,12 @@ import (
 func InitializeApp(ctx context.Context, conf Config) (*App, error) {
 	serverConfig := conf.Server
 	config := conf.DB
-	connection, err := db.NewConnection(config)
+	container, err := db.NewContainer(config)
 	if err != nil {
 		return nil, err
 	}
-	container := env.NewContainer(connection)
-	base := service.NewBase(container)
+	envContainer := env.NewContainer(container)
+	base := service.NewBase(envContainer)
 	taskService := appv1.NewTaskService(base)
 	server := NewServer(serverConfig, taskService)
 	app := NewApp(server)

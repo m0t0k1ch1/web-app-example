@@ -6,20 +6,20 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Connection struct {
+type Container struct {
 	MySQL *sql.DB
 }
 
-func NewConnection(conf Config) (*Connection, error) {
-	conn := &Connection{}
+func NewContainer(conf Config) (*Container, error) {
+	ctr := &Container{}
 	{
 		db, err := sql.Open("mysql", conf.MySQL.DSN())
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to open db: %s", conf.MySQL.DBName)
 		}
 
-		conn.MySQL = db
+		ctr.MySQL = db
 	}
 
-	return conn, nil
+	return ctr, nil
 }
