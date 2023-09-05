@@ -1,4 +1,4 @@
-version: "3"
+name: web-app-sample
 services:
   backend:
     build: ./backend
@@ -12,14 +12,22 @@ services:
         condition: service_healthy
   mysql:
     image: mysql:8.0
-    volumes:
-      - ./schema/sql/:/docker-entrypoint-initdb.d/
+    configs:
+      - source: mysql_schema_sql
+        target: /docker-entrypoint-initdb.d/schema.sql
     environment:
       MYSQL_ROOT_PASSWORD: my-secret-pw
       MYSQL_DATABASE: app
       TZ: UTC
     healthcheck:
-      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1;'"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1;'"
+        ]
       interval: 1s
       start_period: 30s
       retries: 30
+configs:
+  mysql_schema_sql:
+    file: ./schema/sql/schema.sql

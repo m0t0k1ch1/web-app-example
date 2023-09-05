@@ -39,8 +39,6 @@ func loadConfig(path string) (config.App, error) {
 func main() {
 	flag.Parse()
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
-
 	conf, err := loadConfig(*confPath)
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to load config"))
