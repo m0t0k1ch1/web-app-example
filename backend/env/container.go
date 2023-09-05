@@ -8,8 +8,8 @@ type Container struct {
 	DB *db.Container
 }
 
-func NewContainer(db *db.Container) *Container {
+func NewContainer(dbCtr *db.Container) *Container {
 	return &Container{
-		DB: db,
+		DB: dbCtr,
 	}
 }

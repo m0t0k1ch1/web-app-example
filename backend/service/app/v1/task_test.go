@@ -36,12 +36,12 @@ func TestTaskService(t *testing.T) {
 		}
 		defer dbTeardown()
 
-		db, err := db.NewContainer(dbConf)
+		dbCtr, err := db.NewContainer(dbConf)
 		if err != nil {
 			t.Fatal(errors.Wrap(err, "failed to initialize db container"))
 		}
 
-		s = NewTaskService(service.NewBase(env.NewContainer(db)))
+		s = NewTaskService(service.NewBase(env.NewContainer(dbCtr)))
 	}
 
 	var (
