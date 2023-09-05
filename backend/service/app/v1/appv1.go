@@ -7,11 +7,9 @@ import (
 
 func NewTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:        row.ID.Encode(),
-		Title:     row.Title,
-		Status:    appv1.TaskStatus(row.Status),
-		UpdatedAt: row.UpdatedAt.Unix(),
-		CreatedAt: row.CreatedAt.Unix(),
+		Id:     row.ID.Encode(),
+		Title:  row.Title,
+		Status: appv1.TaskStatus(row.Status),
 	}
 }
 
