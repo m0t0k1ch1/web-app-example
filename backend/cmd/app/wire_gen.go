@@ -14,10 +14,6 @@ import (
 	"context"
 )
 
-import (
-	_ "github.com/go-sql-driver/mysql"
-)
-
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, conf Config) (*App, error) {
