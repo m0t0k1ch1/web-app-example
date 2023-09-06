@@ -4,12 +4,12 @@
 
 ## Code generation
 
-```sh
+```
 make generate
 ```
 
 ## Test
 
-```sh
+```
 make test
 ```

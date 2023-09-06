@@ -4,6 +4,6 @@ a sample web app built with [Connect](https://connectrpc.com) and [Next.js](http
 
 ## Run
 
-```sh
+```
 docker compose up --build -d
 ```
