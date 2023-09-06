@@ -18,7 +18,7 @@ func SetupDB(ctx context.Context, schemaPath string) (db.Config, func(), error) 
 		return db.Config{}, nil, errors.New("schema path must be absolute")
 	}
 
-	mysqlCtr, mysqlConf, err := setupMySQL(ctx, schemaPath)
+	mysqlCtr, mysqlConf, err := setupMySQL(ctx, "app_test", schemaPath)
 	if err != nil {
 		return db.Config{}, nil, errors.Wrap(err, "failed to setup mysql")
 	}
@@ -30,10 +30,10 @@ func SetupDB(ctx context.Context, schemaPath string) (db.Config, func(), error) 
 		}, nil
 }
 
-func setupMySQL(ctx context.Context, schemaPath string) (testcontainers.Container, db.MySQLConfig, error) {
+func setupMySQL(ctx context.Context, dbName string, schemaPath string) (testcontainers.Container, db.MySQLConfig, error) {
 	conf := db.MySQLConfig{
 		User:   "root",
-		DBName: "test",
+		DBName: dbName,
 	}
 
 	req := testcontainers.ContainerRequest{
