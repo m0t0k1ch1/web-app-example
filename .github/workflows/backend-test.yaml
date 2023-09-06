@@ -4,6 +4,7 @@ on:
     branches:
       - "**"
     paths:
+      - .github/workflows/backend-test.yaml
       - backend/**
 jobs:
   test:
@@ -13,7 +14,7 @@ jobs:
         working-directory: backend
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
