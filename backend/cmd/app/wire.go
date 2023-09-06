@@ -10,8 +10,6 @@ import (
 
 	"app/db"
 	"app/env"
-	"app/service"
-	appv1 "app/service/app/v1"
 )
 
 func InitializeApp(ctx context.Context, conf Config) (*App, error) {
@@ -20,9 +18,6 @@ func InitializeApp(ctx context.Context, conf Config) (*App, error) {
 
 		db.NewContainer,
 		env.NewContainer,
-
-		service.NewBase,
-		appv1.NewTaskService,
 
 		NewServer,
 

@@ -9,8 +9,6 @@ package main
 import (
 	"app/db"
 	"app/env"
-	"app/service"
-	"app/service/app/v1"
 	"context"
 )
 
@@ -24,9 +22,7 @@ func InitializeApp(ctx context.Context, conf Config) (*App, error) {
 		return nil, err
 	}
 	envContainer := env.NewContainer(container)
-	base := service.NewBase(envContainer)
-	taskService := appv1.NewTaskService(base)
-	server := NewServer(serverConfig, taskService)
+	server := NewServer(serverConfig, envContainer)
 	app := NewApp(server)
 	return app, nil
 }
