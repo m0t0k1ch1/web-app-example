@@ -24,7 +24,7 @@ func main() {
 		fatal(errors.Wrap(err, "failed to load config"))
 	}
 
-	app, err := InitializeApp(context.Background(), conf)
+	app, err := InitializeApp(conf)
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to initialize app"))
 	}

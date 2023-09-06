@@ -4,15 +4,13 @@
 package main
 
 import (
-	"context"
-
 	"github.com/google/wire"
 
 	"app/db"
 	"app/env"
 )
 
-func InitializeApp(ctx context.Context, conf Config) (*App, error) {
+func InitializeApp(conf Config) (*App, error) {
 	wire.Build(
 		wire.FieldsOf(new(Config), "DB", "Server"),
 

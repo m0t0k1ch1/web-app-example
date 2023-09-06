@@ -9,12 +9,11 @@ package main
 import (
 	"app/db"
 	"app/env"
-	"context"
 )
 
 // Injectors from wire.go:
 
-func InitializeApp(ctx context.Context, conf Config) (*App, error) {
+func InitializeApp(conf Config) (*App, error) {
 	serverConfig := conf.Server
 	config := conf.DB
 	container, err := db.NewContainer(config)
