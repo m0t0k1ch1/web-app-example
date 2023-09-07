@@ -12,7 +12,7 @@ import (
 type Task struct {
 	ID        idutil.ID
 	Title     string
-	Status    int32
+	Status    uint32
 	UpdatedAt timeutil.Timestamp
 	CreatedAt timeutil.Timestamp
 }

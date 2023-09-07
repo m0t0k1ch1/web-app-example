@@ -105,7 +105,7 @@ UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE 
 
 type UpdateTaskParams struct {
 	Title  string
-	Status int32
+	Status uint32
 	ID     idutil.ID
 }
 
