@@ -8,19 +8,20 @@ import (
 )
 
 type Container struct {
+	config Config
+
 	MySQL *sql.DB
 }
 
 func NewContainer(conf Config) (*Container, error) {
-	ctr := &Container{}
-	{
-		db, err := sql.Open("mysql", conf.MySQL.DSN())
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.DBName)
-		}
-
-		ctr.MySQL = db
+	mysqlDB, err := sql.Open("mysql", conf.MySQL.DSN())
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.DBName)
 	}
 
-	return ctr, nil
+	return &Container{
+		config: conf,
+
+		MySQL: mysqlDB,
+	}, nil
 }

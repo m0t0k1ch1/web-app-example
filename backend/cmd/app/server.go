@@ -28,6 +28,8 @@ func (codec jsonCodec) Name() string {
 
 type Server struct {
 	http.Server
+
+	config ServerConfig
 }
 
 func NewServer(conf ServerConfig, envCtr *env.Container) *Server {
@@ -102,5 +104,7 @@ func NewServer(conf ServerConfig, envCtr *env.Container) *Server {
 			Addr:    conf.Addr(),
 			Handler: r,
 		},
+
+		config: conf,
 	}
 }
