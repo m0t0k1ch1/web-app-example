@@ -2,7 +2,6 @@ package appv1
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -15,10 +14,6 @@ import (
 	"app/internal/testutil"
 	"app/service"
 )
-
-func TestMain(m *testing.M) {
-	os.Exit(testutil.Run(m))
-}
 
 func TestTaskService(t *testing.T) {
 	ctx := context.Background()
@@ -34,7 +29,7 @@ func TestTaskService(t *testing.T) {
 		if err != nil {
 			t.Fatal(errors.Wrap(err, "failed to setup db"))
 		}
-		defer dbTeardown()
+		t.Cleanup(dbTeardown)
 
 		dbCtr, err := db.NewContainer(dbConf)
 		if err != nil {
