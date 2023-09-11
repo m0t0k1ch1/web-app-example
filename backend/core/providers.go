@@ -16,9 +16,12 @@ import (
 var (
 	ProviderSet = wire.NewSet(
 		provideAppConfig,
+		wire.FieldsOf(new(config.AppConfig), "MySQL", "Server"),
+
 		provideMySQL,
 		provideTaskService,
 		provideServer,
+
 		provideApp,
 	)
 )
@@ -38,10 +41,10 @@ func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 	return conf, nil
 }
 
-func provideMySQL(conf config.AppConfig) (*MySQL, error) {
-	db, err := sql.Open("mysql", conf.MySQL.DSN())
+func provideMySQL(conf config.MySQLConfig) (*MySQL, error) {
+	db, err := sql.Open("mysql", conf.DSN())
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.DBName)
+		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.DBName)
 	}
 
 	return &MySQL{
@@ -53,8 +56,8 @@ func provideTaskService(mysql *MySQL) *appv1.TaskService {
 	return appv1.NewTaskService(mysql.DB)
 }
 
-func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
-	return NewServer(conf.Server, taskService)
+func provideServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
+	return NewServer(conf, taskService)
 }
 
 func provideApp(srv *Server) *App {

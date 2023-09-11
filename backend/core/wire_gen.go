@@ -10,6 +10,10 @@ import (
 	"context"
 )
 
+import (
+	_ "github.com/go-sql-driver/mysql"
+)
+
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
@@ -17,12 +21,14 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	mySQL, err := provideMySQL(appConfig)
+	serverConfig := appConfig.Server
+	mySQLConfig := appConfig.MySQL
+	mySQL, err := provideMySQL(mySQLConfig)
 	if err != nil {
 		return nil, err
 	}
 	taskService := provideTaskService(mySQL)
-	server := provideServer(appConfig, taskService)
+	server := provideServer(serverConfig, taskService)
 	app := provideApp(server)
 	return app, nil
 }
