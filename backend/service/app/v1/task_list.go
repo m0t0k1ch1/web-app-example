@@ -12,7 +12,7 @@ import (
 )
 
 func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
-	qdb := mysql.New(s.Env.DB.MySQL)
+	qdb := mysql.New(s.mysql)
 
 	tasks, err := qdb.ListTasks(ctx)
 	if err != nil {

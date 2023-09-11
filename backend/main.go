@@ -10,6 +10,8 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
+
+	"app/core"
 )
 
 var (
@@ -19,12 +21,7 @@ var (
 func main() {
 	flag.Parse()
 
-	conf, err := LoadConfig(*confPath)
-	if err != nil {
-		fatal(errors.Wrap(err, "failed to load config"))
-	}
-
-	app, err := InitializeApp(conf)
+	app, err := core.InitializeApp(context.Background(), core.ConfigPath(*confPath))
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to initialize app"))
 	}

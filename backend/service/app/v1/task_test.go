@@ -8,11 +8,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/pkg/errors"
 
-	"app/db"
-	"app/env"
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
-	"app/service"
 )
 
 func TestTaskService(t *testing.T) {
@@ -25,18 +22,13 @@ func TestTaskService(t *testing.T) {
 			t.Fatal(errors.Wrap(err, "failed to prepare schema path"))
 		}
 
-		dbConf, dbTeardown, err := testutil.SetupDB(ctx, schemaPath)
+		mysql, mysqlTeardown, err := testutil.SetupMySQL(ctx, "app_test", schemaPath)
 		if err != nil {
 			t.Fatal(errors.Wrap(err, "failed to setup db"))
 		}
-		t.Cleanup(dbTeardown)
+		t.Cleanup(mysqlTeardown)
 
-		dbCtr, err := db.NewContainer(dbConf)
-		if err != nil {
-			t.Fatal(errors.Wrap(err, "failed to initialize db container"))
-		}
-
-		s = NewTaskService(service.NewBase(env.NewContainer(dbCtr)))
+		s = NewTaskService(mysql)
 	}
 
 	var (

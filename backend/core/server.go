@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"context"
@@ -12,9 +12,8 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"app/env"
+	"app/config"
 	"app/gen/buf/app/v1/appv1connect"
-	"app/service"
 	appv1 "app/service/app/v1"
 )
 
@@ -29,18 +28,16 @@ func (codec jsonCodec) Name() string {
 type Server struct {
 	http.Server
 
-	config ServerConfig
+	config config.ServerConfig
 }
 
-func NewServer(conf ServerConfig, envCtr *env.Container) *Server {
+func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
 
-		serviceBase := service.NewBase(envCtr)
-
 		path, h := appv1connect.NewTaskServiceHandler(
-			appv1.NewTaskService(serviceBase),
+			taskService,
 			connect.WithInterceptors(
 				connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 					return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {

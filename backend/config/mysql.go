@@ -1,12 +1,8 @@
-package db
+package config
 
 import (
 	"fmt"
 )
-
-type Config struct {
-	MySQL MySQLConfig `yaml:"mysql" validate:"required"`
-}
 
 type MySQLConfig struct {
 	Host     string `yaml:"host" validate:"required,hostname_rfc1123"`

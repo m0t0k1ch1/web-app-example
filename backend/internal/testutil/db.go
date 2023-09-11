@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"context"
+	"database/sql"
 	"path/filepath"
 
 	"github.com/docker/go-connections/nat"
@@ -10,28 +11,15 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"app/db"
+	"app/config"
 )
 
-func SetupDB(ctx context.Context, schemaPath string) (db.Config, func(), error) {
+func SetupMySQL(ctx context.Context, dbName string, schemaPath string) (*sql.DB, func(), error) {
 	if !filepath.IsAbs(schemaPath) {
-		return db.Config{}, nil, errors.New("schema path must be absolute")
+		return nil, nil, errors.New("schema path must be absolute")
 	}
 
-	mysqlCtr, mysqlConf, err := setupMySQL(ctx, "app_test", schemaPath)
-	if err != nil {
-		return db.Config{}, nil, errors.Wrap(err, "failed to setup mysql")
-	}
-
-	return db.Config{
-			MySQL: mysqlConf,
-		}, func() {
-			mysqlCtr.Terminate(ctx)
-		}, nil
-}
-
-func setupMySQL(ctx context.Context, dbName string, schemaPath string) (testcontainers.Container, db.MySQLConfig, error) {
-	conf := db.MySQLConfig{
+	conf := config.MySQLConfig{
 		User:   "root",
 		DBName: dbName,
 	}
@@ -59,8 +47,15 @@ func setupMySQL(ctx context.Context, dbName string, schemaPath string) (testcont
 		Started:          true,
 	})
 	if err != nil {
-		return nil, db.MySQLConfig{}, errors.Wrap(err, "failed to create container")
+		return nil, nil, errors.Wrap(err, "failed to create container")
 	}
 
-	return ctr, conf, nil
+	db, err := sql.Open("mysql", conf.DSN())
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.DBName)
+	}
+
+	return db, func() {
+		ctr.Terminate(ctx)
+	}, nil
 }

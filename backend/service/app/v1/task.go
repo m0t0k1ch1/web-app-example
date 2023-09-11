@@ -1,15 +1,15 @@
 package appv1
 
 import (
-	"app/service"
+	"database/sql"
 )
 
 type TaskService struct {
-	*service.Base
+	mysql *sql.DB
 }
 
-func NewTaskService(base *service.Base) *TaskService {
+func NewTaskService(mysql *sql.DB) *TaskService {
 	return &TaskService{
-		Base: base,
+		mysql: mysql,
 	}
 }
