@@ -17,11 +17,61 @@ import (
 	appv1 "app/service/app/v1"
 )
 
-type jsonCodec struct {
+var (
+	jsonCodec = &JSONCodec{
+		runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				EmitUnpopulated: true,
+			},
+		},
+	}
+
+	validationInterceptor = connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
+		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			v, ok := req.Any().(interface {
+				ValidateAll() error
+			})
+			if ok {
+				if err := v.ValidateAll(); err != nil {
+					return nil, connect.NewError(connect.CodeInvalidArgument, err)
+				}
+			}
+
+			return next(ctx, req)
+		})
+	})
+
+	connectCORSOptions = cors.Options{
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+		},
+		AllowedHeaders: []string{
+			"Accept-Encoding",
+			"Content-Encoding",
+			"Content-Type",
+			"Connect-Protocol-Version",
+			"Connect-Timeout-Ms",
+			"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
+			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+			"Grpc-Timeout",             // Used for gRPC-web
+			"X-Grpc-Web",               // Used for gRPC-web
+			"X-User-Agent",             // Used for gRPC-web
+		},
+		ExposedHeaders: []string{
+			"Content-Encoding",         // Unused in web browsers, but added for future-proofing
+			"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
+			"Grpc-Status",              // Required for gRPC-web
+			"Grpc-Message",             // Required for gRPC-web
+		},
+	}
+)
+
+type JSONCodec struct {
 	runtime.JSONPb
 }
 
-func (codec jsonCodec) Name() string {
+func (codec JSONCodec) Name() string {
 	return "json"
 }
 
@@ -35,60 +85,17 @@ func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
+		{
+			path, h := appv1connect.NewTaskServiceHandler(
+				taskService,
+				connect.WithCodec(jsonCodec),
+				connect.WithInterceptors(
+					validationInterceptor,
+				),
+			)
 
-		path, h := appv1connect.NewTaskServiceHandler(
-			taskService,
-			connect.WithInterceptors(
-				connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-					return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-						v, ok := req.Any().(interface {
-							ValidateAll() error
-						})
-						if ok {
-							if err := v.ValidateAll(); err != nil {
-								return nil, connect.NewError(connect.CodeInvalidArgument, err)
-							}
-						}
-
-						return next(ctx, req)
-					})
-				}),
-			),
-			connect.WithCodec(&jsonCodec{
-				runtime.JSONPb{
-					MarshalOptions: protojson.MarshalOptions{
-						EmitUnpopulated: true,
-					},
-				},
-			}),
-		)
-
-		c := cors.New(cors.Options{
-			AllowedMethods: []string{
-				http.MethodGet,
-				http.MethodPost,
-			},
-			AllowedHeaders: []string{
-				"Accept-Encoding",
-				"Content-Encoding",
-				"Content-Type",
-				"Connect-Protocol-Version",
-				"Connect-Timeout-Ms",
-				"Connect-Accept-Encoding",  // Unused in web browsers, but added for future-proofing
-				"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-				"Grpc-Timeout",             // Used for gRPC-web
-				"X-Grpc-Web",               // Used for gRPC-web
-				"X-User-Agent",             // Used for gRPC-web
-			},
-			ExposedHeaders: []string{
-				"Content-Encoding",         // Unused in web browsers, but added for future-proofing
-				"Connect-Content-Encoding", // Unused in web browsers, but added for future-proofing
-				"Grpc-Status",              // Required for gRPC-web
-				"Grpc-Message",             // Required for gRPC-web
-			},
-		})
-
-		r.Handle(path+"*", h2c.NewHandler(c.Handler(h), &http2.Server{}))
+			r.Handle(path+"*", h2c.NewHandler(cors.New(connectCORSOptions).Handler(h), &http2.Server{}))
+		}
 
 		grpcHandler = r
 	}
