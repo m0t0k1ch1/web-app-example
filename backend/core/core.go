@@ -10,6 +10,4 @@ func (confPath ConfigPath) String() string {
 	return string(confPath)
 }
 
-type MySQL struct {
-	*sql.DB
-}
+type MySQL *sql.DB

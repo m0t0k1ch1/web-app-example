@@ -41,19 +41,17 @@ func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 	return conf, nil
 }
 
-func provideMySQL(conf config.MySQLConfig) (*MySQL, error) {
+func provideMySQL(conf config.MySQLConfig) (MySQL, error) {
 	db, err := sql.Open("mysql", conf.DSN())
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.DBName)
 	}
 
-	return &MySQL{
-		DB: db,
-	}, nil
+	return MySQL(db), nil
 }
 
-func provideTaskService(mysql *MySQL) *appv1.TaskService {
-	return appv1.NewTaskService(mysql.DB)
+func provideTaskService(mysql MySQL) *appv1.TaskService {
+	return appv1.NewTaskService(mysql)
 }
 
 func provideServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
