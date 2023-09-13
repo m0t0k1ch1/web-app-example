@@ -30,7 +30,7 @@ func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 
 	var conf config.AppConfig
 	if err := configloader.LoadWithEnv(&conf, path.String()); err != nil {
-		return config.AppConfig{}, err
+		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(conf); err != nil {
