@@ -2,7 +2,7 @@
 generate:
 	buf generate _schema/proto
 	sqlc generate
-	wire gen ./...
+	wire gen ./core
 
 .PHOHY: test
 test:
