@@ -24,7 +24,7 @@ func TestTaskService(t *testing.T) {
 
 		mysql, mysqlTeardown, err := testutil.SetupMySQL(ctx, "app_test", schemaPath)
 		if err != nil {
-			t.Fatal(errors.Wrap(err, "failed to setup db"))
+			t.Fatal(errors.Wrap(err, "failed to set up mysql db: app_test"))
 		}
 		t.Cleanup(mysqlTeardown)
 
