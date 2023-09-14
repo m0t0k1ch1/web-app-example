@@ -25,9 +25,11 @@ var (
 	)
 )
 
-func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
+func init() {
 	configloader.Delims("<%", "%>")
+}
 
+func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 	var conf config.AppConfig
 	if err := configloader.LoadWithEnv(&conf, path.String()); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
