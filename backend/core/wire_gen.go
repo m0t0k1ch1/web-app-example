@@ -27,6 +27,6 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	}
 	taskService := provideTaskService(mySQL)
 	server := provideServer(appConfig, taskService)
-	app := provideApp(server)
+	app := provideApp(appConfig, server)
 	return app, nil
 }

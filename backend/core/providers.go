@@ -59,6 +59,6 @@ func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Serve
 	return NewServer(conf.Server, taskService)
 }
 
-func provideApp(srv *Server) *App {
-	return NewApp(srv)
+func provideApp(conf config.AppConfig, srv *Server) *App {
+	return NewApp(conf, srv)
 }

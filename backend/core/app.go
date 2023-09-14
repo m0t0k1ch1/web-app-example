@@ -3,14 +3,18 @@ package core
 import (
 	"context"
 	"net/http"
+
+	"app/config"
 )
 
 type App struct {
+	config config.AppConfig
 	server *Server
 }
 
-func NewApp(srv *Server) *App {
+func NewApp(conf config.AppConfig, srv *Server) *App {
 	return &App{
+		config: conf,
 		server: srv,
 	}
 }
