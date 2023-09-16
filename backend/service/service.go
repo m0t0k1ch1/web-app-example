@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	"connectrpc.com/connect"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"

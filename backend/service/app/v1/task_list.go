@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"

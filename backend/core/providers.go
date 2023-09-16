@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 
 	"app/config"
 	appv1 "app/service/app/v1"
