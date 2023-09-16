@@ -46,7 +46,7 @@ func (t *Timestamp) Scan(src any) error {
 		t.Time = time.Unix(i, 0).In(time.UTC)
 
 	default:
-		return errors.Errorf("unexpected src type: %T", src)
+		return errors.Newf("unexpected src type: %T", src)
 	}
 
 	return nil
