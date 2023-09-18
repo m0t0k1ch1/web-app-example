@@ -11,8 +11,10 @@ func (confPath ConfigPath) String() string {
 }
 
 type AppConfig struct {
-	MySQL  MySQLConfig  `yaml:"mysql" validate:"required"`
-	Server ServerConfig `yaml:"server" validate:"required"`
+	MySQL   MySQLConfig   `yaml:"mysql" validate:"required"`
+	Runtime RuntimeConfig `yaml:"runtime" validate:"required"`
+	Sentry  SentryConfig  `yaml:"sentry"`
+	Server  ServerConfig  `yaml:"server" validate:"required"`
 }
 
 type MySQLConfig struct {
@@ -28,6 +30,14 @@ func (conf MySQLConfig) DSN() string {
 		"%s:%s@tcp(%s:%d)/%s",
 		conf.User, conf.Password, conf.Host, conf.Port, conf.DBName,
 	)
+}
+
+type RuntimeConfig struct {
+	Env string `yaml:"env" validate:"required"`
+}
+
+type SentryConfig struct {
+	DSN string `yaml:"dsn"`
 }
 
 type ServerConfig struct {

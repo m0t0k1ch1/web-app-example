@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	grpcgwruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -18,7 +20,7 @@ import (
 
 var (
 	jsonCodec = &JSONCodec{
-		runtime.JSONPb{
+		grpcgwruntime.JSONPb{
 			MarshalOptions: protojson.MarshalOptions{
 				EmitUnpopulated: true,
 			},
@@ -67,7 +69,7 @@ var (
 )
 
 type JSONCodec struct {
-	runtime.JSONPb
+	grpcgwruntime.JSONPb
 }
 
 func (codec JSONCodec) Name() string {
@@ -80,7 +82,7 @@ type Server struct {
 	config ServerConfig
 }
 
-func NewServer(conf ServerConfig, taskService *appv1.TaskService) *Server {
+func NewServer(conf ServerConfig, sentryHandler *sentryhttp.Handler, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
@@ -93,14 +95,33 @@ func NewServer(conf ServerConfig, taskService *appv1.TaskService) *Server {
 				),
 			)
 
-			r.Handle(path+"*", h2c.NewHandler(cors.New(connectCORSOptions).Handler(h), &http2.Server{}))
+			r.Handle(path+"*", h)
 		}
 
 		grpcHandler = r
+		grpcHandler = cors.New(connectCORSOptions).Handler(grpcHandler)
+		grpcHandler = h2c.NewHandler(grpcHandler, &http2.Server{})
+	}
+
+	var testHandler http.Handler
+	{
+		r := chi.NewRouter()
+		r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
+			panic("y tho")
+		})
+
+		testHandler = r
 	}
 
 	r := chi.NewRouter()
+	r.Use(chimiddleware.Recoverer)
+	if sentryHandler != nil {
+		r.Use(func(h http.Handler) http.Handler {
+			return sentryHandler.Handle(h)
+		})
+	}
 	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
+	r.Mount("/test", http.StripPrefix("/test", testHandler))
 
 	return &Server{
 		Server: http.Server{

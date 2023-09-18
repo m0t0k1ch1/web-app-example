@@ -21,12 +21,16 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	handler, err := provideSentryHandler(appConfig)
+	if err != nil {
+		return nil, err
+	}
 	mySQL, err := provideMySQL(appConfig)
 	if err != nil {
 		return nil, err
 	}
 	taskService := provideTaskService(mySQL)
-	server := provideServer(appConfig, taskService)
+	server := provideServer(appConfig, handler, taskService)
 	app := provideApp(appConfig, server)
 	return app, nil
 }
