@@ -61,9 +61,8 @@ func provideSentryHandler(conf AppConfig) (*sentryhttp.Handler, error) {
 	}
 
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:           conf.Sentry.DSN,
-		EnableTracing: true,
-		Environment:   conf.Runtime.Env,
+		Dsn:         conf.Sentry.DSN,
+		Environment: conf.Runtime.Env,
 	}); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize sentry sdk")
 	}
