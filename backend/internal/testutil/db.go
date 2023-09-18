@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"path/filepath"
 
+	"github.com/cockroachdb/errors"
 	"github.com/docker/go-connections/nat"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/cockroachdb/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"app/config"
+	"app/core"
 )
 
 func SetupMySQL(ctx context.Context, dbName string, schemaPath string) (*sql.DB, func(), error) {
@@ -19,7 +19,7 @@ func SetupMySQL(ctx context.Context, dbName string, schemaPath string) (*sql.DB,
 		return nil, nil, errors.New("schema path must be absolute")
 	}
 
-	conf := config.MySQLConfig{
+	conf := core.MySQLConfig{
 		User:   "root",
 		DBName: dbName,
 	}

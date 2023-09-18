@@ -1,4 +1,4 @@
-package appv1
+package appv1_test
 
 import (
 	"context"
@@ -10,12 +10,13 @@ import (
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
+	here "app/service/app/v1"
 )
 
 func TestTaskService(t *testing.T) {
 	ctx := context.Background()
 
-	var s *TaskService
+	var s *here.TaskService
 	{
 		schemaPath, err := filepath.Abs("../../../_schema")
 		if err != nil {
@@ -28,7 +29,7 @@ func TestTaskService(t *testing.T) {
 		}
 		t.Cleanup(mysqlTeardown)
 
-		s = NewTaskService(mysql)
+		s = here.NewTaskService(mysql)
 	}
 
 	var (
