@@ -1,8 +1,19 @@
-package config
+package core
 
 import (
 	"fmt"
 )
+
+type ConfigPath string
+
+func (confPath ConfigPath) String() string {
+	return string(confPath)
+}
+
+type AppConfig struct {
+	MySQL  MySQLConfig  `yaml:"mysql" validate:"required"`
+	Server ServerConfig `yaml:"server" validate:"required"`
+}
 
 type MySQLConfig struct {
 	Host     string `yaml:"host" validate:"required,hostname_rfc1123"`
@@ -17,4 +28,12 @@ func (conf MySQLConfig) DSN() string {
 		"%s:%s@tcp(%s:%d)/%s",
 		conf.User, conf.Password, conf.Host, conf.Port, conf.DBName,
 	)
+}
+
+type ServerConfig struct {
+	Port int `yaml:"port" validate:"required,gte=1,lte=65535"`
+}
+
+func (conf ServerConfig) Addr() string {
+	return fmt.Sprintf(":%d", conf.Port)
 }

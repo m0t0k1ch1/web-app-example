@@ -3,13 +3,12 @@ package core
 import (
 	"database/sql"
 
+	"github.com/cockroachdb/errors"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
-	"github.com/cockroachdb/errors"
 
-	"app/config"
 	appv1 "app/service/app/v1"
 )
 
@@ -25,24 +24,26 @@ var (
 	)
 )
 
+type MySQL *sql.DB
+
 func init() {
 	configloader.Delims("<%", "%>")
 }
 
-func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
-	var conf config.AppConfig
+func provideAppConfig(path ConfigPath) (AppConfig, error) {
+	var conf AppConfig
 	if err := configloader.LoadWithEnv(&conf, path.String()); err != nil {
-		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
+		return AppConfig{}, errors.Wrap(err, "failed to load config")
 	}
 
 	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(conf); err != nil {
-		return config.AppConfig{}, errors.Wrap(err, "invalid config")
+		return AppConfig{}, errors.Wrap(err, "invalid config")
 	}
 
 	return conf, nil
 }
 
-func provideMySQL(conf config.AppConfig) (MySQL, error) {
+func provideMySQL(conf AppConfig) (MySQL, error) {
 	db, err := sql.Open("mysql", conf.MySQL.DSN())
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.DBName)
@@ -55,10 +56,10 @@ func provideTaskService(mysql MySQL) *appv1.TaskService {
 	return appv1.NewTaskService(mysql)
 }
 
-func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
+func provideServer(conf AppConfig, taskService *appv1.TaskService) *Server {
 	return NewServer(conf.Server, taskService)
 }
 
-func provideApp(conf config.AppConfig, srv *Server) *App {
+func provideApp(conf AppConfig, srv *Server) *App {
 	return NewApp(conf, srv)
 }

@@ -12,7 +12,6 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"app/config"
 	"app/gen/buf/app/v1/appv1connect"
 	appv1 "app/service/app/v1"
 )
@@ -78,10 +77,10 @@ func (codec JSONCodec) Name() string {
 type Server struct {
 	http.Server
 
-	config config.ServerConfig
+	config ServerConfig
 }
 
-func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
+func NewServer(conf ServerConfig, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
