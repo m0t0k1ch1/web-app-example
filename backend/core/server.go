@@ -30,35 +30,6 @@ var (
 		},
 	}
 
-	errorReportInterceptor = connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			resp, err := next(ctx, req)
-			if err != nil {
-				if hub := sentry.GetHubFromContext(ctx); hub != nil {
-					event, _ := errors.BuildSentryReport(err)
-					hub.CaptureEvent(event)
-				}
-			}
-
-			return resp, err
-		})
-	})
-
-	validationInterceptor = connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			v, ok := req.Any().(interface {
-				ValidateAll() error
-			})
-			if ok {
-				if err := v.ValidateAll(); err != nil {
-					return nil, connect.NewError(connect.CodeInvalidArgument, err)
-				}
-			}
-
-			return next(ctx, req)
-		})
-	})
-
 	connectCORSOptions = cors.Options{
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -108,8 +79,8 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 				taskService,
 				connect.WithCodec(jsonCodec),
 				connect.WithInterceptors(
-					errorReportInterceptor,
-					validationInterceptor,
+					errorReportInterceptor(),
+					validationInterceptor(),
 				),
 			)
 
@@ -149,4 +120,37 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 
 		config: conf,
 	}
+}
+
+func errorReportInterceptor() connect.Interceptor {
+	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
+		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			resp, err := next(ctx, req)
+			if err != nil {
+				if hub := sentry.GetHubFromContext(ctx); hub != nil {
+					event, _ := errors.BuildSentryReport(err)
+					hub.CaptureEvent(event)
+				}
+			}
+
+			return resp, err
+		})
+	})
+}
+
+func validationInterceptor() connect.Interceptor {
+	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
+		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			v, ok := req.Any().(interface {
+				ValidateAll() error
+			})
+			if ok {
+				if err := v.ValidateAll(); err != nil {
+					return nil, connect.NewError(connect.CodeInvalidArgument, err)
+				}
+			}
+
+			return next(ctx, req)
+		})
+	})
 }
