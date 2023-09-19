@@ -79,8 +79,8 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 				taskService,
 				connect.WithCodec(jsonCodec),
 				connect.WithInterceptors(
-					errorReportInterceptor(),
-					validationInterceptor(),
+					newErrorReportInterceptor(),
+					newValidationInterceptor(),
 				),
 			)
 
@@ -124,7 +124,7 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 	}
 }
 
-func errorReportInterceptor() connect.Interceptor {
+func newErrorReportInterceptor() connect.Interceptor {
 	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 			resp, err := next(ctx, req)
@@ -140,7 +140,7 @@ func errorReportInterceptor() connect.Interceptor {
 	})
 }
 
-func validationInterceptor() connect.Interceptor {
+func newValidationInterceptor() connect.Interceptor {
 	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 			v, ok := req.Any().(interface {
