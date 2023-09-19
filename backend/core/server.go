@@ -84,20 +84,23 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 				),
 			)
 
+			h = cors.New(connectCORSOptions).Handler(h)
+			h = h2c.NewHandler(h, &http2.Server{})
+
 			r.Handle(path+"*", h)
 		}
 
 		grpcHandler = r
-		grpcHandler = cors.New(connectCORSOptions).Handler(grpcHandler)
-		grpcHandler = h2c.NewHandler(grpcHandler, &http2.Server{})
 	}
 
 	var testHandler http.Handler
 	{
 		r := chi.NewRouter()
-		r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
-			panic("y tho")
-		})
+		{
+			r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
+				panic("y tho")
+			})
+		}
 
 		testHandler = r
 	}
