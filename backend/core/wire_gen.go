@@ -7,6 +7,7 @@
 package core
 
 import (
+	"app/config"
 	"context"
 )
 
@@ -16,7 +17,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
+func InitializeApp(ctx context.Context, confPath config.ConfigPath) (*App, error) {
 	appConfig, err := provideAppConfig(confPath)
 	if err != nil {
 		return nil, err

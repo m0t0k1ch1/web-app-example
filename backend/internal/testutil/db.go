@@ -11,7 +11,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"app/core"
+	"app/config"
 )
 
 func SetupMySQL(ctx context.Context, dbName string, schemaPath string) (*sql.DB, func(), error) {
@@ -19,7 +19,7 @@ func SetupMySQL(ctx context.Context, dbName string, schemaPath string) (*sql.DB,
 		return nil, nil, errors.New("schema path must be absolute")
 	}
 
-	conf := core.MySQLConfig{
+	conf := config.MySQLConfig{
 		User:   "root",
 		DBName: dbName,
 	}
