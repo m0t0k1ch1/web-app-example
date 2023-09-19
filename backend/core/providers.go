@@ -28,13 +28,19 @@ var (
 	)
 )
 
+type ConfigPath string
+
+func (confPath ConfigPath) String() string {
+	return string(confPath)
+}
+
 type MySQL *sql.DB
 
 func init() {
 	configloader.Delims("<%", "%>")
 }
 
-func provideAppConfig(path config.ConfigPath) (config.AppConfig, error) {
+func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 	var conf config.AppConfig
 	if err := configloader.LoadWithEnv(&conf, path.String()); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")

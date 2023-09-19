@@ -7,11 +7,9 @@ import (
 	"context"
 
 	"github.com/google/wire"
-
-	"app/config"
 )
 
-func InitializeApp(ctx context.Context, confPath config.ConfigPath) (*App, error) {
+func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	wire.Build(ProviderSet)
 
 	return &App{}, nil

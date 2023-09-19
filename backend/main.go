@@ -11,7 +11,6 @@ import (
 	"github.com/cockroachdb/errors"
 	"golang.org/x/exp/slog"
 
-	"app/config"
 	"app/core"
 )
 
@@ -22,7 +21,7 @@ var (
 func main() {
 	flag.Parse()
 
-	app, err := core.InitializeApp(context.Background(), config.ConfigPath(*confPath))
+	app, err := core.InitializeApp(context.Background(), core.ConfigPath(*confPath))
 	if err != nil {
 		fatal(errors.Wrap(err, "failed to initialize app"))
 	}
