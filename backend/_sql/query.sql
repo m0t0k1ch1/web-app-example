@@ -1,5 +1,5 @@
 -- name: CreateTask :execlastid
-INSERT INTO task (title, updated_at, created_at) VALUES (?, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()));
+INSERT INTO task (title) VALUES (?);
 
 -- name: GetTask :one
 SELECT * FROM task WHERE id = ?;
