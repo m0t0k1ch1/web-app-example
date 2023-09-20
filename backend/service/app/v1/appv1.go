@@ -7,7 +7,7 @@ import (
 
 func NewTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:     row.ID.Encode(),
+		Id:     row.DisplayID.String,
 		Title:  row.Title,
 		Status: appv1.TaskStatus(row.Status),
 	}

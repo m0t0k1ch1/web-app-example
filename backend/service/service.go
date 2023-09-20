@@ -8,11 +8,13 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"app/gen/sqlc/mysql"
-	"app/library/idutil"
 )
 
-func GetTaskOrError(ctx context.Context, db mysql.DBTX, id idutil.ID) (mysql.Task, error) {
-	task, err := mysql.New(db).GetTask(ctx, id)
+func GetTaskByDisplayIDOrError(ctx context.Context, db mysql.DBTX, displayID string) (mysql.Task, error) {
+	task, err := mysql.New(db).GetTaskByDisplayID(ctx, sql.NullString{
+		String: displayID,
+		Valid:  true,
+	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return mysql.Task{}, NewNotFoundError(errors.Wrap(err, "task not found"))

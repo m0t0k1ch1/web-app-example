@@ -9,18 +9,12 @@ import (
 
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/library/idutil"
 	"app/library/sqlutil"
 	"app/service"
 )
 
 func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
-	id, err := idutil.Decode(req.Msg.Id)
-	if err != nil {
-		return nil, service.NewInvalidArgumentError(errors.Wrap(err, "invalid TaskServiceDeleteRequest.Id"))
-	}
-
-	task, err := service.GetTaskOrError(ctx, s.mysql, id)
+	task, err := service.GetTaskByDisplayIDOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
