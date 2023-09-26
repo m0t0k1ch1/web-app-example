@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,22 +25,31 @@ func main() {
 		fatal(errors.Wrap(err, "failed to initialize app"))
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(sigCh)
+
+	appErrCh := make(chan error, 1)
 
 	go func() {
+		defer close(appErrCh)
+
 		info("start app")
-		if err := app.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fatal(errors.Wrap(err, "failed to start app"))
-		}
+		appErrCh <- app.Start()
 	}()
 
-	<-ctx.Done()
+	select {
+	case err := <-appErrCh:
+		fatal(errors.Wrap(err, "failed to start app"))
+	case <-sigCh:
+	}
 
 	info("stop app")
 	if err := app.Stop(context.Background()); err != nil {
 		fatal(errors.Wrap(err, "failed to stop app"))
 	}
+
+	<-appErrCh // wait http.ErrServerClosed
 }
 
 func info(msg string) {
