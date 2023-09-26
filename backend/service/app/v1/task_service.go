@@ -92,7 +92,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
 			ID:     task.ID,
 			Title:  req.Msg.Title,
-			Status: uint32(req.Msg.Status),
+			Status: mysql.TaskStatus(req.Msg.Status.String()),
 		}); txErr != nil {
 			return service.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}
