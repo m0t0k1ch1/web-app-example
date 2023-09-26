@@ -4,10 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
 
-	"app/domain"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
 )
@@ -17,7 +15,7 @@ func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql
 	if err != nil {
 		return mysql.Task{}, NewInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
 	}
-	if resourceName != domain.ResourceNameTask {
+	if resourceName != ResourceNameTask {
 		return mysql.Task{}, NewInvalidArgumentError(errors.Newf("unexpected resource name: %s", resourceName))
 	}
 
@@ -31,16 +29,4 @@ func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql
 	}
 
 	return task, nil
-}
-
-func NewUnknownError(err error) error {
-	return connect.NewError(connect.CodeUnknown, err)
-}
-
-func NewInvalidArgumentError(err error) error {
-	return connect.NewError(connect.CodeInvalidArgument, err)
-}
-
-func NewNotFoundError(err error) error {
-	return connect.NewError(connect.CodeNotFound, err)
 }

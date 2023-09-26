@@ -1,25 +1,25 @@
 package appv1
 
 import (
-	"app/domain"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
+	"app/service"
 )
 
-func NewTask(row mysql.Task) *appv1.Task {
+func ConvertTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:     idutil.Encode(domain.ResourceNameTask, row.ID),
+		Id:     idutil.Encode(service.ResourceNameTask, row.ID),
 		Title:  row.Title,
 		Status: appv1.TaskStatus(row.Status),
 	}
 }
 
-func NewTasks(rows []mysql.Task) []*appv1.Task {
+func ConvertTasks(rows []mysql.Task) []*appv1.Task {
 	tasks := make([]*appv1.Task, len(rows))
 
 	for idx, row := range rows {
-		tasks[idx] = NewTask(row)
+		tasks[idx] = ConvertTask(row)
 	}
 
 	return tasks
