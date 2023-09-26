@@ -7,8 +7,6 @@ package mysql
 
 import (
 	"context"
-
-	"app/library/idutil"
 )
 
 const createTask = `-- name: CreateTask :execlastid
@@ -27,7 +25,7 @@ const deleteTask = `-- name: DeleteTask :exec
 DELETE FROM task WHERE id = ?
 `
 
-func (q *Queries) DeleteTask(ctx context.Context, id idutil.ID) error {
+func (q *Queries) DeleteTask(ctx context.Context, id uint64) error {
 	_, err := q.db.ExecContext(ctx, deleteTask, id)
 	return err
 }
@@ -36,7 +34,7 @@ const getTask = `-- name: GetTask :one
 SELECT id, title, status, updated_at, created_at FROM task WHERE id = ?
 `
 
-func (q *Queries) GetTask(ctx context.Context, id idutil.ID) (Task, error) {
+func (q *Queries) GetTask(ctx context.Context, id uint64) (Task, error) {
 	row := q.db.QueryRowContext(ctx, getTask, id)
 	var i Task
 	err := row.Scan(
@@ -53,7 +51,7 @@ const getTaskForUpdate = `-- name: GetTaskForUpdate :one
 SELECT id, title, status, updated_at, created_at FROM task WHERE id = ? FOR UPDATE
 `
 
-func (q *Queries) GetTaskForUpdate(ctx context.Context, id idutil.ID) (Task, error) {
+func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error) {
 	row := q.db.QueryRowContext(ctx, getTaskForUpdate, id)
 	var i Task
 	err := row.Scan(
@@ -106,7 +104,7 @@ UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE 
 type UpdateTaskParams struct {
 	Title  string
 	Status uint32
-	ID     idutil.ID
+	ID     uint64
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {

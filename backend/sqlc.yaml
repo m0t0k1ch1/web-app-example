@@ -8,8 +8,6 @@ sql:
         package: "mysql"
         out: "gen/sqlc/mysql"
         overrides:
-          - column: "*.id"
-            go_type: "app/library/idutil.ID"
           - column: "*.updated_at"
             go_type: "app/library/timeutil.Timestamp"
           - column: "*.created_at"

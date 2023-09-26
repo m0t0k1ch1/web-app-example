@@ -9,7 +9,6 @@ import (
 
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/library/idutil"
 	"app/library/sqlutil"
 	"app/service"
 )
@@ -20,12 +19,12 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
-		var id64 int64
-		if id64, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
+		var id int64
+		if id, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
 			return service.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
 		}
 
-		if task, txErr = qtx.GetTask(txCtx, idutil.ID(id64)); txErr != nil {
+		if task, txErr = qtx.GetTask(txCtx, uint64(id)); txErr != nil {
 			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
 		}
 

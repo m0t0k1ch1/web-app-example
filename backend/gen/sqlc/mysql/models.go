@@ -5,12 +5,11 @@
 package mysql
 
 import (
-	"app/library/idutil"
 	"app/library/timeutil"
 )
 
 type Task struct {
-	ID        idutil.ID
+	ID        uint64
 	Title     string
 	Status    uint32
 	UpdatedAt timeutil.Timestamp
