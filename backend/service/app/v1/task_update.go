@@ -14,7 +14,7 @@ import (
 )
 
 func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
-	task, err := service.GetTaskByDisplayIDOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}

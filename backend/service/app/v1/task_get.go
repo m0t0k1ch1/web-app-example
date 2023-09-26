@@ -10,7 +10,7 @@ import (
 )
 
 func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {
-	task, err := service.GetTaskByDisplayIDOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}

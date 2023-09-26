@@ -1,32 +1,44 @@
 package idutil
 
 import (
+	"encoding/base64"
+	"strconv"
+	"strings"
+
 	"github.com/cockroachdb/errors"
-	"github.com/sqids/sqids-go"
+)
+
+const (
+	separator = ":"
 )
 
 var (
-	codec *sqids.Sqids
+	enc *base64.Encoding
 )
 
 func init() {
-	codec, _ = sqids.New()
+	enc = base64.RawURLEncoding
 }
 
-func Encode(i uint64) string {
-	encoded, _ := codec.Encode([]uint64{i})
-
-	return encoded
+func Encode(prefix string, id uint64) string {
+	return enc.EncodeToString([]byte(prefix + separator + strconv.FormatUint(id, 10)))
 }
 
-func Decode(s string) (uint64, error) {
-	is := codec.Decode(s)
-	if len(is) == 0 {
-		return 0, errors.New("invalid")
-	}
-	if len(is) > 1 {
-		return 0, errors.New("out of range")
+func Decode(s string) (string, uint64, error) {
+	decoded, err := enc.DecodeString(s)
+	if err != nil {
+		return "", 0, err
 	}
 
-	return is[0], nil
+	parts := strings.Split(string(decoded), separator)
+	if len(parts) != 2 {
+		return "", 0, errors.New("invalid format")
+	}
+
+	id, err := strconv.ParseUint(parts[1], 10, 64)
+	if err != nil {
+		return "", 0, errors.New("invalid format")
+	}
+
+	return parts[0], id, nil
 }

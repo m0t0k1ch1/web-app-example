@@ -7,7 +7,6 @@ package mysql
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createTask = `-- name: CreateTask :execlastid
@@ -32,7 +31,7 @@ func (q *Queries) DeleteTask(ctx context.Context, id uint64) error {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, display_id, title, status, updated_at, created_at FROM task WHERE id = ?
+SELECT id, title, status, updated_at, created_at FROM task WHERE id = ?
 `
 
 func (q *Queries) GetTask(ctx context.Context, id uint64) (Task, error) {
@@ -40,25 +39,6 @@ func (q *Queries) GetTask(ctx context.Context, id uint64) (Task, error) {
 	var i Task
 	err := row.Scan(
 		&i.ID,
-		&i.DisplayID,
-		&i.Title,
-		&i.Status,
-		&i.UpdatedAt,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const getTaskByDisplayID = `-- name: GetTaskByDisplayID :one
-SELECT id, display_id, title, status, updated_at, created_at FROM task WHERE display_id = ?
-`
-
-func (q *Queries) GetTaskByDisplayID(ctx context.Context, displayID sql.NullString) (Task, error) {
-	row := q.db.QueryRowContext(ctx, getTaskByDisplayID, displayID)
-	var i Task
-	err := row.Scan(
-		&i.ID,
-		&i.DisplayID,
 		&i.Title,
 		&i.Status,
 		&i.UpdatedAt,
@@ -68,7 +48,7 @@ func (q *Queries) GetTaskByDisplayID(ctx context.Context, displayID sql.NullStri
 }
 
 const getTaskForUpdate = `-- name: GetTaskForUpdate :one
-SELECT id, display_id, title, status, updated_at, created_at FROM task WHERE id = ? FOR UPDATE
+SELECT id, title, status, updated_at, created_at FROM task WHERE id = ? FOR UPDATE
 `
 
 func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error) {
@@ -76,7 +56,6 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error)
 	var i Task
 	err := row.Scan(
 		&i.ID,
-		&i.DisplayID,
 		&i.Title,
 		&i.Status,
 		&i.UpdatedAt,
@@ -86,7 +65,7 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error)
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, display_id, title, status, updated_at, created_at FROM task ORDER BY id DESC
+SELECT id, title, status, updated_at, created_at FROM task ORDER BY id DESC
 `
 
 func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
@@ -100,7 +79,6 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 		var i Task
 		if err := rows.Scan(
 			&i.ID,
-			&i.DisplayID,
 			&i.Title,
 			&i.Status,
 			&i.UpdatedAt,
@@ -131,19 +109,5 @@ type UpdateTaskParams struct {
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
 	_, err := q.db.ExecContext(ctx, updateTask, arg.Title, arg.Status, arg.ID)
-	return err
-}
-
-const updateTaskDisplayID = `-- name: UpdateTaskDisplayID :exec
-UPDATE task SET display_id = ? WHERE id = ?
-`
-
-type UpdateTaskDisplayIDParams struct {
-	DisplayID sql.NullString
-	ID        uint64
-}
-
-func (q *Queries) UpdateTaskDisplayID(ctx context.Context, arg UpdateTaskDisplayIDParams) error {
-	_, err := q.db.ExecContext(ctx, updateTaskDisplayID, arg.DisplayID, arg.ID)
 	return err
 }

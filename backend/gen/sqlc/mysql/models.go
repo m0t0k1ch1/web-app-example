@@ -5,14 +5,11 @@
 package mysql
 
 import (
-	"database/sql"
-
 	"app/library/timeutil"
 )
 
 type Task struct {
 	ID        uint64
-	DisplayID sql.NullString
 	Title     string
 	Status    uint32
 	UpdatedAt timeutil.Timestamp

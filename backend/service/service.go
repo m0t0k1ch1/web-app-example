@@ -7,14 +7,21 @@ import (
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
 
+	"app/domain"
 	"app/gen/sqlc/mysql"
+	"app/library/idutil"
 )
 
-func GetTaskByDisplayIDOrError(ctx context.Context, db mysql.DBTX, displayID string) (mysql.Task, error) {
-	task, err := mysql.New(db).GetTaskByDisplayID(ctx, sql.NullString{
-		String: displayID,
-		Valid:  true,
-	})
+func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql.Task, error) {
+	resourceName, id, err := idutil.Decode(encodedID)
+	if err != nil {
+		return mysql.Task{}, NewInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
+	}
+	if resourceName != domain.ResourceNameTask {
+		return mysql.Task{}, NewInvalidArgumentError(errors.Newf("unexpected resource name: %s", resourceName))
+	}
+
+	task, err := mysql.New(db).GetTask(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return mysql.Task{}, NewNotFoundError(errors.Wrap(err, "task not found"))

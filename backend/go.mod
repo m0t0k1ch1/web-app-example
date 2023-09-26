@@ -16,7 +16,6 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/kayac/go-config v0.7.0
 	github.com/rs/cors v1.10.0
-	github.com/sqids/sqids-go v0.4.1
 	github.com/testcontainers/testcontainers-go v0.23.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/net v0.15.0

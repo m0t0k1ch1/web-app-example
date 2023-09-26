@@ -14,7 +14,7 @@ import (
 )
 
 func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
-	task, err := service.GetTaskByDisplayIDOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
