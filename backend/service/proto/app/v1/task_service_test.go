@@ -10,6 +10,7 @@ import (
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
+	"app/library/timeutil"
 	here "app/service/proto/app/v1"
 )
 
@@ -49,6 +50,10 @@ func TestTaskService(t *testing.T) {
 	})
 
 	t.Run("success: create task1", func(t *testing.T) {
+		now := timeutil.Now()
+		timeutil.Lock(now)
+		defer timeutil.Unlock()
+
 		{
 			title := "task1"
 
@@ -61,6 +66,8 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
+			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, now.Unix(), resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
 		}
@@ -75,6 +82,8 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
 			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
 		}
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
@@ -86,10 +95,16 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Tasks[0].Id)
 			testutil.Equal(t, task1.Title, resp.Msg.Tasks[0].Title)
 			testutil.Equal(t, task1.Status, resp.Msg.Tasks[0].Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
 		}
 	})
 
 	t.Run("success: create task2", func(t *testing.T) {
+		now := timeutil.Now()
+		timeutil.Lock(now)
+		defer timeutil.Unlock()
+
 		{
 			title := "task2"
 
@@ -102,6 +117,8 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
+			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, now.Unix(), resp.Msg.Task.CreatedAt)
 
 			task2 = resp.Msg.Task
 		}
@@ -116,6 +133,8 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task2.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, task2.Title, resp.Msg.Task.Title)
 			testutil.Equal(t, task2.Status, resp.Msg.Task.Status)
+			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, task2.CreatedAt, resp.Msg.Task.CreatedAt)
 		}
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
@@ -124,16 +143,24 @@ func TestTaskService(t *testing.T) {
 			}
 
 			testutil.Equal(t, 2, len(resp.Msg.Tasks))
-			testutil.Equal(t, task2.Id, resp.Msg.Tasks[0].Id)
-			testutil.Equal(t, task2.Title, resp.Msg.Tasks[0].Title)
-			testutil.Equal(t, task2.Status, resp.Msg.Tasks[0].Status)
-			testutil.Equal(t, task1.Id, resp.Msg.Tasks[1].Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Tasks[1].Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Tasks[1].Status)
+			testutil.Equal(t, task1.Id, resp.Msg.Tasks[0].Id)
+			testutil.Equal(t, task1.Title, resp.Msg.Tasks[0].Title)
+			testutil.Equal(t, task1.Status, resp.Msg.Tasks[0].Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
+			testutil.Equal(t, task2.Id, resp.Msg.Tasks[1].Id)
+			testutil.Equal(t, task2.Title, resp.Msg.Tasks[1].Title)
+			testutil.Equal(t, task2.Status, resp.Msg.Tasks[1].Status)
+			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Tasks[1].UpdatedAt)
+			testutil.Equal(t, task2.CreatedAt, resp.Msg.Tasks[1].CreatedAt)
 		}
 	})
 
 	t.Run("success: update task1", func(t *testing.T) {
+		now := timeutil.Now()
+		timeutil.Lock(now)
+		defer timeutil.Unlock()
+
 		{
 			title := "task1_updated"
 			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
@@ -150,6 +177,8 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, status, resp.Msg.Task.Status)
+			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
 		}
@@ -164,6 +193,8 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
 			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
+			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
 		}
 	})
 
@@ -187,6 +218,8 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task2.Id, resp.Msg.Tasks[0].Id)
 			testutil.Equal(t, task2.Title, resp.Msg.Tasks[0].Title)
 			testutil.Equal(t, task2.Status, resp.Msg.Tasks[0].Status)
+			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
+			testutil.Equal(t, task2.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
 		}
 	})
 }

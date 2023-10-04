@@ -1,5 +1,5 @@
 -- name: CreateTask :execlastid
-INSERT INTO task (title) VALUES (?);
+INSERT INTO task (title, updated_at, created_at) VALUES (?, ?, ?);
 
 -- name: GetTask :one
 SELECT * FROM task WHERE id = ?;
@@ -8,10 +8,10 @@ SELECT * FROM task WHERE id = ?;
 SELECT * FROM task WHERE id = ? FOR UPDATE;
 
 -- name: ListTasks :many
-SELECT * FROM task ORDER BY id DESC;
+SELECT * FROM task ORDER BY id;
 
 -- name: UpdateTask :exec
-UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE id = ?;
+UPDATE task SET title = ?, status = ?, updated_at = ? WHERE id = ?;
 
 -- name: DeleteTask :exec
 DELETE FROM task WHERE id = ?;

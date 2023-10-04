@@ -10,6 +10,7 @@ import (
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/sqlutil"
+	"app/library/timeutil"
 	"app/service/proto"
 )
 
@@ -29,8 +30,14 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
+		now := timeutil.Now()
+
 		var id int64
-		if id, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
+		if id, txErr = qtx.CreateTask(txCtx, mysql.CreateTaskParams{
+			Title:     req.Msg.Title,
+			UpdatedAt: now,
+			CreatedAt: now,
+		}); txErr != nil {
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
 		}
 
@@ -90,9 +97,10 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		}
 
 		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
-			ID:     task.ID,
-			Title:  req.Msg.Title,
-			Status: req.Msg.Status,
+			ID:        task.ID,
+			Title:     req.Msg.Title,
+			Status:    req.Msg.Status,
+			UpdatedAt: timeutil.Now(),
 		}); txErr != nil {
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}

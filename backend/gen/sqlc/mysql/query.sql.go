@@ -9,14 +9,21 @@ import (
 	"context"
 
 	appv1 "app/gen/buf/app/v1"
+	"app/library/timeutil"
 )
 
 const createTask = `-- name: CreateTask :execlastid
-INSERT INTO task (title) VALUES (?)
+INSERT INTO task (title, updated_at, created_at) VALUES (?, ?, ?)
 `
 
-func (q *Queries) CreateTask(ctx context.Context, title string) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createTask, title)
+type CreateTaskParams struct {
+	Title     string
+	UpdatedAt timeutil.Timestamp
+	CreatedAt timeutil.Timestamp
+}
+
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createTask, arg.Title, arg.UpdatedAt, arg.CreatedAt)
 	if err != nil {
 		return 0, err
 	}
@@ -67,7 +74,7 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error)
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, title, status, updated_at, created_at FROM task ORDER BY id DESC
+SELECT id, title, status, updated_at, created_at FROM task ORDER BY id
 `
 
 func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
@@ -100,16 +107,22 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 }
 
 const updateTask = `-- name: UpdateTask :exec
-UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE id = ?
+UPDATE task SET title = ?, status = ?, updated_at = ? WHERE id = ?
 `
 
 type UpdateTaskParams struct {
-	Title  string
-	Status appv1.TaskStatus
-	ID     uint64
+	Title     string
+	Status    appv1.TaskStatus
+	UpdatedAt timeutil.Timestamp
+	ID        uint64
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, updateTask, arg.Title, arg.Status, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateTask,
+		arg.Title,
+		arg.Status,
+		arg.UpdatedAt,
+		arg.ID,
+	)
 	return err
 }
