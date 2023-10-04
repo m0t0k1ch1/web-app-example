@@ -10,7 +10,7 @@ import (
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/sqlutil"
-	"app/service"
+	"app/service/proto"
 )
 
 type TaskService struct {
@@ -31,11 +31,11 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 
 		var id int64
 		if id, txErr = qtx.CreateTask(txCtx, req.Msg.Title); txErr != nil {
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to create task"))
 		}
 
 		if task, txErr = qtx.GetTask(txCtx, uint64(id)); txErr != nil {
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
 		}
 
 		return
@@ -49,7 +49,7 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 }
 
 func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {
-	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 
 	tasks, err := qdb.ListTasks(ctx)
 	if err != nil {
-		return nil, service.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
+		return nil, proto.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceListResponse{
@@ -73,7 +73,7 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 }
 
 func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
-	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -83,10 +83,10 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
-				return service.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
 			}
 
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
 		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
@@ -94,11 +94,11 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 			Title:  req.Msg.Title,
 			Status: req.Msg.Status,
 		}); txErr != nil {
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}
 
 		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
 		}
 
 		return
@@ -112,7 +112,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 }
 
 func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
-	task, err := service.GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -122,14 +122,14 @@ func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.Tas
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
-				return service.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
 			}
 
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
 		if txErr = qtx.DeleteTask(txCtx, task.ID); txErr != nil {
-			return service.NewUnknownError(errors.Wrap(txErr, "failed to delete task"))
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to delete task"))
 		}
 
 		return

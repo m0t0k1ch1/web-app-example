@@ -4,12 +4,11 @@ import (
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
-	"app/service"
 )
 
 func ConvertTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:     idutil.Encode(service.ResourceNameTask, row.ID),
+		Id:     idutil.Encode(ResourceNameTask, row.ID),
 		Title:  row.Title,
 		Status: row.Status,
 	}

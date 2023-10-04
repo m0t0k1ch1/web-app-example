@@ -1,4 +1,4 @@
-package service
+package proto
 
 import (
 	"connectrpc.com/connect"
