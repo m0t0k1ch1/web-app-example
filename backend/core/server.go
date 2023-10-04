@@ -16,7 +16,7 @@ import (
 
 	"app/config"
 	"app/gen/buf/app/v1/appv1connect"
-	appv1 "app/service/app/v1"
+	appv1 "app/service/proto/app/v1"
 )
 
 var (

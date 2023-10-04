@@ -10,7 +10,7 @@ import (
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
-	here "app/service/app/v1"
+	here "app/service/proto/app/v1"
 )
 
 func TestTaskService(t *testing.T) {
@@ -18,7 +18,7 @@ func TestTaskService(t *testing.T) {
 
 	var s *here.TaskService
 	{
-		schemaPath, err := filepath.Abs("../../../_schema")
+		schemaPath, err := filepath.Abs("../../../../_schema")
 		if err != nil {
 			t.Fatal(errors.Wrap(err, "failed to prepare schema path"))
 		}

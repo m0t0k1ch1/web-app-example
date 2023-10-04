@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 
 	"app/config"
-	appv1 "app/service/app/v1"
+	appv1 "app/service/proto/app/v1"
 )
 
 var (
