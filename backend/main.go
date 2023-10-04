@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
 
 	"app/core"

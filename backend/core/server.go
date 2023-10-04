@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/cockroachdb/errors"
-	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -79,7 +77,6 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 				taskService,
 				connect.WithCodec(jsonCodec),
 				connect.WithInterceptors(
-					newErrorReportInterceptor(),
 					newValidationInterceptor(),
 				),
 			)
@@ -122,22 +119,6 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 
 		config: conf,
 	}
-}
-
-func newErrorReportInterceptor() connect.Interceptor {
-	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
-		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			resp, err := next(ctx, req)
-			if err != nil {
-				if hub := sentry.GetHubFromContext(ctx); hub != nil {
-					event, _ := errors.BuildSentryReport(err)
-					hub.CaptureEvent(event)
-				}
-			}
-
-			return resp, err
-		})
-	})
 }
 
 func newValidationInterceptor() connect.Interceptor {

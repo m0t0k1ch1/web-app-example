@@ -3,13 +3,13 @@ package core
 import (
 	"database/sql"
 
-	"github.com/cockroachdb/errors"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
+	"github.com/pkg/errors"
 
 	"app/config"
 	appv1 "app/service/app/v1"

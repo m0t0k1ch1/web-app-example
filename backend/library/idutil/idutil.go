@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 )
 
 const (

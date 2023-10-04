@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"path/filepath"
 
-	"github.com/cockroachdb/errors"
 	"github.com/docker/go-connections/nat"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 

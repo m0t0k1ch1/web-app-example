@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
@@ -16,7 +16,7 @@ func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql
 		return mysql.Task{}, NewInvalidArgumentError(errors.Wrap(err, "failed to decode id"))
 	}
 	if resourceName != ResourceNameTask {
-		return mysql.Task{}, NewInvalidArgumentError(errors.Newf("unexpected resource name: %s", resourceName))
+		return mysql.Task{}, NewInvalidArgumentError(errors.Errorf("unexpected resource name: %s", resourceName))
 	}
 
 	task, err := mysql.New(db).GetTask(ctx, id)

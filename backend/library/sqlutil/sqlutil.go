@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 )
 
 type TxStarter interface {
