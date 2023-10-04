@@ -11,7 +11,7 @@ func ConvertTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
 		Id:     idutil.Encode(service.ResourceNameTask, row.ID),
 		Title:  row.Title,
-		Status: appv1.TaskStatus(appv1.TaskStatus_value[string(row.Status)]),
+		Status: row.Status,
 	}
 }
 

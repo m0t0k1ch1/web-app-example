@@ -7,6 +7,8 @@ package mysql
 
 import (
 	"context"
+
+	appv1 "app/gen/buf/app/v1"
 )
 
 const createTask = `-- name: CreateTask :execlastid
@@ -103,7 +105,7 @@ UPDATE task SET title = ?, status = ?, updated_at = UNIX_TIMESTAMP(NOW()) WHERE 
 
 type UpdateTaskParams struct {
 	Title  string
-	Status TaskStatus
+	Status appv1.TaskStatus
 	ID     uint64
 }
 
