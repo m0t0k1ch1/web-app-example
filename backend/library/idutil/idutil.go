@@ -20,13 +20,13 @@ func Encode(prefix string, id uint64) string {
 	return enc.EncodeToString([]byte(prefix + separator + strconv.FormatUint(id, 10)))
 }
 
-func Decode(s string) (string, uint64, error) {
-	decoded, err := enc.DecodeString(s)
+func Decode(encoded string) (string, uint64, error) {
+	b, err := enc.DecodeString(encoded)
 	if err != nil {
 		return "", 0, err
 	}
 
-	parts := strings.Split(string(decoded), separator)
+	parts := strings.Split(string(b), separator)
 	if len(parts) != 2 {
 		return "", 0, errors.New("invalid format")
 	}
