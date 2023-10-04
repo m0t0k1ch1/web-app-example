@@ -14,6 +14,8 @@ message Task {
   string id = 1;
   string title = 2;
   TaskStatus status = 3;
+  int64 updated_at = 1001;
+  int64 created_at = 1002;
 }
 
 message TaskServiceCreateRequest {
