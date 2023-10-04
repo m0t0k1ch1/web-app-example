@@ -5,7 +5,7 @@ package app.v1;
 import "validate/validate.proto";
 
 enum TaskStatus {
-  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_UNKNOWN = 0;
   TASK_STATUS_UNCOMPLETED = 1;
   TASK_STATUS_COMPLETED = 2;
 }
