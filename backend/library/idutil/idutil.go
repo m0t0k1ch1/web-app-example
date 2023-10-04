@@ -13,12 +13,8 @@ const (
 )
 
 var (
-	enc *base64.Encoding
-)
-
-func init() {
 	enc = base64.RawURLEncoding
-}
+)
 
 func Encode(prefix string, id uint64) string {
 	return enc.EncodeToString([]byte(prefix + separator + strconv.FormatUint(id, 10)))
