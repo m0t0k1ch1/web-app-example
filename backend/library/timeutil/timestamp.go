@@ -13,7 +13,7 @@ var (
 )
 
 type Timestamp struct {
-	time.Time
+	t time.Time
 }
 
 func Now() Timestamp {
@@ -24,18 +24,30 @@ func Now() Timestamp {
 	return Timestamp{time.Now()}
 }
 
+func (t Timestamp) IsZero() bool {
+	return t.t.IsZero()
+}
+
+func (t Timestamp) Time() time.Time {
+	return t.t
+}
+
+func (t Timestamp) Unix() int64 {
+	return t.t.Unix()
+}
+
 func (t Timestamp) String() string {
-	return strconv.FormatInt(t.Unix(), 10)
+	return strconv.FormatInt(t.t.Unix(), 10)
 }
 
 func (t Timestamp) Value() (driver.Value, error) {
-	return t.Unix(), nil
+	return t.t.Unix(), nil
 }
 
 func (t *Timestamp) Scan(src any) error {
 	switch v := src.(type) {
 	case int64:
-		t.Time = time.Unix(v, 0).In(time.UTC)
+		t.t = time.Unix(v, 0).In(time.UTC)
 
 	case []byte:
 		i, err := strconv.ParseInt(string(v), 10, 64)
@@ -43,7 +55,7 @@ func (t *Timestamp) Scan(src any) error {
 			return errors.Wrapf(err, "failed to convert %s into type int64", string(v))
 		}
 
-		t.Time = time.Unix(i, 0).In(time.UTC)
+		t.t = time.Unix(i, 0).In(time.UTC)
 
 	default:
 		return errors.Errorf("unexpected src type: %T", src)
@@ -62,7 +74,7 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 		return errors.Wrapf(err, "failed to convert %s into type int64", string(b))
 	}
 
-	t.Time = time.Unix(i, 0).In(time.UTC)
+	t.t = time.Unix(i, 0).In(time.UTC)
 
 	return nil
 }
