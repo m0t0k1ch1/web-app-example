@@ -21,7 +21,9 @@ func Now() Timestamp {
 		return locked
 	}
 
-	return Timestamp{time.Now()}
+	return Timestamp{
+		t: time.Now(),
+	}
 }
 
 func (t Timestamp) IsZero() bool {
