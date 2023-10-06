@@ -5,21 +5,23 @@ import (
 	"database/sql"
 
 	"connectrpc.com/connect"
+	"github.com/m0t0k1ch1-go/timeutil"
 	"github.com/pkg/errors"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/library/sqlutil"
-	"app/library/timeutil"
 	"app/service/proto"
 )
 
 type TaskService struct {
+	clock timeutil.Clock
 	mysql *sql.DB
 }
 
-func NewTaskService(mysql *sql.DB) *TaskService {
+func NewTaskService(clock timeutil.Clock, mysql *sql.DB) *TaskService {
 	return &TaskService{
+		clock: clock,
 		mysql: mysql,
 	}
 }
@@ -30,7 +32,7 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
-		now := timeutil.Now()
+		now := s.clock.Now()
 
 		var id int64
 		if id, txErr = qtx.CreateTask(txCtx, mysql.CreateTaskParams{
@@ -100,7 +102,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 			ID:        task.ID,
 			Title:     req.Msg.Title,
 			Status:    req.Msg.Status,
-			UpdatedAt: timeutil.Now(),
+			UpdatedAt: s.clock.Now(),
 		}); txErr != nil {
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}

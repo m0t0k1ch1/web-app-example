@@ -16,6 +16,6 @@ sql:
               package: "appv1"
               type: "TaskStatus"
           - column: "*.updated_at"
-            go_type: "app/library/timeutil.Timestamp"
+            go_type: "github.com/m0t0k1ch1-go/timeutil.Timestamp"
           - column: "*.created_at"
-            go_type: "app/library/timeutil.Timestamp"
+            go_type: "github.com/m0t0k1ch1-go/timeutil.Timestamp"

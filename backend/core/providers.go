@@ -9,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
+	"github.com/m0t0k1ch1-go/timeutil"
 	"github.com/pkg/errors"
 
 	"app/config"
@@ -19,6 +20,7 @@ var (
 	ProviderSet = wire.NewSet(
 		provideAppConfig,
 
+		provideClock,
 		provideMySQL,
 		provideSentryHandler,
 		provideTaskService,
@@ -53,6 +55,10 @@ func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 	return conf, nil
 }
 
+func provideClock() timeutil.Clock {
+	return timeutil.NewClock()
+}
+
 func provideMySQL(conf config.AppConfig) (MySQL, error) {
 	db, err := sql.Open("mysql", conf.MySQL.DSN())
 	if err != nil {
@@ -79,8 +85,8 @@ func provideSentryHandler(conf config.AppConfig) (*sentryhttp.Handler, error) {
 	}), nil
 }
 
-func provideTaskService(mysql MySQL) *appv1.TaskService {
-	return appv1.NewTaskService(mysql)
+func provideTaskService(clock timeutil.Clock, mysql MySQL) *appv1.TaskService {
+	return appv1.NewTaskService(clock, mysql)
 }
 
 func provideServer(conf config.AppConfig, sentryHandler *sentryhttp.Handler, taskService *appv1.TaskService) *Server {

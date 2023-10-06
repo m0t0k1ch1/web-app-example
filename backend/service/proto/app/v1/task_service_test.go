@@ -6,16 +6,18 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/m0t0k1ch1-go/timeutil"
 	"github.com/pkg/errors"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
-	"app/library/timeutil"
 	here "app/service/proto/app/v1"
 )
 
 func TestTaskService(t *testing.T) {
 	ctx := context.Background()
+
+	clock := timeutil.NewMockClock(timeutil.Now())
 
 	var s *here.TaskService
 	{
@@ -30,7 +32,7 @@ func TestTaskService(t *testing.T) {
 		}
 		t.Cleanup(mysqlTeardown)
 
-		s = here.NewTaskService(mysql)
+		s = here.NewTaskService(clock, mysql)
 	}
 
 	var (
@@ -51,8 +53,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: create task1", func(t *testing.T) {
 		now := timeutil.Now()
-		timeutil.Lock(now)
-		defer timeutil.Unlock()
+		clock.Set(now)
 
 		{
 			title := "task1"
@@ -66,8 +67,8 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, now.Unix(), resp.Msg.Task.CreatedAt)
+			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
 		}
@@ -102,8 +103,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: create task2", func(t *testing.T) {
 		now := timeutil.Now()
-		timeutil.Lock(now)
-		defer timeutil.Unlock()
+		clock.Set(now)
 
 		{
 			title := "task2"
@@ -117,8 +117,8 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, now.Unix(), resp.Msg.Task.CreatedAt)
+			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.CreatedAt)
 
 			task2 = resp.Msg.Task
 		}
@@ -158,8 +158,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: update task1", func(t *testing.T) {
 		now := timeutil.Now()
-		timeutil.Lock(now)
-		defer timeutil.Unlock()
+		clock.Set(now)
 
 		{
 			title := "task1_updated"
@@ -177,7 +176,7 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, status, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Unix(), resp.Msg.Task.UpdatedAt)
+			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
 			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
