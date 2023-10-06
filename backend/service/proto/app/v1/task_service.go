@@ -5,12 +5,12 @@ import (
 	"database/sql"
 
 	"connectrpc.com/connect"
+	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil"
 	"github.com/pkg/errors"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/library/sqlutil"
 	"app/service/proto"
 )
 

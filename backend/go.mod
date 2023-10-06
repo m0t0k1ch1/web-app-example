@@ -14,7 +14,8 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/kayac/go-config v0.7.0
-	github.com/m0t0k1ch1-go/timeutil v1.0.1
+	github.com/m0t0k1ch1-go/sqlutil v1.0.0
+	github.com/m0t0k1ch1-go/timeutil v1.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.10.1
 	github.com/testcontainers/testcontainers-go v0.25.0
