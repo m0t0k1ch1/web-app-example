@@ -2,7 +2,7 @@ version: 2
 sql:
   - engine: "mysql"
     schema:
-      - "_schema/sql/schema.sql"
+      - "_schema/sql/app.sql"
     queries:
       - "_sql/queries.sql"
     gen:

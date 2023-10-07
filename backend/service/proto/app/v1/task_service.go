@@ -9,27 +9,28 @@ import (
 	"github.com/m0t0k1ch1-go/timeutil"
 	"github.com/pkg/errors"
 
+	"app/container"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
 	"app/service/proto"
 )
 
 type TaskService struct {
-	clock timeutil.Clock
-	mysql *sql.DB
+	clock          timeutil.Clock
+	mysqlContainer *container.MySQLContainer
 }
 
-func NewTaskService(clock timeutil.Clock, mysql *sql.DB) *TaskService {
+func NewTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *TaskService {
 	return &TaskService{
-		clock: clock,
-		mysql: mysql,
+		clock:          clock,
+		mysqlContainer: mysqlCtr,
 	}
 }
 
 func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.TaskServiceCreateRequest]) (*connect.Response[appv1.TaskServiceCreateResponse], error) {
 	var task mysql.Task
 
-	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		now := s.clock.Now()
@@ -58,7 +59,7 @@ func (s *TaskService) Create(ctx context.Context, req *connect.Request[appv1.Tas
 }
 
 func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskServiceGetRequest]) (*connect.Response[appv1.TaskServiceGetResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskSe
 }
 
 func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
-	qdb := mysql.New(s.mysql)
+	qdb := mysql.New(s.mysqlContainer.App)
 
 	tasks, err := qdb.ListTasks(ctx)
 	if err != nil {
@@ -82,12 +83,12 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 }
 
 func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
@@ -122,12 +123,12 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 }
 
 func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.TaskServiceDeleteRequest]) (*connect.Response[appv1.TaskServiceDeleteResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysql, req.Msg.Id)
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := sqlutil.Transact(ctx, s.mysql, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {

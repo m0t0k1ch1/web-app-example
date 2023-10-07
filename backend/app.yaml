@@ -1,9 +1,10 @@
 mysql:
-  host: "<% env `APP_MYSQL_HOST` `127.0.0.1` %>"
-  port: <% env `APP_MYSQL_PORT` `3306` %>
-  user: "<% env `APP_MYSQL_USER` `root` %>"
-  password: "<% must_env `APP_MYSQL_PASSWORD` %>"
-  db_name: "<% env `APP_MYSQL_DB_NAME` `app` %>"
+  app:
+    host: "<% env `APP_MYSQL_APP_HOST` `127.0.0.1` %>"
+    port: <% env `APP_MYSQL_APP_PORT` `3306` %>
+    user: "<% env `APP_MYSQL_APP_USER` `root` %>"
+    password: "<% must_env `APP_MYSQL_APP_PASSWORD` %>"
+    name: "<% env `APP_MYSQL_APP_NAME` `app` %>"
 runtime:
   env: "<% must_env `APP_RUNTIME_ENV` %>"
 sentry:

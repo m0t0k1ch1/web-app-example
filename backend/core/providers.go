@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 
 	"app/config"
+	"app/container"
 	appv1 "app/service/proto/app/v1"
 )
 
@@ -21,7 +22,7 @@ var (
 		provideAppConfig,
 
 		provideClock,
-		provideMySQL,
+		provideMySQLContainer,
 		provideSentryHandler,
 		provideTaskService,
 		provideServer,
@@ -35,8 +36,6 @@ type ConfigPath string
 func (confPath ConfigPath) String() string {
 	return string(confPath)
 }
-
-type MySQL *sql.DB
 
 func init() {
 	configloader.Delims("<%", "%>")
@@ -59,13 +58,18 @@ func provideClock() timeutil.Clock {
 	return timeutil.NewClock()
 }
 
-func provideMySQL(conf config.AppConfig) (MySQL, error) {
-	db, err := sql.Open("mysql", conf.MySQL.DSN())
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.DBName)
+func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, error) {
+	mysqlCtr := &container.MySQLContainer{}
+	{
+		db, err := sql.Open("mysql", conf.MySQL.App.DSN())
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.App.Name)
+		}
+
+		mysqlCtr.App = db
 	}
 
-	return MySQL(db), nil
+	return mysqlCtr, nil
 }
 
 func provideSentryHandler(conf config.AppConfig) (*sentryhttp.Handler, error) {
@@ -85,8 +89,8 @@ func provideSentryHandler(conf config.AppConfig) (*sentryhttp.Handler, error) {
 	}), nil
 }
 
-func provideTaskService(clock timeutil.Clock, mysql MySQL) *appv1.TaskService {
-	return appv1.NewTaskService(clock, mysql)
+func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
+	return appv1.NewTaskService(clock, mysqlCtr)
 }
 
 func provideServer(conf config.AppConfig, sentryHandler *sentryhttp.Handler, taskService *appv1.TaskService) *Server {

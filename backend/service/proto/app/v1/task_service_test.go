@@ -2,7 +2,6 @@ package appv1_test
 
 import (
 	"context"
-	"path/filepath"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -15,25 +14,14 @@ import (
 )
 
 func TestTaskService(t *testing.T) {
+	setup(t)
+	t.Cleanup(func() {
+		teardown(t)
+	})
+
 	ctx := context.Background()
 
-	clock := timeutil.NewMockClock(timeutil.Now())
-
-	var s *here.TaskService
-	{
-		schemaPath, err := filepath.Abs("../../../../_schema")
-		if err != nil {
-			t.Fatal(errors.Wrap(err, "failed to prepare schema path"))
-		}
-
-		mysql, mysqlTeardown, err := testutil.SetupMySQL(ctx, "app_test", schemaPath)
-		if err != nil {
-			t.Fatal(errors.Wrap(err, "failed to set up mysql db: app_test"))
-		}
-		t.Cleanup(mysqlTeardown)
-
-		s = here.NewTaskService(clock, mysql)
-	}
+	s := here.NewTaskService(clock, mysqlCtr)
 
 	var (
 		task1 *appv1.Task
