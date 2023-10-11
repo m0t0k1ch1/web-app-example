@@ -6,7 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/m0t0k1ch1-go/sqlutil"
-	"github.com/m0t0k1ch1-go/timeutil"
+	"github.com/m0t0k1ch1-go/timeutil/v2"
 	"github.com/pkg/errors"
 
 	"app/container"

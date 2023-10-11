@@ -15,12 +15,12 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/kayac/go-config v0.7.0
 	github.com/m0t0k1ch1-go/sqlutil v1.2.1
-	github.com/m0t0k1ch1-go/timeutil v1.0.2
+	github.com/m0t0k1ch1-go/timeutil/v2 v2.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.10.1
 	github.com/testcontainers/testcontainers-go v0.25.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
-	golang.org/x/net v0.16.0
+	golang.org/x/net v0.17.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -59,7 +59,7 @@ require (
 	github.com/pingcap/errors v0.11.5-0.20210425183316-da1aaba5fb63 // indirect
 	github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c // indirect
 	github.com/pingcap/log v1.1.0 // indirect
-	github.com/pingcap/tidb/parser v0.0.0-20231007131352-8d2190390c5b // indirect
+	github.com/pingcap/tidb/parser v0.0.0-20231011150025-7f9ab7f2d3d0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
@@ -77,9 +77,9 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
-	google.golang.org/grpc v1.58.2 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20231009173412-8bfb1ae86b6c // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231009173412-8bfb1ae86b6c // indirect
+	google.golang.org/grpc v1.58.3 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
