@@ -53,7 +53,7 @@ func testMain(m *testing.M) int {
 }
 
 func failMain(err error) int {
-	fmt.Fprint(os.Stderr, err.Error())
+	fmt.Fprintln(os.Stderr, err.Error())
 	return 1
 }
 
@@ -67,6 +67,6 @@ func teardown(t *testing.T) {
 	ctx := context.Background()
 
 	if err := sqlutil.TruncateAll(ctx, mysqlCtr.App); err != nil {
-		t.Fatal(errors.Wrap(err, "failed to truncate all app tables"))
+		t.Fatal(err)
 	}
 }

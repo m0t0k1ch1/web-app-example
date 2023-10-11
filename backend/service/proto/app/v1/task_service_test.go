@@ -6,7 +6,6 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/m0t0k1ch1-go/timeutil"
-	"github.com/pkg/errors"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
@@ -32,7 +31,7 @@ func TestTaskService(t *testing.T) {
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to list tasks"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, 0, len(resp.Msg.Tasks))
@@ -50,7 +49,7 @@ func TestTaskService(t *testing.T) {
 				Title: title,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to create task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
@@ -65,7 +64,7 @@ func TestTaskService(t *testing.T) {
 				Id: task1.Id,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to get task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
@@ -77,7 +76,7 @@ func TestTaskService(t *testing.T) {
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to list tasks"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
@@ -100,7 +99,7 @@ func TestTaskService(t *testing.T) {
 				Title: title,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to create task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
@@ -115,7 +114,7 @@ func TestTaskService(t *testing.T) {
 				Id: task2.Id,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to get task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, task2.Id, resp.Msg.Task.Id)
@@ -127,7 +126,7 @@ func TestTaskService(t *testing.T) {
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to list tasks"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, 2, len(resp.Msg.Tasks))
@@ -158,7 +157,7 @@ func TestTaskService(t *testing.T) {
 				Status: status,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to update task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
@@ -174,7 +173,7 @@ func TestTaskService(t *testing.T) {
 				Id: task1.Id,
 			}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to get task"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
@@ -190,7 +189,7 @@ func TestTaskService(t *testing.T) {
 			if _, err := s.Delete(ctx, connect.NewRequest(&appv1.TaskServiceDeleteRequest{
 				Id: task1.Id,
 			})); err != nil {
-				t.Fatal(errors.Wrap(err, "failed to delete task"))
+				t.Fatal(err)
 			}
 
 			task1 = nil
@@ -198,7 +197,7 @@ func TestTaskService(t *testing.T) {
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
-				t.Fatal(errors.Wrap(err, "failed to list tasks"))
+				t.Fatal(err)
 			}
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
