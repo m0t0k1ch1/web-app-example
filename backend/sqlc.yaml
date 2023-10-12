@@ -17,11 +17,11 @@ sql:
               type: "TaskStatus"
           - column: "*.updated_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v2"
+              import: "github.com/m0t0k1ch1-go/timeutil/v3"
               package: "timeutil"
               type: "Timestamp"
           - column: "*.created_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v2"
+              import: "github.com/m0t0k1ch1-go/timeutil/v3"
               package: "timeutil"
               type: "Timestamp"

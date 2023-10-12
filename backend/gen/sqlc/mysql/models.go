@@ -6,7 +6,7 @@ package mysql
 
 import (
 	appv1 "app/gen/buf/app/v1"
-	timeutil "github.com/m0t0k1ch1-go/timeutil/v2"
+	timeutil "github.com/m0t0k1ch1-go/timeutil/v3"
 )
 
 type Task struct {

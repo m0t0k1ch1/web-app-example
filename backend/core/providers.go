@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
-	"github.com/m0t0k1ch1-go/timeutil/v2"
+	"github.com/m0t0k1ch1-go/timeutil/v3"
 	"github.com/pkg/errors"
 
 	"app/config"

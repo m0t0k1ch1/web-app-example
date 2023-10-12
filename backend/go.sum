@@ -99,8 +99,8 @@ github.com/lufia/plan9stats v0.0.0-20230326075908-cb1d2100619a h1:N9zuLhTvBSRt0g
 github.com/lufia/plan9stats v0.0.0-20230326075908-cb1d2100619a/go.mod h1:JKx41uQRwqlTZabZc+kILPrO/3jlKnQ2Z8b7YiVw5cE=
 github.com/m0t0k1ch1-go/sqlutil v1.2.1 h1:CyF41BRby/HJgZoEWcERsmBQLPUG+f2TdbgidVdF48I=
 github.com/m0t0k1ch1-go/sqlutil v1.2.1/go.mod h1:HJcq5/KG6415MT3XHXa6hq/Typ8ktZprxUuvYkZR0DE=
-github.com/m0t0k1ch1-go/timeutil/v2 v2.0.2 h1:V0OQ4f8+z87XrAjPMpQuqjj6BCbU3+BJucEheB6kFlw=
-github.com/m0t0k1ch1-go/timeutil/v2 v2.0.2/go.mod h1:m/zhgTrwbLeU/Gwznpvl2+NzhBZ3+BmR9x6A3qo/azw=
+github.com/m0t0k1ch1-go/timeutil/v3 v3.0.1 h1:MV3hAhy1gviby7IMUV3oEYZRczQIgIefxxyY5OFoA8o=
+github.com/m0t0k1ch1-go/timeutil/v3 v3.0.1/go.mod h1:txDRaZayOznoAr2GizSe8PHUc2Nr9Shj0xdDq3gzi4w=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/moby/patternmatcher v0.6.0 h1:GmP9lR19aU5GqSSFko+5pRqHi+Ohk1O69aFiKkVGiPk=
@@ -125,8 +125,8 @@ github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c h1:CgbKAHto5CQgW
 github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c/go.mod h1:4qGtCB0QK0wBzKtFEGDhxXnSnbQApw1gc9siScUl8ew=
 github.com/pingcap/log v1.1.0 h1:ELiPxACz7vdo1qAvvaWJg1NrYFoY6gqAh/+Uo6aXdD8=
 github.com/pingcap/log v1.1.0/go.mod h1:DWQW5jICDR7UJh4HtxXSM20Churx4CQL0fwL/SoOSA4=
-github.com/pingcap/tidb/parser v0.0.0-20231011150025-7f9ab7f2d3d0 h1:Yq9C9Ed2bkUt+8fohqb4E6C0/AyPOPEBYqzx6KFGtMg=
-github.com/pingcap/tidb/parser v0.0.0-20231011150025-7f9ab7f2d3d0/go.mod h1:cwq4bKUlftpWuznB+rqNwbN0xy6/i5SL/nYvEKeJn4s=
+github.com/pingcap/tidb/parser v0.0.0-20231012095309-656b96b9190c h1:u+Way78EdeXYLlGVmAqG4SgVxkc//i0IqT74Rk2kJiI=
+github.com/pingcap/tidb/parser v0.0.0-20231012095309-656b96b9190c/go.mod h1:cwq4bKUlftpWuznB+rqNwbN0xy6/i5SL/nYvEKeJn4s=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

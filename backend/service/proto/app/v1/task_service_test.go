@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/m0t0k1ch1-go/timeutil/v2"
+	"github.com/m0t0k1ch1-go/timeutil/v3"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"

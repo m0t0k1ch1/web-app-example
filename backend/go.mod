@@ -15,7 +15,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/kayac/go-config v0.7.0
 	github.com/m0t0k1ch1-go/sqlutil v1.2.1
-	github.com/m0t0k1ch1-go/timeutil/v2 v2.0.2
+	github.com/m0t0k1ch1-go/timeutil/v3 v3.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.10.1
 	github.com/testcontainers/testcontainers-go v0.25.0
@@ -59,7 +59,7 @@ require (
 	github.com/pingcap/errors v0.11.5-0.20210425183316-da1aaba5fb63 // indirect
 	github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c // indirect
 	github.com/pingcap/log v1.1.0 // indirect
-	github.com/pingcap/tidb/parser v0.0.0-20231011150025-7f9ab7f2d3d0 // indirect
+	github.com/pingcap/tidb/parser v0.0.0-20231012095309-656b96b9190c // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
