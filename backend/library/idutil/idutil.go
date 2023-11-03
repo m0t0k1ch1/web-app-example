@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	enc = base64.RawURLEncoding
+	enc = base64.URLEncoding
 )
 
 func Encode(prefix string, id uint64) string {
