@@ -19,31 +19,50 @@ message Task {
 }
 
 message TaskServiceCreateRequest {
-  string title = 1 [ (validate.rules).string = {min_len : 1, max_len : 32} ];
+  string title = 1 [(validate.rules).string = {
+    min_len: 1,
+    max_len: 32
+  }];
 }
 
-message TaskServiceCreateResponse { Task task = 1; }
+message TaskServiceCreateResponse {
+  Task task = 1;
+}
 
 message TaskServiceGetRequest {
-  string id = 1 [ (validate.rules).string = {min_len : 1} ];
+  string id = 1 [(validate.rules).string = {min_len: 1}];
 }
 
-message TaskServiceGetResponse { Task task = 1; }
+message TaskServiceGetResponse {
+  Task task = 1;
+}
 
 message TaskServiceListRequest {}
 
-message TaskServiceListResponse { repeated Task tasks = 1; }
-
-message TaskServiceUpdateRequest {
-  string id = 1 [ (validate.rules).string = {min_len : 1} ];
-  string title = 2 [ (validate.rules).string = {min_len : 1, max_len : 32} ];
-  TaskStatus status = 3 [ (validate.rules).enum = {in : [ 1, 2 ]} ];
+message TaskServiceListResponse {
+  repeated Task tasks = 1;
 }
 
-message TaskServiceUpdateResponse { Task task = 1; }
+message TaskServiceUpdateRequest {
+  string id = 1 [(validate.rules).string = {min_len: 1}];
+  string title = 2 [(validate.rules).string = {
+    min_len: 1,
+    max_len: 32
+  }];
+  TaskStatus status = 3 [(validate.rules).enum = {
+    in: [
+      1,
+      2
+    ]
+  }];
+}
+
+message TaskServiceUpdateResponse {
+  Task task = 1;
+}
 
 message TaskServiceDeleteRequest {
-  string id = 1 [ (validate.rules).string = {min_len : 1} ];
+  string id = 1 [(validate.rules).string = {min_len: 1}];
 }
 
 message TaskServiceDeleteResponse {}
