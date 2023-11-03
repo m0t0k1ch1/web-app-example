@@ -6,5 +6,5 @@ CREATE TABLE `task` (
   `created_at` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_status` (`status`),
-  CONSTRAINT `chk_status` CHECK (`status` IN (1, 2))
+  CONSTRAINT `chk_task_status` CHECK (`status` IN (1, 2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;
