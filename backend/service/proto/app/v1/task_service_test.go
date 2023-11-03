@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/m0t0k1ch1-go/timeutil/v3"
 
 	appv1 "app/gen/buf/app/v1"
@@ -67,11 +68,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
-			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
+			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
@@ -80,11 +77,7 @@ func TestTaskService(t *testing.T) {
 			}
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
-			testutil.Equal(t, task1.Id, resp.Msg.Tasks[0].Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Tasks[0].Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Tasks[0].Status)
-			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
-			testutil.Equal(t, task1.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
+			testutil.Equal(t, task1, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 	})
 
@@ -117,11 +110,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			testutil.Equal(t, task2.Id, resp.Msg.Task.Id)
-			testutil.Equal(t, task2.Title, resp.Msg.Task.Title)
-			testutil.Equal(t, task2.Status, resp.Msg.Task.Status)
-			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, task2.CreatedAt, resp.Msg.Task.CreatedAt)
+			testutil.Equal(t, task2, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
@@ -130,16 +119,8 @@ func TestTaskService(t *testing.T) {
 			}
 
 			testutil.Equal(t, 2, len(resp.Msg.Tasks))
-			testutil.Equal(t, task1.Id, resp.Msg.Tasks[0].Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Tasks[0].Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Tasks[0].Status)
-			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
-			testutil.Equal(t, task1.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
-			testutil.Equal(t, task2.Id, resp.Msg.Tasks[1].Id)
-			testutil.Equal(t, task2.Title, resp.Msg.Tasks[1].Title)
-			testutil.Equal(t, task2.Status, resp.Msg.Tasks[1].Status)
-			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Tasks[1].UpdatedAt)
-			testutil.Equal(t, task2.CreatedAt, resp.Msg.Tasks[1].CreatedAt)
+			testutil.Equal(t, task1, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
+			testutil.Equal(t, task2, resp.Msg.Tasks[1], cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 	})
 
@@ -176,11 +157,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
-			testutil.Equal(t, task1.UpdatedAt, resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
+			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 	})
 
@@ -201,11 +178,7 @@ func TestTaskService(t *testing.T) {
 			}
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
-			testutil.Equal(t, task2.Id, resp.Msg.Tasks[0].Id)
-			testutil.Equal(t, task2.Title, resp.Msg.Tasks[0].Title)
-			testutil.Equal(t, task2.Status, resp.Msg.Tasks[0].Status)
-			testutil.Equal(t, task2.UpdatedAt, resp.Msg.Tasks[0].UpdatedAt)
-			testutil.Equal(t, task2.CreatedAt, resp.Msg.Tasks[0].CreatedAt)
+			testutil.Equal(t, task2, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 	})
 }
