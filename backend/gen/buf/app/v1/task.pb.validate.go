@@ -62,10 +62,6 @@ func (m *Task) validate(all bool) error {
 
 	// no validation rules for Status
 
-	// no validation rules for UpdatedAt
-
-	// no validation rules for CreatedAt
-
 	if len(errors) > 0 {
 		return TaskMultiError(errors)
 	}

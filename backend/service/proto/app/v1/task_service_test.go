@@ -6,7 +6,6 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/m0t0k1ch1-go/timeutil/v3"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
@@ -40,9 +39,6 @@ func TestTaskService(t *testing.T) {
 	})
 
 	t.Run("success: create task1", func(t *testing.T) {
-		now := timeutil.Now()
-		clock.Set(now)
-
 		{
 			title := "task1"
 
@@ -55,8 +51,6 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
 		}
@@ -82,9 +76,6 @@ func TestTaskService(t *testing.T) {
 	})
 
 	t.Run("success: create task2", func(t *testing.T) {
-		now := timeutil.Now()
-		clock.Set(now)
-
 		{
 			title := "task2"
 
@@ -97,8 +88,6 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.CreatedAt)
 
 			task2 = resp.Msg.Task
 		}
@@ -125,9 +114,6 @@ func TestTaskService(t *testing.T) {
 	})
 
 	t.Run("success: update task1", func(t *testing.T) {
-		now := timeutil.Now()
-		clock.Set(now)
-
 		{
 			title := "task1_updated"
 			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
@@ -144,8 +130,6 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, status, resp.Msg.Task.Status)
-			testutil.Equal(t, now.Time().Unix(), resp.Msg.Task.UpdatedAt)
-			testutil.Equal(t, task1.CreatedAt, resp.Msg.Task.CreatedAt)
 
 			task1 = resp.Msg.Task
 		}

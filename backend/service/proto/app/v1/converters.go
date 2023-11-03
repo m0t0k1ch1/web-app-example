@@ -8,11 +8,9 @@ import (
 
 func ConvertTask(row mysql.Task) *appv1.Task {
 	return &appv1.Task{
-		Id:        idutil.Encode(ResourceNameTask, row.ID),
-		Title:     row.Title,
-		Status:    row.Status,
-		UpdatedAt: row.UpdatedAt.Time().Unix(),
-		CreatedAt: row.CreatedAt.Time().Unix(),
+		Id:     idutil.Encode(ResourceNameTask, row.ID),
+		Title:  row.Title,
+		Status: row.Status,
 	}
 }
 
