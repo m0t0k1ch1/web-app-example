@@ -3,7 +3,6 @@ package core
 import (
 	"database/sql"
 
-	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
@@ -44,7 +43,7 @@ func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
 	}
 
-	if err := validator.New(validator.WithRequiredStructEnabled()).Struct(conf); err != nil {
+	if err := config.NewValidator().Struct(conf); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "invalid config")
 	}
 
