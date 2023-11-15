@@ -113,15 +113,13 @@ func TestTaskService(t *testing.T) {
 		}
 	})
 
-	t.Run("success: update task1", func(t *testing.T) {
+	t.Run("success: update task1 title", func(t *testing.T) {
 		{
 			title := "task1_updated"
-			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
 
-			resp, err := s.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
-				Id:     task1.Id,
-				Title:  title,
-				Status: status,
+			resp, err := s.UpdateTitle(ctx, connect.NewRequest(&appv1.TaskServiceUpdateTitleRequest{
+				Id:    task1.Id,
+				Title: title,
 			}))
 			if err != nil {
 				t.Fatal(err)
@@ -129,6 +127,36 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
 			testutil.Equal(t, title, resp.Msg.Task.Title)
+			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
+
+			task1 = resp.Msg.Task
+		}
+		{
+			resp, err := s.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
+				Id: task1.Id,
+			}))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
+		}
+	})
+
+	t.Run("success: update task1 status", func(t *testing.T) {
+		{
+			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
+
+			resp, err := s.UpdateStatus(ctx, connect.NewRequest(&appv1.TaskServiceUpdateStatusRequest{
+				Id:     task1.Id,
+				Status: status,
+			}))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
+			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
 			testutil.Equal(t, status, resp.Msg.Task.Status)
 
 			task1 = resp.Msg.Task

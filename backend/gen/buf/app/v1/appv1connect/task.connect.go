@@ -39,8 +39,11 @@ const (
 	TaskServiceGetProcedure = "/app.v1.TaskService/Get"
 	// TaskServiceListProcedure is the fully-qualified name of the TaskService's List RPC.
 	TaskServiceListProcedure = "/app.v1.TaskService/List"
-	// TaskServiceUpdateProcedure is the fully-qualified name of the TaskService's Update RPC.
-	TaskServiceUpdateProcedure = "/app.v1.TaskService/Update"
+	// TaskServiceUpdateTitleProcedure is the fully-qualified name of the TaskService's UpdateTitle RPC.
+	TaskServiceUpdateTitleProcedure = "/app.v1.TaskService/UpdateTitle"
+	// TaskServiceUpdateStatusProcedure is the fully-qualified name of the TaskService's UpdateStatus
+	// RPC.
+	TaskServiceUpdateStatusProcedure = "/app.v1.TaskService/UpdateStatus"
 	// TaskServiceDeleteProcedure is the fully-qualified name of the TaskService's Delete RPC.
 	TaskServiceDeleteProcedure = "/app.v1.TaskService/Delete"
 )
@@ -50,7 +53,8 @@ type TaskServiceClient interface {
 	Create(context.Context, *connect.Request[v1.TaskServiceCreateRequest]) (*connect.Response[v1.TaskServiceCreateResponse], error)
 	Get(context.Context, *connect.Request[v1.TaskServiceGetRequest]) (*connect.Response[v1.TaskServiceGetResponse], error)
 	List(context.Context, *connect.Request[v1.TaskServiceListRequest]) (*connect.Response[v1.TaskServiceListResponse], error)
-	Update(context.Context, *connect.Request[v1.TaskServiceUpdateRequest]) (*connect.Response[v1.TaskServiceUpdateResponse], error)
+	UpdateTitle(context.Context, *connect.Request[v1.TaskServiceUpdateTitleRequest]) (*connect.Response[v1.TaskServiceUpdateTitleResponse], error)
+	UpdateStatus(context.Context, *connect.Request[v1.TaskServiceUpdateStatusRequest]) (*connect.Response[v1.TaskServiceUpdateStatusResponse], error)
 	Delete(context.Context, *connect.Request[v1.TaskServiceDeleteRequest]) (*connect.Response[v1.TaskServiceDeleteResponse], error)
 }
 
@@ -79,9 +83,14 @@ func NewTaskServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			baseURL+TaskServiceListProcedure,
 			opts...,
 		),
-		update: connect.NewClient[v1.TaskServiceUpdateRequest, v1.TaskServiceUpdateResponse](
+		updateTitle: connect.NewClient[v1.TaskServiceUpdateTitleRequest, v1.TaskServiceUpdateTitleResponse](
 			httpClient,
-			baseURL+TaskServiceUpdateProcedure,
+			baseURL+TaskServiceUpdateTitleProcedure,
+			opts...,
+		),
+		updateStatus: connect.NewClient[v1.TaskServiceUpdateStatusRequest, v1.TaskServiceUpdateStatusResponse](
+			httpClient,
+			baseURL+TaskServiceUpdateStatusProcedure,
 			opts...,
 		),
 		delete: connect.NewClient[v1.TaskServiceDeleteRequest, v1.TaskServiceDeleteResponse](
@@ -94,11 +103,12 @@ func NewTaskServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // taskServiceClient implements TaskServiceClient.
 type taskServiceClient struct {
-	create *connect.Client[v1.TaskServiceCreateRequest, v1.TaskServiceCreateResponse]
-	get    *connect.Client[v1.TaskServiceGetRequest, v1.TaskServiceGetResponse]
-	list   *connect.Client[v1.TaskServiceListRequest, v1.TaskServiceListResponse]
-	update *connect.Client[v1.TaskServiceUpdateRequest, v1.TaskServiceUpdateResponse]
-	delete *connect.Client[v1.TaskServiceDeleteRequest, v1.TaskServiceDeleteResponse]
+	create       *connect.Client[v1.TaskServiceCreateRequest, v1.TaskServiceCreateResponse]
+	get          *connect.Client[v1.TaskServiceGetRequest, v1.TaskServiceGetResponse]
+	list         *connect.Client[v1.TaskServiceListRequest, v1.TaskServiceListResponse]
+	updateTitle  *connect.Client[v1.TaskServiceUpdateTitleRequest, v1.TaskServiceUpdateTitleResponse]
+	updateStatus *connect.Client[v1.TaskServiceUpdateStatusRequest, v1.TaskServiceUpdateStatusResponse]
+	delete       *connect.Client[v1.TaskServiceDeleteRequest, v1.TaskServiceDeleteResponse]
 }
 
 // Create calls app.v1.TaskService.Create.
@@ -116,9 +126,14 @@ func (c *taskServiceClient) List(ctx context.Context, req *connect.Request[v1.Ta
 	return c.list.CallUnary(ctx, req)
 }
 
-// Update calls app.v1.TaskService.Update.
-func (c *taskServiceClient) Update(ctx context.Context, req *connect.Request[v1.TaskServiceUpdateRequest]) (*connect.Response[v1.TaskServiceUpdateResponse], error) {
-	return c.update.CallUnary(ctx, req)
+// UpdateTitle calls app.v1.TaskService.UpdateTitle.
+func (c *taskServiceClient) UpdateTitle(ctx context.Context, req *connect.Request[v1.TaskServiceUpdateTitleRequest]) (*connect.Response[v1.TaskServiceUpdateTitleResponse], error) {
+	return c.updateTitle.CallUnary(ctx, req)
+}
+
+// UpdateStatus calls app.v1.TaskService.UpdateStatus.
+func (c *taskServiceClient) UpdateStatus(ctx context.Context, req *connect.Request[v1.TaskServiceUpdateStatusRequest]) (*connect.Response[v1.TaskServiceUpdateStatusResponse], error) {
+	return c.updateStatus.CallUnary(ctx, req)
 }
 
 // Delete calls app.v1.TaskService.Delete.
@@ -131,7 +146,8 @@ type TaskServiceHandler interface {
 	Create(context.Context, *connect.Request[v1.TaskServiceCreateRequest]) (*connect.Response[v1.TaskServiceCreateResponse], error)
 	Get(context.Context, *connect.Request[v1.TaskServiceGetRequest]) (*connect.Response[v1.TaskServiceGetResponse], error)
 	List(context.Context, *connect.Request[v1.TaskServiceListRequest]) (*connect.Response[v1.TaskServiceListResponse], error)
-	Update(context.Context, *connect.Request[v1.TaskServiceUpdateRequest]) (*connect.Response[v1.TaskServiceUpdateResponse], error)
+	UpdateTitle(context.Context, *connect.Request[v1.TaskServiceUpdateTitleRequest]) (*connect.Response[v1.TaskServiceUpdateTitleResponse], error)
+	UpdateStatus(context.Context, *connect.Request[v1.TaskServiceUpdateStatusRequest]) (*connect.Response[v1.TaskServiceUpdateStatusResponse], error)
 	Delete(context.Context, *connect.Request[v1.TaskServiceDeleteRequest]) (*connect.Response[v1.TaskServiceDeleteResponse], error)
 }
 
@@ -156,9 +172,14 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 		svc.List,
 		opts...,
 	)
-	taskServiceUpdateHandler := connect.NewUnaryHandler(
-		TaskServiceUpdateProcedure,
-		svc.Update,
+	taskServiceUpdateTitleHandler := connect.NewUnaryHandler(
+		TaskServiceUpdateTitleProcedure,
+		svc.UpdateTitle,
+		opts...,
+	)
+	taskServiceUpdateStatusHandler := connect.NewUnaryHandler(
+		TaskServiceUpdateStatusProcedure,
+		svc.UpdateStatus,
 		opts...,
 	)
 	taskServiceDeleteHandler := connect.NewUnaryHandler(
@@ -174,8 +195,10 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 			taskServiceGetHandler.ServeHTTP(w, r)
 		case TaskServiceListProcedure:
 			taskServiceListHandler.ServeHTTP(w, r)
-		case TaskServiceUpdateProcedure:
-			taskServiceUpdateHandler.ServeHTTP(w, r)
+		case TaskServiceUpdateTitleProcedure:
+			taskServiceUpdateTitleHandler.ServeHTTP(w, r)
+		case TaskServiceUpdateStatusProcedure:
+			taskServiceUpdateStatusHandler.ServeHTTP(w, r)
 		case TaskServiceDeleteProcedure:
 			taskServiceDeleteHandler.ServeHTTP(w, r)
 		default:
@@ -199,8 +222,12 @@ func (UnimplementedTaskServiceHandler) List(context.Context, *connect.Request[v1
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.TaskService.List is not implemented"))
 }
 
-func (UnimplementedTaskServiceHandler) Update(context.Context, *connect.Request[v1.TaskServiceUpdateRequest]) (*connect.Response[v1.TaskServiceUpdateResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.TaskService.Update is not implemented"))
+func (UnimplementedTaskServiceHandler) UpdateTitle(context.Context, *connect.Request[v1.TaskServiceUpdateTitleRequest]) (*connect.Response[v1.TaskServiceUpdateTitleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.TaskService.UpdateTitle is not implemented"))
+}
+
+func (UnimplementedTaskServiceHandler) UpdateStatus(context.Context, *connect.Request[v1.TaskServiceUpdateStatusRequest]) (*connect.Response[v1.TaskServiceUpdateStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("app.v1.TaskService.UpdateStatus is not implemented"))
 }
 
 func (UnimplementedTaskServiceHandler) Delete(context.Context, *connect.Request[v1.TaskServiceDeleteRequest]) (*connect.Response[v1.TaskServiceDeleteResponse], error) {

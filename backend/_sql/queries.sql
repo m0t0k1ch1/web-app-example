@@ -10,8 +10,11 @@ SELECT * FROM task WHERE id = ? FOR UPDATE;
 -- name: ListTasks :many
 SELECT * FROM task ORDER BY id;
 
--- name: UpdateTask :exec
-UPDATE task SET title = ?, status = ?, updated_at = ? WHERE id = ?;
+-- name: UpdateTaskTitle :exec
+UPDATE task SET title = ?, updated_at = ? WHERE id = ?;
+
+-- name: UpdateTaskStatus :exec
+UPDATE task SET status = ?, updated_at = ? WHERE id = ?;
 
 -- name: DeleteTask :exec
 DELETE FROM task WHERE id = ?;

@@ -865,22 +865,22 @@ var _ interface {
 	ErrorName() string
 } = TaskServiceListResponseValidationError{}
 
-// Validate checks the field values on TaskServiceUpdateRequest with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on TaskServiceUpdateTitleRequest with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *TaskServiceUpdateRequest) Validate() error {
+func (m *TaskServiceUpdateTitleRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on TaskServiceUpdateRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// TaskServiceUpdateRequestMultiError, or nil if none found.
-func (m *TaskServiceUpdateRequest) ValidateAll() error {
+// ValidateAll checks the field values on TaskServiceUpdateTitleRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// TaskServiceUpdateTitleRequestMultiError, or nil if none found.
+func (m *TaskServiceUpdateTitleRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *TaskServiceUpdateRequest) validate(all bool) error {
+func (m *TaskServiceUpdateTitleRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -888,7 +888,7 @@ func (m *TaskServiceUpdateRequest) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetId()) < 1 {
-		err := TaskServiceUpdateRequestValidationError{
+		err := TaskServiceUpdateTitleRequestValidationError{
 			field:  "Id",
 			reason: "value length must be at least 1 runes",
 		}
@@ -899,7 +899,7 @@ func (m *TaskServiceUpdateRequest) validate(all bool) error {
 	}
 
 	if l := utf8.RuneCountInString(m.GetTitle()); l < 1 || l > 32 {
-		err := TaskServiceUpdateRequestValidationError{
+		err := TaskServiceUpdateTitleRequestValidationError{
 			field:  "Title",
 			reason: "value length must be between 1 and 32 runes, inclusive",
 		}
@@ -909,31 +909,20 @@ func (m *TaskServiceUpdateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if _, ok := _TaskServiceUpdateRequest_Status_InLookup[m.GetStatus()]; !ok {
-		err := TaskServiceUpdateRequestValidationError{
-			field:  "Status",
-			reason: "value must be in list [TASK_STATUS_UNCOMPLETED TASK_STATUS_COMPLETED]",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if len(errors) > 0 {
-		return TaskServiceUpdateRequestMultiError(errors)
+		return TaskServiceUpdateTitleRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// TaskServiceUpdateRequestMultiError is an error wrapping multiple validation
-// errors returned by TaskServiceUpdateRequest.ValidateAll() if the designated
-// constraints aren't met.
-type TaskServiceUpdateRequestMultiError []error
+// TaskServiceUpdateTitleRequestMultiError is an error wrapping multiple
+// validation errors returned by TaskServiceUpdateTitleRequest.ValidateAll()
+// if the designated constraints aren't met.
+type TaskServiceUpdateTitleRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m TaskServiceUpdateRequestMultiError) Error() string {
+func (m TaskServiceUpdateTitleRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -942,11 +931,12 @@ func (m TaskServiceUpdateRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m TaskServiceUpdateRequestMultiError) AllErrors() []error { return m }
+func (m TaskServiceUpdateTitleRequestMultiError) AllErrors() []error { return m }
 
-// TaskServiceUpdateRequestValidationError is the validation error returned by
-// TaskServiceUpdateRequest.Validate if the designated constraints aren't met.
-type TaskServiceUpdateRequestValidationError struct {
+// TaskServiceUpdateTitleRequestValidationError is the validation error
+// returned by TaskServiceUpdateTitleRequest.Validate if the designated
+// constraints aren't met.
+type TaskServiceUpdateTitleRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -954,24 +944,24 @@ type TaskServiceUpdateRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e TaskServiceUpdateRequestValidationError) Field() string { return e.field }
+func (e TaskServiceUpdateTitleRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e TaskServiceUpdateRequestValidationError) Reason() string { return e.reason }
+func (e TaskServiceUpdateTitleRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e TaskServiceUpdateRequestValidationError) Cause() error { return e.cause }
+func (e TaskServiceUpdateTitleRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e TaskServiceUpdateRequestValidationError) Key() bool { return e.key }
+func (e TaskServiceUpdateTitleRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e TaskServiceUpdateRequestValidationError) ErrorName() string {
-	return "TaskServiceUpdateRequestValidationError"
+func (e TaskServiceUpdateTitleRequestValidationError) ErrorName() string {
+	return "TaskServiceUpdateTitleRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e TaskServiceUpdateRequestValidationError) Error() string {
+func (e TaskServiceUpdateTitleRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -983,14 +973,14 @@ func (e TaskServiceUpdateRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sTaskServiceUpdateRequest.%s: %s%s",
+		"invalid %sTaskServiceUpdateTitleRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = TaskServiceUpdateRequestValidationError{}
+var _ error = TaskServiceUpdateTitleRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -998,29 +988,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = TaskServiceUpdateRequestValidationError{}
+} = TaskServiceUpdateTitleRequestValidationError{}
 
-var _TaskServiceUpdateRequest_Status_InLookup = map[TaskStatus]struct{}{
-	1: {},
-	2: {},
-}
-
-// Validate checks the field values on TaskServiceUpdateResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on TaskServiceUpdateTitleResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *TaskServiceUpdateResponse) Validate() error {
+func (m *TaskServiceUpdateTitleResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on TaskServiceUpdateResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// TaskServiceUpdateResponseMultiError, or nil if none found.
-func (m *TaskServiceUpdateResponse) ValidateAll() error {
+// ValidateAll checks the field values on TaskServiceUpdateTitleResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// TaskServiceUpdateTitleResponseMultiError, or nil if none found.
+func (m *TaskServiceUpdateTitleResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *TaskServiceUpdateResponse) validate(all bool) error {
+func (m *TaskServiceUpdateTitleResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1031,7 +1016,7 @@ func (m *TaskServiceUpdateResponse) validate(all bool) error {
 		switch v := interface{}(m.GetTask()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, TaskServiceUpdateResponseValidationError{
+				errors = append(errors, TaskServiceUpdateTitleResponseValidationError{
 					field:  "Task",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1039,7 +1024,7 @@ func (m *TaskServiceUpdateResponse) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, TaskServiceUpdateResponseValidationError{
+				errors = append(errors, TaskServiceUpdateTitleResponseValidationError{
 					field:  "Task",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1048,7 +1033,7 @@ func (m *TaskServiceUpdateResponse) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetTask()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return TaskServiceUpdateResponseValidationError{
+			return TaskServiceUpdateTitleResponseValidationError{
 				field:  "Task",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1057,19 +1042,19 @@ func (m *TaskServiceUpdateResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return TaskServiceUpdateResponseMultiError(errors)
+		return TaskServiceUpdateTitleResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// TaskServiceUpdateResponseMultiError is an error wrapping multiple validation
-// errors returned by TaskServiceUpdateResponse.ValidateAll() if the
-// designated constraints aren't met.
-type TaskServiceUpdateResponseMultiError []error
+// TaskServiceUpdateTitleResponseMultiError is an error wrapping multiple
+// validation errors returned by TaskServiceUpdateTitleResponse.ValidateAll()
+// if the designated constraints aren't met.
+type TaskServiceUpdateTitleResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m TaskServiceUpdateResponseMultiError) Error() string {
+func (m TaskServiceUpdateTitleResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1078,11 +1063,12 @@ func (m TaskServiceUpdateResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m TaskServiceUpdateResponseMultiError) AllErrors() []error { return m }
+func (m TaskServiceUpdateTitleResponseMultiError) AllErrors() []error { return m }
 
-// TaskServiceUpdateResponseValidationError is the validation error returned by
-// TaskServiceUpdateResponse.Validate if the designated constraints aren't met.
-type TaskServiceUpdateResponseValidationError struct {
+// TaskServiceUpdateTitleResponseValidationError is the validation error
+// returned by TaskServiceUpdateTitleResponse.Validate if the designated
+// constraints aren't met.
+type TaskServiceUpdateTitleResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1090,24 +1076,24 @@ type TaskServiceUpdateResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e TaskServiceUpdateResponseValidationError) Field() string { return e.field }
+func (e TaskServiceUpdateTitleResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e TaskServiceUpdateResponseValidationError) Reason() string { return e.reason }
+func (e TaskServiceUpdateTitleResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e TaskServiceUpdateResponseValidationError) Cause() error { return e.cause }
+func (e TaskServiceUpdateTitleResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e TaskServiceUpdateResponseValidationError) Key() bool { return e.key }
+func (e TaskServiceUpdateTitleResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e TaskServiceUpdateResponseValidationError) ErrorName() string {
-	return "TaskServiceUpdateResponseValidationError"
+func (e TaskServiceUpdateTitleResponseValidationError) ErrorName() string {
+	return "TaskServiceUpdateTitleResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e TaskServiceUpdateResponseValidationError) Error() string {
+func (e TaskServiceUpdateTitleResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1119,14 +1105,14 @@ func (e TaskServiceUpdateResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sTaskServiceUpdateResponse.%s: %s%s",
+		"invalid %sTaskServiceUpdateTitleResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = TaskServiceUpdateResponseValidationError{}
+var _ error = TaskServiceUpdateTitleResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1134,7 +1120,269 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = TaskServiceUpdateResponseValidationError{}
+} = TaskServiceUpdateTitleResponseValidationError{}
+
+// Validate checks the field values on TaskServiceUpdateStatusRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *TaskServiceUpdateStatusRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TaskServiceUpdateStatusRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// TaskServiceUpdateStatusRequestMultiError, or nil if none found.
+func (m *TaskServiceUpdateStatusRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TaskServiceUpdateStatusRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetId()) < 1 {
+		err := TaskServiceUpdateStatusRequestValidationError{
+			field:  "Id",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if _, ok := _TaskServiceUpdateStatusRequest_Status_InLookup[m.GetStatus()]; !ok {
+		err := TaskServiceUpdateStatusRequestValidationError{
+			field:  "Status",
+			reason: "value must be in list [TASK_STATUS_UNCOMPLETED TASK_STATUS_COMPLETED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return TaskServiceUpdateStatusRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// TaskServiceUpdateStatusRequestMultiError is an error wrapping multiple
+// validation errors returned by TaskServiceUpdateStatusRequest.ValidateAll()
+// if the designated constraints aren't met.
+type TaskServiceUpdateStatusRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TaskServiceUpdateStatusRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TaskServiceUpdateStatusRequestMultiError) AllErrors() []error { return m }
+
+// TaskServiceUpdateStatusRequestValidationError is the validation error
+// returned by TaskServiceUpdateStatusRequest.Validate if the designated
+// constraints aren't met.
+type TaskServiceUpdateStatusRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TaskServiceUpdateStatusRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TaskServiceUpdateStatusRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TaskServiceUpdateStatusRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TaskServiceUpdateStatusRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TaskServiceUpdateStatusRequestValidationError) ErrorName() string {
+	return "TaskServiceUpdateStatusRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e TaskServiceUpdateStatusRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTaskServiceUpdateStatusRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TaskServiceUpdateStatusRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TaskServiceUpdateStatusRequestValidationError{}
+
+var _TaskServiceUpdateStatusRequest_Status_InLookup = map[TaskStatus]struct{}{
+	1: {},
+	2: {},
+}
+
+// Validate checks the field values on TaskServiceUpdateStatusResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *TaskServiceUpdateStatusResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TaskServiceUpdateStatusResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// TaskServiceUpdateStatusResponseMultiError, or nil if none found.
+func (m *TaskServiceUpdateStatusResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TaskServiceUpdateStatusResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetTask()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, TaskServiceUpdateStatusResponseValidationError{
+					field:  "Task",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, TaskServiceUpdateStatusResponseValidationError{
+					field:  "Task",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTask()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TaskServiceUpdateStatusResponseValidationError{
+				field:  "Task",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return TaskServiceUpdateStatusResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// TaskServiceUpdateStatusResponseMultiError is an error wrapping multiple
+// validation errors returned by TaskServiceUpdateStatusResponse.ValidateAll()
+// if the designated constraints aren't met.
+type TaskServiceUpdateStatusResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TaskServiceUpdateStatusResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TaskServiceUpdateStatusResponseMultiError) AllErrors() []error { return m }
+
+// TaskServiceUpdateStatusResponseValidationError is the validation error
+// returned by TaskServiceUpdateStatusResponse.Validate if the designated
+// constraints aren't met.
+type TaskServiceUpdateStatusResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TaskServiceUpdateStatusResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TaskServiceUpdateStatusResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TaskServiceUpdateStatusResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TaskServiceUpdateStatusResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TaskServiceUpdateStatusResponseValidationError) ErrorName() string {
+	return "TaskServiceUpdateStatusResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e TaskServiceUpdateStatusResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTaskServiceUpdateStatusResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TaskServiceUpdateStatusResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TaskServiceUpdateStatusResponseValidationError{}
 
 // Validate checks the field values on TaskServiceDeleteRequest with the rules
 // defined in the proto definition for this message. If any rules are

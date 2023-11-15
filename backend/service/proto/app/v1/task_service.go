@@ -82,7 +82,7 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 	}), nil
 }
 
-func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
+func (s *TaskService) UpdateTitle(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateTitleRequest]) (*connect.Response[appv1.TaskServiceUpdateTitleResponse], error) {
 	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
 	if err != nil {
 		return nil, err
@@ -99,9 +99,47 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
-		if txErr = qtx.UpdateTask(txCtx, mysql.UpdateTaskParams{
+		if txErr = qtx.UpdateTaskTitle(txCtx, mysql.UpdateTaskTitleParams{
 			ID:        task.ID,
 			Title:     req.Msg.Title,
+			UpdatedAt: s.clock.Now(),
+		}); txErr != nil {
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
+		}
+
+		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
+		}
+
+		return
+	}); err != nil {
+		return nil, err
+	}
+
+	return connect.NewResponse(&appv1.TaskServiceUpdateTitleResponse{
+		Task: ConvertTask(task),
+	}), nil
+}
+
+func (s *TaskService) UpdateStatus(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateStatusRequest]) (*connect.Response[appv1.TaskServiceUpdateStatusResponse], error) {
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
+		qtx := mysql.New(tx)
+
+		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
+			if errors.Is(txErr, sql.ErrNoRows) {
+				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+			}
+
+			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+		}
+
+		if txErr = qtx.UpdateTaskStatus(txCtx, mysql.UpdateTaskStatusParams{
+			ID:        task.ID,
 			Status:    req.Msg.Status,
 			UpdatedAt: s.clock.Now(),
 		}); txErr != nil {
@@ -117,7 +155,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, err
 	}
 
-	return connect.NewResponse(&appv1.TaskServiceUpdateResponse{
+	return connect.NewResponse(&appv1.TaskServiceUpdateStatusResponse{
 		Task: ConvertTask(task),
 	}), nil
 }
