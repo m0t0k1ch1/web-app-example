@@ -4,6 +4,11 @@ import (
 	"fmt"
 )
 
+type AppConfig struct {
+	MySQL  MySQLConfig  `yaml:"mysql" validate:"required"`
+	Server ServerConfig `yaml:"server" validate:"required"`
+}
+
 type MySQLConfig struct {
 	App MySQLDBConfig `yaml:"app" validate:"required"`
 }
@@ -21,4 +26,12 @@ func (conf MySQLDBConfig) DSN() string {
 		"%s:%s@tcp(%s:%d)/%s",
 		conf.User, conf.Password, conf.Host, conf.Port, conf.Name,
 	)
+}
+
+type ServerConfig struct {
+	Port int `yaml:"port" validate:"required,gte=1,lte=65535"`
+}
+
+func (conf ServerConfig) Addr() string {
+	return fmt.Sprintf(":%d", conf.Port)
 }
