@@ -7,7 +7,6 @@ services:
     environment:
       APP_MYSQL_APP_HOST: mysql
       APP_MYSQL_APP_PASSWORD: my-secret-pw
-      APP_RUNTIME_ENV: dev
     depends_on:
       mysql:
         condition: service_healthy
