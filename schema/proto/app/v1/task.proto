@@ -41,13 +41,21 @@ message TaskServiceListResponse {
   repeated Task tasks = 1;
 }
 
-message TaskServiceUpdateRequest {
+message TaskServiceUpdateTitleRequest {
   string id = 1 [(validate.rules).string = {min_len: 1}];
   string title = 2 [(validate.rules).string = {
     min_len: 1,
     max_len: 32
   }];
-  TaskStatus status = 3 [(validate.rules).enum = {
+}
+
+message TaskServiceUpdateTitleResponse {
+  Task task = 1;
+}
+
+message TaskServiceUpdateStatusRequest {
+  string id = 1 [(validate.rules).string = {min_len: 1}];
+  TaskStatus status = 2 [(validate.rules).enum = {
     in: [
       1,
       2
@@ -55,7 +63,7 @@ message TaskServiceUpdateRequest {
   }];
 }
 
-message TaskServiceUpdateResponse {
+message TaskServiceUpdateStatusResponse {
   Task task = 1;
 }
 
@@ -69,6 +77,7 @@ service TaskService {
   rpc Create(TaskServiceCreateRequest) returns (TaskServiceCreateResponse) {}
   rpc Get(TaskServiceGetRequest) returns (TaskServiceGetResponse) {}
   rpc List(TaskServiceListRequest) returns (TaskServiceListResponse) {}
-  rpc Update(TaskServiceUpdateRequest) returns (TaskServiceUpdateResponse) {}
+  rpc UpdateTitle(TaskServiceUpdateTitleRequest) returns (TaskServiceUpdateTitleResponse) {}
+  rpc UpdateStatus(TaskServiceUpdateStatusRequest) returns (TaskServiceUpdateStatusResponse) {}
   rpc Delete(TaskServiceDeleteRequest) returns (TaskServiceDeleteResponse) {}
 }
