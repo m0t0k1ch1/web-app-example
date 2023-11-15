@@ -6,7 +6,6 @@ require (
 	connectrpc.com/connect v1.12.0
 	github.com/docker/go-connections v0.4.0
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
-	github.com/getsentry/sentry-go v0.25.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-sql-driver/mysql v1.7.1

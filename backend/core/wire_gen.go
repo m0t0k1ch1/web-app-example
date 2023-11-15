@@ -21,17 +21,13 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler, err := provideSentryHandler(appConfig)
-	if err != nil {
-		return nil, err
-	}
 	clock := provideClock()
 	mySQLContainer, err := provideMySQLContainer(appConfig)
 	if err != nil {
 		return nil, err
 	}
 	taskService := provideTaskService(clock, mySQLContainer)
-	server := provideServer(appConfig, handler, taskService)
+	server := provideServer(appConfig, taskService)
 	app := provideApp(appConfig, server)
 	return app, nil
 }

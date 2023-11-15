@@ -3,8 +3,6 @@ package core
 import (
 	"database/sql"
 
-	"github.com/getsentry/sentry-go"
-	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
@@ -23,7 +21,6 @@ var (
 
 		provideClock,
 		provideMySQLContainer,
-		provideSentryHandler,
 		provideTaskService,
 		provideServer,
 
@@ -72,29 +69,12 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	return mysqlCtr, nil
 }
 
-func provideSentryHandler(conf config.AppConfig) (*sentryhttp.Handler, error) {
-	if len(conf.Sentry.DSN) == 0 {
-		return nil, nil
-	}
-
-	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:         conf.Sentry.DSN,
-		Environment: conf.Runtime.Env,
-	}); err != nil {
-		return nil, errors.Wrap(err, "failed to initialize sentry sdk")
-	}
-
-	return sentryhttp.New(sentryhttp.Options{
-		Repanic: true,
-	}), nil
-}
-
 func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
 	return appv1.NewTaskService(clock, mysqlCtr)
 }
 
-func provideServer(conf config.AppConfig, sentryHandler *sentryhttp.Handler, taskService *appv1.TaskService) *Server {
-	return NewServer(conf.Server, sentryHandler, taskService)
+func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
+	return NewServer(conf.Server, taskService)
 }
 
 func provideApp(conf config.AppConfig, srv *Server) *App {

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	grpcgwruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -68,7 +67,7 @@ type Server struct {
 	config config.ServerConfig
 }
 
-func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, taskService *appv1.TaskService) *Server {
+func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
@@ -103,11 +102,6 @@ func NewServer(conf config.ServerConfig, sentryHandler *sentryhttp.Handler, task
 
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Recoverer)
-	if sentryHandler != nil {
-		r.Use(func(h http.Handler) http.Handler {
-			return sentryHandler.Handle(h)
-		})
-	}
 	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
 	r.Mount("/test", http.StripPrefix("/test", testHandler))
 
