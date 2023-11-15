@@ -1,4 +1,4 @@
-name: web-app-sample
+name: web-app-example
 services:
   backend:
     build: ./backend

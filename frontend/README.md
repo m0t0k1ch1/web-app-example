@@ -1,1 +1,1 @@
-# web-app-sample/frontend
+# web-app-example/frontend

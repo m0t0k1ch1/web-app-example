@@ -1,6 +1,6 @@
-# web-app-sample
+# web-app-example
 
-a sample web app built with [Connect](https://connectrpc.com) and [Next.js](https://nextjs.org)
+a web app example built with [Connect](https://connectrpc.com) and [Next.js](https://nextjs.org)
 
 ## Run
 
