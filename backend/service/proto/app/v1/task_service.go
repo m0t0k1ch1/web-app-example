@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"connectrpc.com/connect"
+	"github.com/go-playground/validator/v10"
 	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v3"
 	"github.com/pkg/errors"
@@ -17,12 +18,18 @@ import (
 )
 
 type TaskService struct {
+	validator      *validator.Validate
 	clock          timeutil.Clock
 	mysqlContainer *container.MySQLContainer
 }
 
-func NewTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *TaskService {
+func NewTaskService(
+	vldtr *validator.Validate,
+	clock timeutil.Clock,
+	mysqlCtr *container.MySQLContainer,
+) *TaskService {
 	return &TaskService{
+		validator:      vldtr,
 		clock:          clock,
 		mysqlContainer: mysqlCtr,
 	}

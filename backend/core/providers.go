@@ -3,6 +3,7 @@ package core
 import (
 	"database/sql"
 
+	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
@@ -11,11 +12,13 @@ import (
 
 	"app/config"
 	"app/container"
+	"app/domain/validation"
 	appv1 "app/service/proto/app/v1"
 )
 
 var (
 	ProviderSet = wire.NewSet(
+		provideValidator,
 		provideAppConfig,
 
 		provideClock,
@@ -37,13 +40,17 @@ func init() {
 	configloader.Delims("<%", "%>")
 }
 
-func provideAppConfig(path ConfigPath) (config.AppConfig, error) {
+func provideValidator() *validator.Validate {
+	return validation.NewValidator()
+}
+
+func provideAppConfig(confPath ConfigPath, vldtr *validator.Validate) (config.AppConfig, error) {
 	var conf config.AppConfig
-	if err := configloader.LoadWithEnv(&conf, path.String()); err != nil {
+	if err := configloader.LoadWithEnv(&conf, confPath.String()); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
 	}
 
-	if err := config.NewValidator().Struct(conf); err != nil {
+	if err := vldtr.Struct(conf); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "invalid config")
 	}
 
@@ -68,8 +75,8 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	return mysqlCtr, nil
 }
 
-func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
-	return appv1.NewTaskService(clock, mysqlCtr)
+func provideTaskService(vldtr *validator.Validate, clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
+	return appv1.NewTaskService(vldtr, clock, mysqlCtr)
 }
 
 func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {

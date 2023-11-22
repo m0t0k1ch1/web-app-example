@@ -2,13 +2,7 @@ package config
 
 import (
 	"fmt"
-
-	"github.com/go-playground/validator/v10"
 )
-
-func NewValidator() *validator.Validate {
-	return validator.New(validator.WithRequiredStructEnabled())
-}
 
 type AppConfig struct {
 	MySQL  MySQLConfig  `yaml:"mysql" validate:"required"`

@@ -17,7 +17,8 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
-	appConfig, err := provideAppConfig(confPath)
+	validate := provideValidator()
+	appConfig, err := provideAppConfig(confPath, validate)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +27,7 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	taskService := provideTaskService(clock, mySQLContainer)
+	taskService := provideTaskService(validate, clock, mySQLContainer)
 	server := provideServer(appConfig, taskService)
 	app := provideApp(appConfig, server)
 	return app, nil
