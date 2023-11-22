@@ -84,17 +84,20 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 }
 
 func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Task.Id)
-	if err != nil {
-		return nil, err
-	}
-
 	req.Msg.FieldMask.Normalize()
 	if !req.Msg.FieldMask.IsValid(req.Msg.Task) {
 		return nil, proto.NewInvalidArgumentError(errors.New("invalid field mask"))
 	}
 
 	fmPaths := req.Msg.FieldMask.GetPaths()
+	if !slices.Contains(fmPaths, "id") {
+		return nil, proto.NewInvalidArgumentError(errors.New("invalid field mask: id required"))
+	}
+
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Task.Id)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
