@@ -6,6 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
@@ -117,9 +118,17 @@ func TestTaskService(t *testing.T) {
 		{
 			title := "task1_updated"
 
-			resp, err := s.UpdateTitle(ctx, connect.NewRequest(&appv1.TaskServiceUpdateTitleRequest{
-				Id:    task1.Id,
-				Title: title,
+			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			resp, err := s.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+				Task: &appv1.TaskServiceUpdateRequest_Fields{
+					Id:    task1.Id,
+					Title: &title,
+				},
+				FieldMask: fm,
 			}))
 			if err != nil {
 				t.Fatal(err)
@@ -147,9 +156,17 @@ func TestTaskService(t *testing.T) {
 		{
 			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
 
-			resp, err := s.UpdateStatus(ctx, connect.NewRequest(&appv1.TaskServiceUpdateStatusRequest{
-				Id:     task1.Id,
-				Status: status,
+			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			resp, err := s.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+				Task: &appv1.TaskServiceUpdateRequest_Fields{
+					Id:     task1.Id,
+					Status: &status,
+				},
+				FieldMask: fm,
 			}))
 			if err != nil {
 				t.Fatal(err)

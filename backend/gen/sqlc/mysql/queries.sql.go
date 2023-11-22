@@ -106,32 +106,23 @@ func (q *Queries) ListTasks(ctx context.Context) ([]Task, error) {
 	return items, nil
 }
 
-const updateTaskStatus = `-- name: UpdateTaskStatus :exec
-UPDATE task SET status = ?, updated_at = ? WHERE id = ?
+const updateTask = `-- name: UpdateTask :exec
+UPDATE task SET title = ?, status = ?, updated_at = ? WHERE id = ?
 `
 
-type UpdateTaskStatusParams struct {
+type UpdateTaskParams struct {
+	Title     string
 	Status    appv1.TaskStatus
 	UpdatedAt timeutil.Timestamp
 	ID        uint64
 }
 
-func (q *Queries) UpdateTaskStatus(ctx context.Context, arg UpdateTaskStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateTaskStatus, arg.Status, arg.UpdatedAt, arg.ID)
-	return err
-}
-
-const updateTaskTitle = `-- name: UpdateTaskTitle :exec
-UPDATE task SET title = ?, updated_at = ? WHERE id = ?
-`
-
-type UpdateTaskTitleParams struct {
-	Title     string
-	UpdatedAt timeutil.Timestamp
-	ID        uint64
-}
-
-func (q *Queries) UpdateTaskTitle(ctx context.Context, arg UpdateTaskTitleParams) error {
-	_, err := q.db.ExecContext(ctx, updateTaskTitle, arg.Title, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
+	_, err := q.db.ExecContext(ctx, updateTask,
+		arg.Title,
+		arg.Status,
+		arg.UpdatedAt,
+		arg.ID,
+	)
 	return err
 }

@@ -3,6 +3,7 @@ package appv1
 import (
 	"context"
 	"database/sql"
+	"slices"
 
 	"connectrpc.com/connect"
 	"github.com/m0t0k1ch1-go/sqlutil"
@@ -82,11 +83,18 @@ func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskS
 	}), nil
 }
 
-func (s *TaskService) UpdateTitle(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateTitleRequest]) (*connect.Response[appv1.TaskServiceUpdateTitleResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
+func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateRequest]) (*connect.Response[appv1.TaskServiceUpdateResponse], error) {
+	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Task.Id)
 	if err != nil {
 		return nil, err
 	}
+
+	req.Msg.FieldMask.Normalize()
+	if !req.Msg.FieldMask.IsValid(req.Msg.Task) {
+		return nil, proto.NewInvalidArgumentError(errors.New("invalid field mask"))
+	}
+
+	fmPaths := req.Msg.FieldMask.GetPaths()
 
 	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
 		qtx := mysql.New(tx)
@@ -99,50 +107,24 @@ func (s *TaskService) UpdateTitle(ctx context.Context, req *connect.Request[appv
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
 		}
 
-		if txErr = qtx.UpdateTaskTitle(txCtx, mysql.UpdateTaskTitleParams{
-			ID:        task.ID,
-			Title:     req.Msg.Title,
-			UpdatedAt: s.clock.Now(),
-		}); txErr != nil {
-			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
+		params := mysql.UpdateTaskParams{
+			ID:     task.ID,
+			Title:  task.Title,
+			Status: task.Status,
 		}
-
-		if task, txErr = qtx.GetTask(txCtx, task.ID); txErr != nil {
-			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task"))
-		}
-
-		return
-	}); err != nil {
-		return nil, err
-	}
-
-	return connect.NewResponse(&appv1.TaskServiceUpdateTitleResponse{
-		Task: ConvertTask(task),
-	}), nil
-}
-
-func (s *TaskService) UpdateStatus(ctx context.Context, req *connect.Request[appv1.TaskServiceUpdateStatusRequest]) (*connect.Response[appv1.TaskServiceUpdateStatusResponse], error) {
-	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txCtx context.Context, tx *sql.Tx) (txErr error) {
-		qtx := mysql.New(tx)
-
-		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
-			if errors.Is(txErr, sql.ErrNoRows) {
-				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+		{
+			if slices.Contains(fmPaths, "title") {
+				params.Title = *req.Msg.Task.Title
 			}
 
-			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
+			if slices.Contains(fmPaths, "status") {
+				params.Status = *req.Msg.Task.Status
+			}
+
+			params.UpdatedAt = s.clock.Now()
 		}
 
-		if txErr = qtx.UpdateTaskStatus(txCtx, mysql.UpdateTaskStatusParams{
-			ID:        task.ID,
-			Status:    req.Msg.Status,
-			UpdatedAt: s.clock.Now(),
-		}); txErr != nil {
+		if txErr = qtx.UpdateTask(txCtx, params); txErr != nil {
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to update task"))
 		}
 
@@ -155,7 +137,7 @@ func (s *TaskService) UpdateStatus(ctx context.Context, req *connect.Request[app
 		return nil, err
 	}
 
-	return connect.NewResponse(&appv1.TaskServiceUpdateStatusResponse{
+	return connect.NewResponse(&appv1.TaskServiceUpdateResponse{
 		Task: ConvertTask(task),
 	}), nil
 }
