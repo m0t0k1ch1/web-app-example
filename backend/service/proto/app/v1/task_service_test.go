@@ -140,7 +140,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: update task1 title", func(t *testing.T) {
 		{
-			title := "task1_updated"
+			task1.Title = "task1_updated"
 
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
 			if err != nil {
@@ -150,7 +150,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
 					Id:    task1.Id,
-					Title: &title,
+					Title: &task1.Title,
 				},
 				FieldMask: fm,
 			}))
@@ -158,11 +158,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
-			testutil.Equal(t, title, resp.Msg.Task.Title)
-			testutil.Equal(t, task1.Status, resp.Msg.Task.Status)
-
-			task1 = resp.Msg.Task
+			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
@@ -201,7 +197,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: update task1 status", func(t *testing.T) {
 		{
-			status := appv1.TaskStatus_TASK_STATUS_COMPLETED
+			task1.Status = appv1.TaskStatus_TASK_STATUS_COMPLETED
 
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
 			if err != nil {
@@ -211,7 +207,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
 					Id:     task1.Id,
-					Status: &status,
+					Status: &task1.Status,
 				},
 				FieldMask: fm,
 			}))
@@ -219,11 +215,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			testutil.Equal(t, task1.Id, resp.Msg.Task.Id)
-			testutil.Equal(t, task1.Title, resp.Msg.Task.Title)
-			testutil.Equal(t, status, resp.Msg.Task.Status)
-
-			task1 = resp.Msg.Task
+			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
