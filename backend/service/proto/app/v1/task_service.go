@@ -101,6 +101,28 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 		return nil, proto.NewInvalidArgumentError(errors.New("invalid field mask: id required"))
 	}
 
+	var (
+		isTitleSpecified  = false
+		isStatusSpecified = false
+	)
+	{
+		if slices.Contains(fmPaths, "title") {
+			isTitleSpecified = true
+
+			if req.Msg.Task.Title == nil || len(*req.Msg.Task.Title) == 0 {
+				return nil, proto.NewInvalidArgumentError(errors.New("invalid title"))
+			}
+		}
+
+		if slices.Contains(fmPaths, "status") {
+			isStatusSpecified = true
+
+			if req.Msg.Task.Status == nil {
+				return nil, proto.NewInvalidArgumentError(errors.New("invalid status"))
+			}
+		}
+	}
+
 	task, err := GetTaskOrError(ctx, s.mysqlContainer.App, req.Msg.Task.Id)
 	if err != nil {
 		return nil, err
@@ -123,11 +145,11 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 			Status: task.Status,
 		}
 		{
-			if slices.Contains(fmPaths, "title") {
+			if isTitleSpecified {
 				params.Title = *req.Msg.Task.Title
 			}
 
-			if slices.Contains(fmPaths, "status") {
+			if isStatusSpecified {
 				params.Status = *req.Msg.Task.Status
 			}
 

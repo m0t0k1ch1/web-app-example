@@ -6,6 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	appv1 "app/gen/buf/app/v1"
@@ -114,6 +115,29 @@ func TestTaskService(t *testing.T) {
 		}
 	})
 
+	t.Run("failure: update task1 title: invalid title", func(t *testing.T) {
+		{
+			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+				Task: &appv1.TaskServiceUpdateRequest_Fields{
+					Id: task1.Id,
+				},
+				FieldMask: fm,
+			}))
+
+			var connectErr *connect.Error
+			if !errors.As(err, &connectErr) {
+				t.Fatal(err)
+			}
+			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
+			testutil.Equal(t, "invalid title", connectErr.Message())
+		}
+	})
+
 	t.Run("success: update task1 title", func(t *testing.T) {
 		{
 			title := "task1_updated"
@@ -149,6 +173,29 @@ func TestTaskService(t *testing.T) {
 			}
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
+		}
+	})
+
+	t.Run("failure: update task1 status: invalid status", func(t *testing.T) {
+		{
+			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+				Task: &appv1.TaskServiceUpdateRequest_Fields{
+					Id: task1.Id,
+				},
+				FieldMask: fm,
+			}))
+
+			var connectErr *connect.Error
+			if !errors.As(err, &connectErr) {
+				t.Fatal(err)
+			}
+			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
+			testutil.Equal(t, "invalid status", connectErr.Message())
 		}
 	})
 
