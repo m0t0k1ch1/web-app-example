@@ -21,7 +21,7 @@ func TestTaskService(t *testing.T) {
 
 	ctx := context.Background()
 
-	s := here.NewTaskService(vldtr, clock, mysqlCtr)
+	taskService := here.NewTaskService(vldtr, clock, mysqlCtr)
 
 	var (
 		task1 *appv1.Task
@@ -30,7 +30,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: no tasks", func(t *testing.T) {
 		{
-			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
+			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -43,7 +43,7 @@ func TestTaskService(t *testing.T) {
 		{
 			title := "task1"
 
-			resp, err := s.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
+			resp, err := taskService.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
 				Title: title,
 			}))
 			if err != nil {
@@ -56,7 +56,7 @@ func TestTaskService(t *testing.T) {
 			task1 = resp.Msg.Task
 		}
 		{
-			resp, err := s.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
+			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
 			if err != nil {
@@ -66,7 +66,7 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
-			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
+			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -80,7 +80,7 @@ func TestTaskService(t *testing.T) {
 		{
 			title := "task2"
 
-			resp, err := s.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
+			resp, err := taskService.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
 				Title: title,
 			}))
 			if err != nil {
@@ -93,7 +93,7 @@ func TestTaskService(t *testing.T) {
 			task2 = resp.Msg.Task
 		}
 		{
-			resp, err := s.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
+			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task2.Id,
 			}))
 			if err != nil {
@@ -103,7 +103,7 @@ func TestTaskService(t *testing.T) {
 			testutil.Equal(t, task2, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
-			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
+			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -123,7 +123,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := s.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
 					Id:    task1.Id,
 					Title: &title,
@@ -141,7 +141,7 @@ func TestTaskService(t *testing.T) {
 			task1 = resp.Msg.Task
 		}
 		{
-			resp, err := s.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
+			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
 			if err != nil {
@@ -161,7 +161,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := s.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
+			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
 					Id:     task1.Id,
 					Status: &status,
@@ -179,7 +179,7 @@ func TestTaskService(t *testing.T) {
 			task1 = resp.Msg.Task
 		}
 		{
-			resp, err := s.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
+			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
 			if err != nil {
@@ -192,7 +192,7 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: delete task1", func(t *testing.T) {
 		{
-			if _, err := s.Delete(ctx, connect.NewRequest(&appv1.TaskServiceDeleteRequest{
+			if _, err := taskService.Delete(ctx, connect.NewRequest(&appv1.TaskServiceDeleteRequest{
 				Id: task1.Id,
 			})); err != nil {
 				t.Fatal(err)
@@ -201,7 +201,7 @@ func TestTaskService(t *testing.T) {
 			task1 = nil
 		}
 		{
-			resp, err := s.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
+			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
 			if err != nil {
 				t.Fatal(err)
 			}
