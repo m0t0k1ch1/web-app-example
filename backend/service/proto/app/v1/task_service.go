@@ -107,19 +107,19 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 	)
 	{
 		if slices.Contains(fmPaths, "title") {
-			isTitleSpecified = true
-
-			if req.Msg.Task.Title == nil || len(*req.Msg.Task.Title) == 0 {
-				return nil, proto.NewInvalidArgumentError(errors.New("invalid title"))
+			if req.Msg.Task.Title == nil {
+				return nil, proto.NewInvalidArgumentError(errors.New("title required"))
 			}
+
+			isTitleSpecified = true
 		}
 
 		if slices.Contains(fmPaths, "status") {
-			isStatusSpecified = true
-
 			if req.Msg.Task.Status == nil {
-				return nil, proto.NewInvalidArgumentError(errors.New("invalid status"))
+				return nil, proto.NewInvalidArgumentError(errors.New("status required"))
 			}
+
+			isStatusSpecified = true
 		}
 	}
 

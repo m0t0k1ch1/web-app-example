@@ -115,7 +115,7 @@ func TestTaskService(t *testing.T) {
 		}
 	})
 
-	t.Run("failure: update task1 title: invalid title", func(t *testing.T) {
+	t.Run("failure: update task1 title: title required", func(t *testing.T) {
 		{
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
 			if err != nil {
@@ -134,7 +134,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
-			testutil.Equal(t, "invalid title", connectErr.Message())
+			testutil.Equal(t, "title required", connectErr.Message())
 		}
 	})
 
@@ -176,7 +176,7 @@ func TestTaskService(t *testing.T) {
 		}
 	})
 
-	t.Run("failure: update task1 status: invalid status", func(t *testing.T) {
+	t.Run("failure: update task1 status: status required", func(t *testing.T) {
 		{
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
 			if err != nil {
@@ -195,7 +195,7 @@ func TestTaskService(t *testing.T) {
 				t.Fatal(err)
 			}
 			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
-			testutil.Equal(t, "invalid status", connectErr.Message())
+			testutil.Equal(t, "status required", connectErr.Message())
 		}
 	})
 
