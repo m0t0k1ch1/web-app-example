@@ -3,19 +3,24 @@ package main
 import (
 	"context"
 	"flag"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/pkg/errors"
-	"golang.org/x/exp/slog"
 
 	"app/core"
+	"app/domain/log"
 )
 
 var (
 	confPath = flag.String("config", "app.yaml", "path to config file")
 )
+
+func init() {
+	slog.SetDefault(log.NewLogger())
+}
 
 func main() {
 	flag.Parse()
