@@ -23,7 +23,7 @@ func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql
 	task, err := mysql.New(db).GetTask(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return mysql.Task{}, proto.NewNotFoundError(errors.Wrap(err, "task not found"))
+			return mysql.Task{}, proto.NewNotFoundError(errors.New("task not found"))
 		}
 
 		return mysql.Task{}, proto.NewUnknownError(errors.Wrap(err, "failed to get task"))

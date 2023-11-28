@@ -111,7 +111,7 @@ func (s *TaskService) Update(ctx context.Context, req *connect.Request[appv1.Tas
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
-				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+				return proto.NewNotFoundError(errors.New("task not found"))
 			}
 
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
@@ -163,7 +163,7 @@ func (s *TaskService) Delete(ctx context.Context, req *connect.Request[appv1.Tas
 
 		if task, txErr = qtx.GetTaskForUpdate(txCtx, task.ID); txErr != nil {
 			if errors.Is(txErr, sql.ErrNoRows) {
-				return proto.NewNotFoundError(errors.Wrap(txErr, "task not found"))
+				return proto.NewNotFoundError(errors.New("task not found"))
 			}
 
 			return proto.NewUnknownError(errors.Wrap(txErr, "failed to get task for update"))
