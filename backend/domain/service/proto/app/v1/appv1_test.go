@@ -42,7 +42,7 @@ func testMain(m *testing.M) int {
 		}
 		defer dbTeardown()
 
-		schemaPath, err := filepath.Abs("../../../../_schema/sql/app.sql")
+		schemaPath, err := filepath.Abs("../../../../../_schema/sql/app.sql")
 		if err != nil {
 			return failMain(errors.Wrap(err, "failed to prepare app schema sql path"))
 		}

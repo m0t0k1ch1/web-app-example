@@ -9,9 +9,9 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	here "app/domain/service/proto/app/v1"
 	appv1 "app/gen/buf/app/v1"
 	"app/internal/testutil"
-	here "app/service/proto/app/v1"
 )
 
 func TestTaskService(t *testing.T) {

@@ -14,8 +14,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"app/config"
+	appv1 "app/domain/service/proto/app/v1"
 	"app/gen/buf/app/v1/appv1connect"
-	appv1 "app/service/proto/app/v1"
 )
 
 var (

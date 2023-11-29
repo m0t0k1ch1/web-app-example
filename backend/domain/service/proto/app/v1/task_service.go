@@ -12,9 +12,9 @@ import (
 	"github.com/pkg/errors"
 
 	"app/container"
+	"app/domain/service/proto"
 	appv1 "app/gen/buf/app/v1"
 	"app/gen/sqlc/mysql"
-	"app/service/proto"
 )
 
 type TaskService struct {

@@ -12,8 +12,8 @@ import (
 
 	"app/config"
 	"app/container"
+	appv1 "app/domain/service/proto/app/v1"
 	"app/domain/validation"
-	appv1 "app/service/proto/app/v1"
 )
 
 var (

@@ -6,9 +6,9 @@ import (
 
 	"github.com/pkg/errors"
 
+	"app/domain/service/proto"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
-	"app/service/proto"
 )
 
 func GetTaskOrError(ctx context.Context, db mysql.DBTX, encodedID string) (mysql.Task, error) {
