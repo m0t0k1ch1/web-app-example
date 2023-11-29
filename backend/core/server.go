@@ -2,12 +2,15 @@ package core
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"runtime/debug"
 
 	"connectrpc.com/connect"
 	"github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	grpcgwruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -67,7 +70,7 @@ type Server struct {
 	config config.ServerConfig
 }
 
-func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
+func NewServer(conf config.ServerConfig, logger *slog.Logger, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
@@ -76,6 +79,7 @@ func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server
 				taskService,
 				connect.WithCodec(jsonCodec),
 				connect.WithInterceptors(
+					newErrorHandlingInterceptor(logger),
 					newValidationInterceptor(),
 				),
 			)
@@ -88,22 +92,8 @@ func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server
 		grpcHandler = h2c.NewHandler(grpcHandler, &http2.Server{})
 	}
 
-	var testHandler http.Handler
-	{
-		r := chi.NewRouter()
-		{
-			r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
-				panic("y tho")
-			})
-		}
-
-		testHandler = r
-	}
-
 	r := chi.NewRouter()
-	r.Use(chimiddleware.Recoverer)
 	r.Mount("/grpc", http.StripPrefix("/grpc", grpcHandler))
-	r.Mount("/test", http.StripPrefix("/test", testHandler))
 
 	return &Server{
 		Server: http.Server{
@@ -113,6 +103,42 @@ func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server
 
 		config: conf,
 	}
+}
+
+func newErrorHandlingInterceptor(logger *slog.Logger) connect.Interceptor {
+	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
+		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (resp connect.AnyResponse, err error) {
+			unknownErr := connect.NewError(connect.CodeUnknown, errors.New("unknown error occured"))
+
+			defer func() {
+				if v := recover(); v != nil {
+					e, ok := v.(error)
+					if !ok {
+						e = fmt.Errorf("%v", v)
+					}
+
+					logger.LogAttrs(ctx, slog.LevelError, e.Error(), slog.String("stack", string(debug.Stack())))
+					err = unknownErr
+				}
+			}()
+
+			resp, err = next(ctx, req)
+			if err != nil {
+				var connectErr *connect.Error
+				if errors.As(err, &connectErr) {
+					if connectErr.Code() == connect.CodeUnknown {
+						logger.Error(connectErr.Message())
+						err = unknownErr
+					}
+				} else {
+					logger.Error(err.Error())
+					err = unknownErr
+				}
+			}
+
+			return
+		})
+	})
 }
 
 func newValidationInterceptor() connect.Interceptor {

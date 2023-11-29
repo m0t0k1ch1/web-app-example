@@ -2,6 +2,7 @@ package core
 
 import (
 	"database/sql"
+	"log/slog"
 
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
@@ -12,6 +13,7 @@ import (
 
 	"app/config"
 	"app/container"
+	"app/domain/log"
 	appv1 "app/domain/service/proto/app/v1"
 	"app/domain/validation"
 )
@@ -22,6 +24,7 @@ var (
 		provideAppConfig,
 
 		provideClock,
+		provideLogger,
 		provideMySQLContainer,
 		provideTaskService,
 		provideServer,
@@ -61,6 +64,10 @@ func provideClock() timeutil.Clock {
 	return timeutil.NewClock()
 }
 
+func provideLogger() *slog.Logger {
+	return log.NewLogger()
+}
+
 func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, error) {
 	mysqlCtr := &container.MySQLContainer{}
 	{
@@ -79,8 +86,8 @@ func provideTaskService(vldtr *validator.Validate, clock timeutil.Clock, mysqlCt
 	return appv1.NewTaskService(vldtr, clock, mysqlCtr)
 }
 
-func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
-	return NewServer(conf.Server, taskService)
+func provideServer(conf config.AppConfig, logger *slog.Logger, taskService *appv1.TaskService) *Server {
+	return NewServer(conf.Server, logger, taskService)
 }
 
 func provideApp(conf config.AppConfig, srv *Server) *App {

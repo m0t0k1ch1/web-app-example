@@ -22,13 +22,14 @@ func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	logger := provideLogger()
 	clock := provideClock()
 	mySQLContainer, err := provideMySQLContainer(appConfig)
 	if err != nil {
 		return nil, err
 	}
 	taskService := provideTaskService(validate, clock, mySQLContainer)
-	server := provideServer(appConfig, taskService)
+	server := provideServer(appConfig, logger, taskService)
 	app := provideApp(appConfig, server)
 	return app, nil
 }
