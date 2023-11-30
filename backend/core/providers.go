@@ -69,17 +69,17 @@ func provideLogger() *slog.Logger {
 }
 
 func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, error) {
-	mysqlCtr := &container.MySQLContainer{}
+	ctr := &container.MySQLContainer{}
 	{
 		db, err := sql.Open("mysql", conf.MySQL.App.DSN())
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.App.Name)
 		}
 
-		mysqlCtr.App = db
+		ctr.App = db
 	}
 
-	return mysqlCtr, nil
+	return ctr, nil
 }
 
 func provideTaskService(vldtr *validator.Validate, clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
