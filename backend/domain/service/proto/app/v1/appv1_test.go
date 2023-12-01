@@ -7,18 +7,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v3"
 	"github.com/pkg/errors"
 
 	"app/container"
-	"app/domain/validation"
 	"app/internal/testutil"
 )
 
 var (
-	vldtr    *validator.Validate
 	clock    *timeutil.MockClock
 	mysqlCtr *container.MySQLContainer
 )
@@ -29,8 +26,6 @@ func TestMain(m *testing.M) {
 
 func testMain(m *testing.M) int {
 	ctx := context.Background()
-
-	vldtr = validation.NewValidator()
 
 	clock = timeutil.NewMockClock(timeutil.Now())
 

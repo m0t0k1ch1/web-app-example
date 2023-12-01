@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log/slog"
 
-	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	configloader "github.com/kayac/go-config"
@@ -43,11 +42,11 @@ func init() {
 	configloader.Delims("<%", "%>")
 }
 
-func provideValidator() *validator.Validate {
+func provideValidator() (*validation.Validator, error) {
 	return validation.NewValidator()
 }
 
-func provideAppConfig(confPath ConfigPath, vldtr *validator.Validate) (config.AppConfig, error) {
+func provideAppConfig(confPath ConfigPath, vldtr *validation.Validator) (config.AppConfig, error) {
 	var conf config.AppConfig
 	if err := configloader.LoadWithEnv(&conf, confPath.String()); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
@@ -82,8 +81,8 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	return ctr, nil
 }
 
-func provideTaskService(vldtr *validator.Validate, clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
-	return appv1.NewTaskService(vldtr, clock, mysqlCtr)
+func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
+	return appv1.NewTaskService(clock, mysqlCtr)
 }
 
 func provideServer(conf config.AppConfig, logger *slog.Logger, taskService *appv1.TaskService) *Server {

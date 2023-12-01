@@ -22,7 +22,7 @@ func TestTaskService(t *testing.T) {
 
 	ctx := context.Background()
 
-	taskService := here.NewTaskService(vldtr, clock, mysqlCtr)
+	taskService := here.NewTaskService(clock, mysqlCtr)
 
 	var (
 		task1 *appv1.Task
