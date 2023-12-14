@@ -6,7 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/pkg/errors"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	here "app/domain/service/proto/app/v1"
@@ -32,9 +32,7 @@ func TestTaskService(t *testing.T) {
 	t.Run("success: no tasks", func(t *testing.T) {
 		{
 			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, 0, len(resp.Msg.Tasks))
 		}
@@ -47,9 +45,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
 				Title: title,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
@@ -60,17 +56,13 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
 			testutil.Equal(t, task1, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
@@ -84,9 +76,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Create(ctx, connect.NewRequest(&appv1.TaskServiceCreateRequest{
 				Title: title,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, title, resp.Msg.Task.Title)
 			testutil.Equal(t, appv1.TaskStatus_TASK_STATUS_UNCOMPLETED, resp.Msg.Task.Status)
@@ -97,17 +87,13 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task2.Id,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task2, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 		{
 			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, 2, len(resp.Msg.Tasks))
 			testutil.Equal(t, task1, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
@@ -118,9 +104,7 @@ func TestTaskService(t *testing.T) {
 	t.Run("failure: update task1 title: title required", func(t *testing.T) {
 		{
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			_, err = taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
@@ -130,9 +114,8 @@ func TestTaskService(t *testing.T) {
 			}))
 
 			var connectErr *connect.Error
-			if !errors.As(err, &connectErr) {
-				t.Fatal(err)
-			}
+			require.ErrorAs(t, err, &connectErr)
+
 			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
 			testutil.Equal(t, "title required", connectErr.Message())
 		}
@@ -143,9 +126,7 @@ func TestTaskService(t *testing.T) {
 			task1.Title = "task1_updated"
 
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "title")
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
@@ -154,9 +135,7 @@ func TestTaskService(t *testing.T) {
 				},
 				FieldMask: fm,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
@@ -164,9 +143,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
@@ -175,9 +152,7 @@ func TestTaskService(t *testing.T) {
 	t.Run("failure: update task1 status: status required", func(t *testing.T) {
 		{
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			_, err = taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
@@ -187,9 +162,8 @@ func TestTaskService(t *testing.T) {
 			}))
 
 			var connectErr *connect.Error
-			if !errors.As(err, &connectErr) {
-				t.Fatal(err)
-			}
+			require.ErrorAs(t, err, &connectErr)
+
 			testutil.Equal(t, connect.CodeInvalidArgument, connectErr.Code())
 			testutil.Equal(t, "status required", connectErr.Message())
 		}
@@ -200,9 +174,7 @@ func TestTaskService(t *testing.T) {
 			task1.Status = appv1.TaskStatus_TASK_STATUS_COMPLETED
 
 			fm, err := fieldmaskpb.New(&appv1.Task{}, "id", "status")
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			resp, err := taskService.Update(ctx, connect.NewRequest(&appv1.TaskServiceUpdateRequest{
 				Task: &appv1.TaskServiceUpdateRequest_Fields{
@@ -211,9 +183,7 @@ func TestTaskService(t *testing.T) {
 				},
 				FieldMask: fm,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
@@ -221,9 +191,7 @@ func TestTaskService(t *testing.T) {
 			resp, err := taskService.Get(ctx, connect.NewRequest(&appv1.TaskServiceGetRequest{
 				Id: task1.Id,
 			}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
@@ -231,19 +199,16 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: delete task1", func(t *testing.T) {
 		{
-			if _, err := taskService.Delete(ctx, connect.NewRequest(&appv1.TaskServiceDeleteRequest{
+			_, err := taskService.Delete(ctx, connect.NewRequest(&appv1.TaskServiceDeleteRequest{
 				Id: task1.Id,
-			})); err != nil {
-				t.Fatal(err)
-			}
+			}))
+			require.Nil(t, err)
 
 			task1 = nil
 		}
 		{
 			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{}))
-			if err != nil {
-				t.Fatal(err)
-			}
+			require.Nil(t, err)
 
 			testutil.Equal(t, 1, len(resp.Msg.Tasks))
 			testutil.Equal(t, task2, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
