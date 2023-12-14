@@ -36,7 +36,7 @@ func initValidator() error {
 		return msg
 	}
 
-	vldtr := &validator{
+	vldtr = &validator{
 		validate: pgvalidator.New(pgvalidator.WithRequiredStructEnabled()),
 	}
 	{
