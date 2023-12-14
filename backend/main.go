@@ -11,16 +11,12 @@ import (
 	"github.com/pkg/errors"
 
 	"app/core"
-	"app/domain/log"
+	_ "app/domain/log"
 )
 
 var (
 	confPath = flag.String("config", "app.yaml", "path to config file")
 )
-
-func init() {
-	slog.SetDefault(log.NewLogger())
-}
 
 func main() {
 	flag.Parse()

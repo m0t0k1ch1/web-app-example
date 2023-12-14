@@ -2,7 +2,6 @@ package core
 
 import (
 	"database/sql"
-	"log/slog"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
@@ -12,7 +11,6 @@ import (
 
 	"app/config"
 	"app/container"
-	"app/domain/log"
 	appv1 "app/domain/service/proto/app/v1"
 	"app/domain/validation"
 )
@@ -23,7 +21,6 @@ var (
 		provideAppConfig,
 
 		provideClock,
-		provideLogger,
 		provideMySQLContainer,
 		provideTaskService,
 		provideServer,
@@ -63,10 +60,6 @@ func provideClock() timeutil.Clock {
 	return timeutil.NewClock()
 }
 
-func provideLogger() *slog.Logger {
-	return log.NewLogger()
-}
-
 func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, error) {
 	ctr := &container.MySQLContainer{}
 	{
@@ -85,8 +78,8 @@ func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer
 	return appv1.NewTaskService(clock, mysqlCtr)
 }
 
-func provideServer(conf config.AppConfig, logger *slog.Logger, taskService *appv1.TaskService) *Server {
-	return NewServer(conf.Server, logger, taskService)
+func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
+	return NewServer(conf.Server, taskService)
 }
 
 func provideApp(conf config.AppConfig, srv *Server) *App {

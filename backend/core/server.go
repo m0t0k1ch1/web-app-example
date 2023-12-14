@@ -70,7 +70,7 @@ type Server struct {
 	config config.ServerConfig
 }
 
-func NewServer(conf config.ServerConfig, logger *slog.Logger, taskService *appv1.TaskService) *Server {
+func NewServer(conf config.ServerConfig, taskService *appv1.TaskService) *Server {
 	var grpcHandler http.Handler
 	{
 		r := chi.NewRouter()
@@ -79,7 +79,7 @@ func NewServer(conf config.ServerConfig, logger *slog.Logger, taskService *appv1
 				taskService,
 				connect.WithCodec(jsonCodec),
 				connect.WithInterceptors(
-					newErrorHandlingInterceptor(logger),
+					newErrorHandlingInterceptor(),
 					newValidationInterceptor(),
 				),
 			)
@@ -105,7 +105,7 @@ func NewServer(conf config.ServerConfig, logger *slog.Logger, taskService *appv1
 	}
 }
 
-func newErrorHandlingInterceptor(logger *slog.Logger) connect.Interceptor {
+func newErrorHandlingInterceptor() connect.Interceptor {
 	return connect.UnaryInterceptorFunc(func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (resp connect.AnyResponse, err error) {
 			unknownErr := connect.NewError(connect.CodeUnknown, errors.New("unknown error occured"))
@@ -117,7 +117,7 @@ func newErrorHandlingInterceptor(logger *slog.Logger) connect.Interceptor {
 						e = fmt.Errorf("%v", v)
 					}
 
-					logger.LogAttrs(ctx, slog.LevelError, e.Error(), slog.String("stack", string(debug.Stack())))
+					slog.LogAttrs(ctx, slog.LevelError, e.Error(), slog.String("stack", string(debug.Stack())))
 					err = unknownErr
 				}
 			}()
@@ -127,11 +127,11 @@ func newErrorHandlingInterceptor(logger *slog.Logger) connect.Interceptor {
 				var connectErr *connect.Error
 				if errors.As(err, &connectErr) {
 					if connectErr.Code() == connect.CodeUnknown {
-						logger.Error(connectErr.Message())
+						slog.Error(connectErr.Message())
 						err = unknownErr
 					}
 				} else {
-					logger.Error(err.Error())
+					slog.Error(err.Error())
 					err = unknownErr
 				}
 			}
