@@ -17,7 +17,6 @@ import (
 
 var (
 	ProviderSet = wire.NewSet(
-		provideValidator,
 		provideAppConfig,
 
 		provideClock,
@@ -39,17 +38,13 @@ func init() {
 	configloader.Delims("<%", "%>")
 }
 
-func provideValidator() (*validation.Validator, error) {
-	return validation.NewValidator()
-}
-
-func provideAppConfig(confPath ConfigPath, vldtr *validation.Validator) (config.AppConfig, error) {
+func provideAppConfig(confPath ConfigPath) (config.AppConfig, error) {
 	var conf config.AppConfig
 	if err := configloader.LoadWithEnv(&conf, confPath.String()); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
 	}
 
-	if err := vldtr.Struct(conf); err != nil {
+	if err := validation.Struct(conf); err != nil {
 		return config.AppConfig{}, errors.Wrap(err, "invalid config")
 	}
 

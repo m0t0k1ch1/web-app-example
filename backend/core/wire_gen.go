@@ -17,11 +17,7 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, confPath ConfigPath) (*App, error) {
-	validator, err := provideValidator()
-	if err != nil {
-		return nil, err
-	}
-	appConfig, err := provideAppConfig(confPath, validator)
+	appConfig, err := provideAppConfig(confPath)
 	if err != nil {
 		return nil, err
 	}

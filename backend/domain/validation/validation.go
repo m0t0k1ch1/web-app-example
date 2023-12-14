@@ -6,25 +6,44 @@ import (
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
+	pgvalidator "github.com/go-playground/validator/v10"
 	validatortranslationsen "github.com/go-playground/validator/v10/translations/en"
 	"github.com/pkg/errors"
 )
 
-type Validator struct {
-	validate   *validator.Validate
+var (
+	vldtr *validator
+)
+
+func init() {
+	if err := initValidator(); err != nil {
+		panic(err)
+	}
+}
+
+type validator struct {
+	validate   *pgvalidator.Validate
 	translator ut.Translator
 }
 
-func NewValidator() (*Validator, error) {
-	vldtr := &Validator{
-		validate: validator.New(validator.WithRequiredStructEnabled()),
+func initValidator() error {
+	translate := func(translator ut.Translator, fldErr pgvalidator.FieldError) string {
+		msg, err := translator.T(fldErr.Tag(), fldErr.Field())
+		if err != nil {
+			return ""
+		}
+
+		return msg
+	}
+
+	vldtr := &validator{
+		validate: pgvalidator.New(pgvalidator.WithRequiredStructEnabled()),
 	}
 	{
 		vldtr.translator, _ = ut.New(en.New()).GetTranslator("en")
 
 		if err := validatortranslationsen.RegisterDefaultTranslations(vldtr.validate, vldtr.translator); err != nil {
-			return nil, errors.Wrap(err, "failed to register default translations")
+			return errors.Wrap(err, "failed to register default translations")
 		}
 	}
 	{
@@ -47,20 +66,20 @@ func NewValidator() (*Validator, error) {
 		}, translate)
 	}
 
-	return vldtr, nil
+	return nil
 }
 
-func (vldtr *Validator) Var(v any, tag string) error {
-	return vldtr.handleError(vldtr.validate.Var(v, tag))
+func Var(v any, tag string) error {
+	return handleError(vldtr.validate.Var(v, tag))
 }
 
-func (vldtr *Validator) Struct(v any) error {
-	return vldtr.handleError(vldtr.validate.Struct(v))
+func Struct(v any) error {
+	return handleError(vldtr.validate.Struct(v))
 }
 
-func (vldtr *Validator) handleError(err error) error {
+func handleError(err error) error {
 	if err != nil {
-		vldtnErrs, ok := err.(validator.ValidationErrors)
+		vldtnErrs, ok := err.(pgvalidator.ValidationErrors)
 		if ok {
 			msgs := make([]string, len(vldtnErrs))
 			for idx, vldtnErr := range vldtnErrs {
@@ -72,13 +91,4 @@ func (vldtr *Validator) handleError(err error) error {
 	}
 
 	return err
-}
-
-func translate(translator ut.Translator, fldErr validator.FieldError) string {
-	msg, err := translator.T(fldErr.Tag(), fldErr.Field())
-	if err != nil {
-		return ""
-	}
-
-	return msg
 }
