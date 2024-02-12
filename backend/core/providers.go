@@ -69,12 +69,24 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	return ctr, nil
 }
 
-func provideTaskService(clock timeutil.Clock, mysqlCtr *container.MySQLContainer) *appv1.TaskService {
-	return appv1.NewTaskService(clock, mysqlCtr)
+func provideTaskService(
+	clock timeutil.Clock,
+	mysqlCtr *container.MySQLContainer,
+) *appv1.TaskService {
+	return appv1.NewTaskService(
+		clock,
+		mysqlCtr,
+	)
 }
 
-func provideServer(conf config.AppConfig, taskService *appv1.TaskService) *Server {
-	return NewServer(conf.Server, taskService)
+func provideServer(
+	conf config.AppConfig,
+	taskService *appv1.TaskService,
+) *Server {
+	return NewServer(
+		conf.Server,
+		taskService,
+	)
 }
 
 func provideApp(conf config.AppConfig, srv *Server) *App {
