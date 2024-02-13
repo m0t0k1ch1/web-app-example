@@ -1,7 +1,11 @@
+import { Center, Container, Text } from "@chakra-ui/react";
+
 export default function Page() {
   return (
-    <div className="flex h-full items-center justify-center">
-      <span>web-app-example/frontend</span>
-    </div>
+    <Container h="100%">
+      <Center h="100%">
+        <Text>HELLO</Text>
+      </Center>
+    </Container>
   );
 }
