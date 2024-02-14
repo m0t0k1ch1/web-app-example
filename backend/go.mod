@@ -15,6 +15,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
 	github.com/kayac/go-config v0.7.0
+	github.com/m0t0k1ch1-go/coreutil v1.0.0
 	github.com/m0t0k1ch1-go/sqlutil v1.2.1
 	github.com/m0t0k1ch1-go/timeutil/v3 v3.0.1
 	github.com/pkg/errors v0.9.1

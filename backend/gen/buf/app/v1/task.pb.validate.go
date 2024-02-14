@@ -649,6 +649,21 @@ func (m *TaskServiceListRequest) validate(all bool) error {
 
 	var errors []error
 
+	if m.Status != nil {
+
+		if _, ok := _TaskServiceListRequest_Status_InLookup[m.GetStatus()]; !ok {
+			err := TaskServiceListRequestValidationError{
+				field:  "Status",
+				reason: "value must be in list [TASK_STATUS_UNCOMPLETED TASK_STATUS_COMPLETED]",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return TaskServiceListRequestMultiError(errors)
 	}
@@ -728,6 +743,11 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = TaskServiceListRequestValidationError{}
+
+var _TaskServiceListRequest_Status_InLookup = map[TaskStatus]struct{}{
+	1: {},
+	2: {},
+}
 
 // Validate checks the field values on TaskServiceListResponse with the rules
 // defined in the proto definition for this message. If any rules are
