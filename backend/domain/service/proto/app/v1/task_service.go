@@ -76,9 +76,18 @@ func (s *TaskService) Get(ctx context.Context, req *connect.Request[appv1.TaskSe
 func (s *TaskService) List(ctx context.Context, req *connect.Request[appv1.TaskServiceListRequest]) (*connect.Response[appv1.TaskServiceListResponse], error) {
 	qdb := mysql.New(s.mysqlContainer.App)
 
-	tasks, err := qdb.ListTasks(ctx)
-	if err != nil {
-		return nil, proto.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
+	var tasks []mysql.Task
+	{
+		var err error
+
+		if req.Msg.Status != nil {
+			tasks, err = qdb.ListTasksByStatus(ctx, *req.Msg.Status)
+		} else {
+			tasks, err = qdb.ListTasks(ctx)
+		}
+		if err != nil {
+			return nil, proto.NewUnknownError(errors.Wrap(err, "failed to list tasks"))
+		}
 	}
 
 	return connect.NewResponse(&appv1.TaskServiceListResponse{

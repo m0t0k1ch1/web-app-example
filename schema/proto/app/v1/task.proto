@@ -36,7 +36,14 @@ message TaskServiceGetResponse {
   Task task = 1;
 }
 
-message TaskServiceListRequest {}
+message TaskServiceListRequest {
+  optional TaskStatus status = 1 [(validate.rules).enum = {
+    in: [
+      1,
+      2
+    ]
+  }];
+}
 
 message TaskServiceListResponse {
   repeated Task tasks = 1;

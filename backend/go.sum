@@ -94,6 +94,8 @@ github.com/leodido/go-urn v1.2.4/go.mod h1:7ZrI8mTSeBSHl/UaRyKQW1qZeMgak41ANeCNa
 github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0/go.mod h1:zJYVVT2jmtg6P3p1VtQj7WsuWi/y4VnjVBn7F8KPB3I=
 github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed h1:036IscGBfJsFIgJQzlui7nK1Ncm0tp2ktmPj8xO4N/0=
 github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed/go.mod h1:ilwx/Dta8jXAgpFYFvSWEMwxmbWXyiUHkd5FwyKhb5k=
+github.com/m0t0k1ch1-go/coreutil v1.0.0 h1:gikODlrBdG7rNHtJ9tf7Agnj7C0apQI56G0Vzfa+RLE=
+github.com/m0t0k1ch1-go/coreutil v1.0.0/go.mod h1:v4zS1PGl4LxYvOOQzEF+daoh4ep8dqTHdgjD/xTN/4A=
 github.com/m0t0k1ch1-go/sqlutil v1.2.1 h1:CyF41BRby/HJgZoEWcERsmBQLPUG+f2TdbgidVdF48I=
 github.com/m0t0k1ch1-go/sqlutil v1.2.1/go.mod h1:HJcq5/KG6415MT3XHXa6hq/Typ8ktZprxUuvYkZR0DE=
 github.com/m0t0k1ch1-go/timeutil/v3 v3.0.1 h1:MV3hAhy1gviby7IMUV3oEYZRczQIgIefxxyY5OFoA8o=

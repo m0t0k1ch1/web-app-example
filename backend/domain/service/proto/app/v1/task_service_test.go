@@ -6,6 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/m0t0k1ch1-go/coreutil"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
@@ -197,6 +198,15 @@ func TestTaskService(t *testing.T) {
 			require.Nil(t, err)
 
 			testutil.Equal(t, task1, resp.Msg.Task, cmpopts.IgnoreUnexported(appv1.Task{}))
+		}
+		{
+			resp, err := taskService.List(ctx, connect.NewRequest(&appv1.TaskServiceListRequest{
+				Status: coreutil.Ptr(appv1.TaskStatus_TASK_STATUS_UNCOMPLETED),
+			}))
+			require.Nil(t, err)
+
+			testutil.Equal(t, 1, len(resp.Msg.Tasks))
+			testutil.Equal(t, task2, resp.Msg.Tasks[0], cmpopts.IgnoreUnexported(appv1.Task{}))
 		}
 	})
 
