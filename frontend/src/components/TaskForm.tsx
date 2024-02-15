@@ -1,8 +1,8 @@
 import {
   Button,
+  Flex,
   FormControl,
   FormErrorMessage,
-  HStack,
   Input,
 } from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -22,7 +22,7 @@ export function TaskForm({ onSubmit }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <HStack align="start">
+      <Flex gap="2">
         <FormControl isInvalid={errors.title !== undefined}>
           <Input
             placeholder="title"
@@ -41,7 +41,7 @@ export function TaskForm({ onSubmit }: Props) {
         <Button type="submit" isLoading={isSubmitting}>
           Add
         </Button>
-      </HStack>
+      </Flex>
     </form>
   );
 }

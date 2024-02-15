@@ -233,6 +233,11 @@ export class TaskServiceGetResponse extends Message<TaskServiceGetResponse> {
  * @generated from message app.v1.TaskServiceListRequest
  */
 export class TaskServiceListRequest extends Message<TaskServiceListRequest> {
+  /**
+   * @generated from field: optional app.v1.TaskStatus status = 1;
+   */
+  status?: TaskStatus;
+
   constructor(data?: PartialMessage<TaskServiceListRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -241,6 +246,7 @@ export class TaskServiceListRequest extends Message<TaskServiceListRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "app.v1.TaskServiceListRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "status", kind: "enum", T: proto3.getEnumType(TaskStatus), opt: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TaskServiceListRequest {
