@@ -5,3 +5,9 @@
 ```
 pnpm generate
 ```
+
+## Run
+
+```
+pnpm dev
+```

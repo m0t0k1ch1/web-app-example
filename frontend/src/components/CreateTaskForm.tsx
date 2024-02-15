@@ -5,24 +5,31 @@ import {
   FormErrorMessage,
   Input,
 } from "@chakra-ui/react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import { TaskFormInputs } from "@/interfaces/TaskFormInputs";
+import { CreateTaskInputs } from "@/interfaces";
 
 interface Props {
-  onSubmit: SubmitHandler<TaskFormInputs>;
+  onSubmit: (inputs: CreateTaskInputs) => Promise<void>;
 }
 
-export function TaskForm({ onSubmit }: Props) {
+export function CreateTaskForm(props: Props) {
   const {
-    register,
-    handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<TaskFormInputs>();
+    handleSubmit,
+    register,
+    reset,
+  } = useForm<CreateTaskInputs>();
+
+  async function onSubmit(inputs: CreateTaskInputs): Promise<void> {
+    await props.onSubmit(inputs);
+
+    reset();
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Flex gap="2">
+      <Flex direction="row" gap="2">
         <FormControl isInvalid={errors.title !== undefined}>
           <Input
             placeholder="title"
@@ -38,7 +45,7 @@ export function TaskForm({ onSubmit }: Props) {
             {errors.title !== undefined && errors.title.message}
           </FormErrorMessage>
         </FormControl>
-        <Button type="submit" isLoading={isSubmitting}>
+        <Button colorScheme="teal" isLoading={isSubmitting} type="submit">
           Add
         </Button>
       </Flex>

@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 
-import { Container, Flex } from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/react";
+import { FieldMask } from "@bufbuild/protobuf";
+import { Box, Container, Flex } from "@chakra-ui/react";
 
-import { TaskForm, TaskRow } from "@/components";
+import { CreateTaskForm, TaskRow } from "@/components";
 import { TaskService } from "@/gen/app/v1/task_connect";
-import { Task, TaskStatus } from "@/gen/app/v1/task_pb";
+import {
+  Task,
+  TaskServiceCreateResponse,
+  TaskServiceUpdateResponse,
+  TaskStatus,
+} from "@/gen/app/v1/task_pb";
 import { useConnectClient, useErrorToast, useSuccessToast } from "@/hooks";
-import { TaskFormInputs } from "@/interfaces/TaskFormInputs";
+import { CompleteTaskInputs, CreateTaskInputs } from "@/interfaces";
+import { getErrorMessage } from "@/utils";
 
 export default function Page() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const taskService = useConnectClient(TaskService);
+
   const eToast = useErrorToast();
   const sToast = useSuccessToast();
 
@@ -29,38 +36,85 @@ export default function Page() {
 
       setTasks(initialTasks);
     })();
-  }, []);
+  }, [taskService]);
 
-  async function onSubmit(inputs: TaskFormInputs): Promise<void> {
-    let newTask: Task;
+  async function onCreateTask(inputs: CreateTaskInputs): Promise<void> {
+    let taskCreated: Task;
     {
-      const resp = await taskService.create({
-        title: inputs.title,
-      });
+      let resp: TaskServiceCreateResponse;
+      try {
+        resp = await taskService.create({
+          title: inputs.title,
+        });
+      } catch (err) {
+        eToast({
+          description: getErrorMessage(err),
+        });
+        return;
+      }
       if (resp.task === undefined) {
         eToast({
-          description: "Failed to create task",
+          description: "failed to create task",
         });
         return;
       }
 
-      newTask = resp.task;
+      taskCreated = resp.task;
     }
 
-    setTasks([newTask, ...tasks]);
+    setTasks([taskCreated, ...tasks]);
 
     sToast({
-      title: "Task created",
+      title: "task created",
+    });
+  }
+
+  async function onCompleteTask(inputs: CompleteTaskInputs): Promise<void> {
+    let taskCompleted: Task;
+    {
+      let resp: TaskServiceUpdateResponse;
+      try {
+        resp = await taskService.update({
+          task: {
+            id: inputs.id,
+            status: TaskStatus.COMPLETED,
+          },
+          fieldMask: new FieldMask({
+            paths: ["id", "status"],
+          }),
+        });
+      } catch (err) {
+        eToast({
+          description: getErrorMessage(err),
+        });
+        return;
+      }
+      if (resp.task === undefined) {
+        eToast({
+          description: "failed to complete task",
+        });
+        return;
+      }
+
+      taskCompleted = resp.task;
+    }
+
+    setTasks(tasks.filter((task: Task) => task.id !== taskCompleted.id));
+
+    sToast({
+      title: "task completed",
     });
   }
 
   return (
-    <Container h="100%">
+    <Container my={4}>
       <Flex direction="column">
-        <TaskForm onSubmit={onSubmit} />
-        <Flex direction="column">
+        <Box h={20}>
+          <CreateTaskForm onSubmit={onCreateTask} />
+        </Box>
+        <Flex direction="column" gap={2}>
           {tasks.map((task: Task) => (
-            <TaskRow key={task.id} task={task} />
+            <TaskRow key={task.id} onComplete={onCompleteTask} task={task} />
           ))}
         </Flex>
       </Flex>
