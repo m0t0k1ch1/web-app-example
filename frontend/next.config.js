@@ -1,4 +1,4 @@
-loadEnv(process.env.APP_ENV);
+loadEnv(process.env.NEXT_PUBLIC_APP_ENV);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
