@@ -8,6 +8,7 @@ import { TaskService } from "@/gen/app/v1/task_connect";
 import {
   Task,
   TaskServiceCreateResponse,
+  TaskServiceListResponse,
   TaskServiceUpdateResponse,
   TaskStatus,
 } from "@/gen/app/v1/task_pb";
@@ -27,16 +28,25 @@ export default function Page() {
     (async () => {
       let initialTasks: Task[];
       {
-        const resp = await taskService.list({
-          status: TaskStatus.UNCOMPLETED,
-        });
+        let resp: TaskServiceListResponse;
+        try {
+          resp = await taskService.list({
+            status: TaskStatus.UNCOMPLETED,
+          });
+        } catch (err) {
+          eToast({
+            description: getErrorMessage(err),
+          });
+          return;
+        }
 
         initialTasks = resp.tasks.reverse();
       }
 
       setTasks(initialTasks);
     })();
-  }, [taskService]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function onCreateTask(inputs: CreateTaskInputs): Promise<void> {
     let taskCreated: Task;
