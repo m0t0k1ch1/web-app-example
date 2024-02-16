@@ -1,3 +1,11 @@
 .next
 node_modules
 schema
+
+.dockerignore
+.eslintrc.json
+.gitignore
+buf.gen.yaml
+Dockerfile
+next-env.d.ts
+README.md
