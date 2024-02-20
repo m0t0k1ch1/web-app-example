@@ -19,7 +19,7 @@ import { getErrorMessage } from "@/utils";
 
 const tasksAtom = atom<Task[]>([]);
 
-export default function Page() {
+export default function HomePage() {
   const [tasks, setTasks] = useAtom(tasksAtom);
 
   const taskService = useConnectClient(TaskService);
