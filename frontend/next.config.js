@@ -14,6 +14,9 @@ function loadEnv(appEnv) {
   })();
 
   Object.entries(defaultEnv).forEach(([key, value]) => {
+    if (process.env[key] !== undefined) {
+      return;
+    }
     if (env[key] !== undefined) {
       value = env[key];
     }
