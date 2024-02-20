@@ -1,10 +1,13 @@
-import { useState, ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 
 import { Box, Checkbox, Flex, Text } from "@chakra-ui/react";
+import { atom, useAtom } from "jotai";
 
 import { Task } from "@/gen/app/v1/task_pb";
 import { CompleteTaskInputs } from "@/interfaces";
 import { sleep } from "@/utils";
+
+const isSubmittingAtom = atom<boolean>(false);
 
 interface Props {
   task: Task;
@@ -12,7 +15,7 @@ interface Props {
 }
 
 export function TaskRow(props: Props) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useAtom(isSubmittingAtom);
 
   async function onChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     if (!event.target.checked) {
