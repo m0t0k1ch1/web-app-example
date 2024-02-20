@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { FieldMask } from "@bufbuild/protobuf";
 import { Box, Container, Flex } from "@chakra-ui/react";
+import { atom, useAtom } from "jotai";
 
 import { CreateTaskForm, TaskRow } from "@/components";
 import { TaskService } from "@/gen/app/v1/task_connect";
@@ -16,8 +17,10 @@ import { useConnectClient, useErrorToast, useSuccessToast } from "@/hooks";
 import { CompleteTaskInputs, CreateTaskInputs } from "@/interfaces";
 import { getErrorMessage } from "@/utils";
 
+const tasksAtom = atom<Task[]>([]);
+
 export default function Page() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useAtom(tasksAtom);
 
   const taskService = useConnectClient(TaskService);
 
