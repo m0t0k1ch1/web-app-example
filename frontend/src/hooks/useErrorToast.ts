@@ -4,14 +4,18 @@ import {
   UseToastOptions,
 } from "@chakra-ui/react";
 
+const DEFAULT_OPTIONS: UseToastOptions = {
+  duration: 5_000,
+  title: "Error",
+  isClosable: true,
+  status: "error",
+} as const;
+
 export function useErrorToast(
   options: UseToastOptions = {}
 ): CreateToastFnReturn {
   return useToast({
-    title: "Error",
-    status: "error",
-    duration: 5_000,
-    isClosable: true,
+    ...DEFAULT_OPTIONS,
     ...options,
   });
 }

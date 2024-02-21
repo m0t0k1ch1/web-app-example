@@ -24,8 +24,8 @@ export default function HomePage() {
 
   const taskService = useConnectClient(TaskService);
 
-  const eToast = useErrorToast();
-  const sToast = useSuccessToast();
+  const errorToast = useErrorToast();
+  const successToast = useSuccessToast();
 
   useEffect(() => {
     (async () => {
@@ -37,7 +37,7 @@ export default function HomePage() {
             status: TaskStatus.UNCOMPLETED,
           });
         } catch (err) {
-          eToast({
+          errorToast({
             description: getErrorMessage(err),
           });
           return;
@@ -60,14 +60,14 @@ export default function HomePage() {
           title: inputs.title,
         });
       } catch (err) {
-        eToast({
-          description: getErrorMessage(err),
+        errorToast({
+          title: getErrorMessage(err),
         });
         return;
       }
       if (resp.task === undefined) {
-        eToast({
-          description: "failed to create task",
+        errorToast({
+          title: "failed to create task",
         });
         return;
       }
@@ -77,7 +77,7 @@ export default function HomePage() {
 
     setTasks([taskCreated, ...tasks]);
 
-    sToast({
+    successToast({
       title: "task created",
     });
   }
@@ -97,13 +97,13 @@ export default function HomePage() {
           }),
         });
       } catch (err) {
-        eToast({
+        errorToast({
           description: getErrorMessage(err),
         });
         return;
       }
       if (resp.task === undefined) {
-        eToast({
+        errorToast({
           description: "failed to complete task",
         });
         return;
@@ -114,7 +114,7 @@ export default function HomePage() {
 
     setTasks(tasks.filter((task: Task) => task.id !== taskCompleted.id));
 
-    sToast({
+    successToast({
       title: "task completed",
     });
   }

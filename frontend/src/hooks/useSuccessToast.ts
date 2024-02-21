@@ -4,14 +4,18 @@ import {
   UseToastOptions,
 } from "@chakra-ui/react";
 
+const DEFAULT_OPTIONS: UseToastOptions = {
+  duration: 3_000,
+  title: "Success",
+  isClosable: true,
+  status: "success",
+} as const;
+
 export function useSuccessToast(
   options: UseToastOptions = {}
 ): CreateToastFnReturn {
   return useToast({
-    title: "Success",
-    status: "success",
-    duration: 3_000,
-    isClosable: true,
+    ...DEFAULT_OPTIONS,
     ...options,
   });
 }
