@@ -54,16 +54,20 @@ func initValidator() error {
 	{
 		tag := "hostname_rfc1123"
 
-		vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
+		if err := vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
 			return translator.Add(tag, "{0} must be a valid hostname", false)
-		}, translate)
+		}, translate); err != nil {
+			return errors.Wrapf(err, "failed to register translation for %s", tag)
+		}
 	}
 	{
 		tag := "required"
 
-		vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
+		if err := vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
 			return translator.Add(tag, "{0} is required", true)
-		}, translate)
+		}, translate); err != nil {
+			return errors.Wrapf(err, "failed to register translation for %s", tag)
+		}
 	}
 
 	return nil
