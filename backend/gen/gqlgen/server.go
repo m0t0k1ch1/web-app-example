@@ -72,7 +72,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Node  func(childComplexity int, id string) int
-		Tasks func(childComplexity int, after *string, first int32) int
+		Tasks func(childComplexity int, status *TaskStatus, after *string, first int32) int
 	}
 
 	Task struct {
@@ -101,7 +101,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (Node, error)
-	Tasks(ctx context.Context, after *string, first int32) (*TaskConnection, error)
+	Tasks(ctx context.Context, status *TaskStatus, after *string, first int32) (*TaskConnection, error)
 }
 
 type executableSchema struct {
@@ -230,7 +230,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Tasks(childComplexity, args["after"].(*string), args["first"].(int32)), true
+		return e.complexity.Query.Tasks(childComplexity, args["status"].(*TaskStatus), args["after"].(*string), args["first"].(int32)), true
 
 	case "Task.id":
 		if e.complexity.Task.Id == nil {
@@ -482,7 +482,7 @@ type CompleteTaskPayload {
 }
 
 extend type Query {
-  tasks(after: String, first: Int32!): TaskConnection!
+  tasks(status: TaskStatus, after: String, first: Int32!): TaskConnection!
 }
 
 extend type Mutation {
@@ -575,24 +575,33 @@ func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_tasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 *TaskStatus
+	if tmp, ok := rawArgs["status"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+		arg0, err = ec.unmarshalOTaskStatus2ᚖappᚋgenᚋgqlgenᚐTaskStatus(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["status"] = arg0
+	var arg1 *string
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["after"] = arg0
-	var arg1 int32
+	args["after"] = arg1
+	var arg2 int32
 	if tmp, ok := rawArgs["first"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalNInt322int32(ctx, tmp)
+		arg2, err = ec.unmarshalNInt322int32(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["first"] = arg1
+	args["first"] = arg2
 	return args, nil
 }
 
@@ -1193,7 +1202,7 @@ func (ec *executionContext) _Query_tasks(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tasks(rctx, fc.Args["after"].(*string), fc.Args["first"].(int32))
+		return ec.resolvers.Query().Tasks(rctx, fc.Args["status"].(*TaskStatus), fc.Args["after"].(*string), fc.Args["first"].(int32))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5049,6 +5058,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOTaskStatus2ᚖappᚋgenᚋgqlgenᚐTaskStatus(ctx context.Context, v interface{}) (*TaskStatus, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(TaskStatus)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTaskStatus2ᚖappᚋgenᚋgqlgenᚐTaskStatus(ctx context.Context, sel ast.SelectionSet, v *TaskStatus) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

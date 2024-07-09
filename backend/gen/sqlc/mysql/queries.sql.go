@@ -147,3 +147,80 @@ func (q *Queries) ListFirstTasksAfterCursor(ctx context.Context, arg ListFirstTa
 	}
 	return items, nil
 }
+
+const listFirstTasksAfterCursorByStatus = `-- name: ListFirstTasksAfterCursorByStatus :many
+SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? AND id > ? ORDER BY id LIMIT ?
+`
+
+type ListFirstTasksAfterCursorByStatusParams struct {
+	Status TaskStatus
+	ID     uint64
+	Limit  int32
+}
+
+func (q *Queries) ListFirstTasksAfterCursorByStatus(ctx context.Context, arg ListFirstTasksAfterCursorByStatusParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listFirstTasksAfterCursorByStatus, arg.Status, arg.ID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Status,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFirstTasksByStatus = `-- name: ListFirstTasksByStatus :many
+SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? ORDER BY id LIMIT ?
+`
+
+type ListFirstTasksByStatusParams struct {
+	Status TaskStatus
+	Limit  int32
+}
+
+func (q *Queries) ListFirstTasksByStatus(ctx context.Context, arg ListFirstTasksByStatusParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listFirstTasksByStatus, arg.Status, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Status,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
