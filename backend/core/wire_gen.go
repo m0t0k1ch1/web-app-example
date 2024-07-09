@@ -18,7 +18,15 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context, conf config.AppConfig) (*App, error) {
-	server := provideServer(conf)
+	clock := provideClock()
+	mySQLContainer, err := provideMySQLContainer(conf)
+	if err != nil {
+		return nil, err
+	}
+	taskService := provideTaskService(clock, mySQLContainer)
+	nodeService := provideNodeService(mySQLContainer)
+	resolver := provideGQLResolver(taskService, nodeService)
+	server := provideServer(conf, resolver)
 	app := provideApp(conf, server)
 	return app, nil
 }

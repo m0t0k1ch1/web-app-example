@@ -15,6 +15,7 @@ require (
 	github.com/kayac/go-config v0.7.0
 	github.com/m0t0k1ch1-go/sqlutil v1.2.2
 	github.com/m0t0k1ch1-go/timeutil/v4 v4.1.0
+	github.com/rs/cors v1.11.0
 	github.com/samber/oops v1.12.0
 	github.com/testcontainers/testcontainers-go v0.27.0
 	github.com/vektah/gqlparser/v2 v2.5.16
@@ -42,11 +43,14 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20231016141302-07b5767bb0ed // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/term v0.5.0 // indirect

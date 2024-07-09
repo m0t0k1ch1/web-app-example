@@ -10,13 +10,21 @@ import (
 
 	"app/config"
 	"app/container"
+	appv1 "app/domain/service/gql/app/v1"
+	"app/gql"
 )
 
 var (
 	ProviderSet = wire.NewSet(
 		provideClock,
 		provideMySQLContainer,
+		provideGQLResolver,
+
+		provideTaskService,
+		provideNodeService,
+
 		provideServer,
+
 		provideApp,
 	)
 )
@@ -39,11 +47,41 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	return ctr, nil
 }
 
+func provideTaskService(
+	clock timeutil.Clock,
+	mysqlCtr *container.MySQLContainer,
+) *appv1.TaskService {
+	return appv1.NewTaskService(
+		clock,
+		mysqlCtr,
+	)
+}
+
+func provideNodeService(
+	mysqlCtr *container.MySQLContainer,
+) *appv1.NodeService {
+	return appv1.NewNodeService(
+		mysqlCtr,
+	)
+}
+
+func provideGQLResolver(
+	taskService *appv1.TaskService,
+	nodeService *appv1.NodeService,
+) *gql.Resolver {
+	return gql.NewResolver(
+		taskService,
+		nodeService,
+	)
+}
+
 func provideServer(
 	conf config.AppConfig,
+	gqlResolver *gql.Resolver,
 ) *Server {
 	return NewServer(
 		conf.Server,
+		gqlResolver,
 	)
 }
 
