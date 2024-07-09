@@ -3,6 +3,7 @@ BINDIR := ./_bin
 .PHONY: generate
 generate:
 	sqlc generate
+	gqlgen generate
 	wire gen ./core
 
 .PHOHY: test
