@@ -42,7 +42,7 @@ type CompleteTaskPayload {
 }
 
 extend type Query {
-  tasks(after: String, first: Int32!): TaskConnection!
+  tasks(status: TaskStatus, after: String, first: Int32!): TaskConnection!
 }
 
 extend type Mutation {
