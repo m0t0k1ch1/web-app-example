@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/samber/oops"
 )
 
 const (
@@ -28,12 +28,12 @@ func Decode(encoded string) (string, uint64, error) {
 
 	parts := strings.Split(string(b), separator)
 	if len(parts) != 2 {
-		return "", 0, errors.New("invalid format")
+		return "", 0, oops.Errorf("invalid format")
 	}
 
 	id, err := strconv.ParseUint(parts[1], 10, 64)
 	if err != nil {
-		return "", 0, errors.New("invalid format")
+		return "", 0, oops.Errorf("invalid format")
 	}
 
 	return parts[0], id, nil

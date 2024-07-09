@@ -6,7 +6,7 @@ import (
 
 	"github.com/docker/go-connections/nat"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/pkg/errors"
+	"github.com/samber/oops"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
@@ -39,12 +39,12 @@ func SetupMySQL(ctx context.Context) (*sql.DB, func(), error) {
 		Started:          true,
 	})
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to create container")
+		return nil, nil, oops.Wrapf(err, "failed to create container")
 	}
 
 	db, err := sql.Open("mysql", conf.DSN())
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.Name)
+		return nil, nil, oops.Wrapf(err, "failed to open mysql db: %s", conf.Name)
 	}
 
 	return db, func() {

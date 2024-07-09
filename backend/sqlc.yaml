@@ -10,18 +10,13 @@ sql:
         package: "mysql"
         out: "gen/sqlc/mysql"
         overrides:
-          - column: "task.status"
-            go_type:
-              import: "app/gen/buf/app/v1"
-              package: "appv1"
-              type: "TaskStatus"
           - column: "*.updated_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v3"
+              import: "github.com/m0t0k1ch1-go/timeutil/v4"
               package: "timeutil"
               type: "Timestamp"
           - column: "*.created_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v3"
+              import: "github.com/m0t0k1ch1-go/timeutil/v4"
               package: "timeutil"
               type: "Timestamp"

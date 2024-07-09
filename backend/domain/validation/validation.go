@@ -8,7 +8,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	pgvalidator "github.com/go-playground/validator/v10"
 	validatortranslationsen "github.com/go-playground/validator/v10/translations/en"
-	"github.com/pkg/errors"
+	"github.com/samber/oops"
 )
 
 var (
@@ -43,7 +43,7 @@ func initValidator() error {
 		vldtr.translator, _ = ut.New(en.New()).GetTranslator("en")
 
 		if err := validatortranslationsen.RegisterDefaultTranslations(vldtr.validate, vldtr.translator); err != nil {
-			return errors.Wrap(err, "failed to register default translations")
+			return oops.Wrapf(err, "failed to register default translations")
 		}
 	}
 	{
@@ -57,7 +57,7 @@ func initValidator() error {
 		if err := vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
 			return translator.Add(tag, "{0} must be a valid hostname", false)
 		}, translate); err != nil {
-			return errors.Wrapf(err, "failed to register translation for %s", tag)
+			return oops.Wrapf(err, "failed to register translation for %s", tag)
 		}
 	}
 	{
@@ -66,7 +66,7 @@ func initValidator() error {
 		if err := vldtr.validate.RegisterTranslation(tag, vldtr.translator, func(translator ut.Translator) error {
 			return translator.Add(tag, "{0} is required", true)
 		}, translate); err != nil {
-			return errors.Wrapf(err, "failed to register translation for %s", tag)
+			return oops.Wrapf(err, "failed to register translation for %s", tag)
 		}
 	}
 
@@ -90,7 +90,7 @@ func handleError(err error) error {
 				msgs[idx] = vldtnErr.Translate(vldtr.translator)
 			}
 
-			return errors.New(strings.Join(msgs, "; "))
+			return oops.Errorf(strings.Join(msgs, "; "))
 		}
 	}
 

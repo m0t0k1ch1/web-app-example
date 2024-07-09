@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/m0t0k1ch1-go/sqlutil"
-	"github.com/m0t0k1ch1-go/timeutil/v3"
-	"github.com/pkg/errors"
+	"github.com/m0t0k1ch1-go/timeutil/v4"
+	"github.com/samber/oops"
 
 	"app/container"
 	"app/internal/testutil"
@@ -33,17 +33,17 @@ func testMain(m *testing.M) int {
 	{
 		db, dbTeardown, err := testutil.SetupMySQL(ctx)
 		if err != nil {
-			return failMain(errors.Wrap(err, "failed to set up app mysql"))
+			return failMain(oops.Wrapf(err, "failed to set up app mysql"))
 		}
 		defer dbTeardown()
 
 		schemaPath, err := filepath.Abs("../../../../../_schema/sql/app.sql")
 		if err != nil {
-			return failMain(errors.Wrap(err, "failed to prepare app schema sql path"))
+			return failMain(oops.Wrapf(err, "failed to prepare app schema sql path"))
 		}
 
 		if err := sqlutil.ExecFile(ctx, db, schemaPath); err != nil {
-			return failMain(errors.Wrapf(err, "failed to execute app schema sql"))
+			return failMain(oops.Wrapf(err, "failed to execute app schema sql"))
 		}
 
 		mysqlCtr.App = db

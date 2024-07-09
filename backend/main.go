@@ -8,22 +8,27 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/pkg/errors"
+	"github.com/samber/oops"
 
 	"app/core"
 	_ "app/domain/log"
 )
 
 var (
-	confPath = flag.String("config", "app.yaml", "path to config file")
+	confPath = flag.String("config", "app.yaml", "path to an app config file")
 )
 
 func main() {
 	flag.Parse()
 
-	app, err := core.InitializeApp(context.Background(), core.ConfigPath(*confPath))
+	appConf, err := core.LoadAppConfig(*confPath)
 	if err != nil {
-		fatal(errors.Wrap(err, "failed to initialize app"))
+		fatal(oops.Wrapf(err, "failed to load app config"))
+	}
+
+	app, err := core.InitializeApp(context.Background(), appConf)
+	if err != nil {
+		fatal(oops.Wrapf(err, "failed to initialize app"))
 	}
 
 	sigCh := make(chan os.Signal, 1)
@@ -35,26 +40,22 @@ func main() {
 	go func() {
 		defer close(appErrCh)
 
-		info("start app")
+		slog.Info("start app")
 		appErrCh <- app.Start()
 	}()
 
 	select {
 	case err := <-appErrCh:
-		fatal(errors.Wrap(err, "failed to start app"))
+		fatal(oops.Wrapf(err, "failed to start app"))
 	case <-sigCh:
 	}
 
-	info("stop app")
+	slog.Info("stop app")
 	if err := app.Stop(context.Background()); err != nil {
-		fatal(errors.Wrap(err, "failed to stop app"))
+		fatal(oops.Wrapf(err, "failed to stop app"))
 	}
 
 	<-appErrCh // wait http.ErrServerClosed
-}
-
-func info(msg string) {
-	slog.Info(msg)
 }
 
 func fatal(err error) {
