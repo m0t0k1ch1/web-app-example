@@ -5,11 +5,13 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v4"
 	"github.com/samber/oops"
 
 	"app/container"
+	"app/domain/model"
 	"app/domain/service/gql"
 	"app/domain/validation"
 	"app/gen/gqlgen"
@@ -35,10 +37,38 @@ type TaskServiceListInput struct {
 	Status *gqlgen.TaskStatus `validate:"" en:"status"`
 	After  *string            `validate:"" en:"after"`
 	First  int32              `validate:"gte=0,lte=100" en:"first"`
+
+	idInDBInAfter *uint64
 }
 
 func (in *TaskServiceListInput) Validate() error {
-	return validation.Struct(in)
+	if err := validation.Struct(in); err != nil {
+		return err
+	}
+
+	var idInDBInAfter *uint64
+	{
+		if in.After != nil {
+			cursor, err := model.DecodePaginationCursor(*in.After)
+			if err != nil {
+				return oops.Errorf("invalid after")
+			}
+			if !cmp.Equal(cursor.TaskStatus, in.Status) {
+				return oops.Errorf("invalid after")
+			}
+
+			idInDB, err := DecodeTaskID(cursor.ID)
+			if err != nil {
+				return oops.Errorf("invalid after")
+			}
+
+			idInDBInAfter = &idInDB
+		}
+	}
+
+	in.idInDBInAfter = idInDBInAfter
+
+	return nil
 }
 
 type TaskServiceListOutput struct {
@@ -50,9 +80,100 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 		return TaskServiceListOutput{}, gql.NewBadUserInputError(ctx, err)
 	}
 
-	// TODO
+	qdb := mysql.New(s.mysqlContainer.App)
 
-	return TaskServiceListOutput{}, nil
+	var (
+		edges       []*gqlgen.TaskEdge
+		nodes       []*gqlgen.Task
+		hasNextPage bool
+	)
+	{
+		var (
+			taskInDBs []mysql.Task
+			err       error
+		)
+		{
+			limit := in.First + 1
+
+			if in.Status != nil {
+				if in.After != nil {
+					if taskInDBs, err = qdb.ListFirstTasksAfterCursorByStatus(ctx, mysql.ListFirstTasksAfterCursorByStatusParams{
+						Status: *in.Status,
+						After:  *in.idInDBInAfter,
+						Limit:  limit,
+					}); err != nil {
+						return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks after cursor by status"))
+					}
+				} else {
+					if taskInDBs, err = qdb.ListFirstTasksByStatus(ctx, mysql.ListFirstTasksByStatusParams{
+						Status: *in.Status,
+						Limit:  limit,
+					}); err != nil {
+						return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks by status"))
+					}
+				}
+			} else {
+				if in.After != nil {
+					if taskInDBs, err = qdb.ListFirstTasksAfterCursor(ctx, mysql.ListFirstTasksAfterCursorParams{
+						After: *in.idInDBInAfter,
+						Limit: limit,
+					}); err != nil {
+						return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks after cursor"))
+					}
+				} else {
+					if taskInDBs, err = qdb.ListFirstTasks(ctx, limit); err != nil {
+						return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks"))
+					}
+				}
+			}
+		}
+
+		hasNextPage = len(taskInDBs) > int(in.First)
+		if hasNextPage {
+			taskInDBs = taskInDBs[:in.First]
+		}
+
+		edges, nodes, err = ConvertIntoTaskEdgesAndNodes(taskInDBs, in.Status)
+		if err != nil {
+			return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to convert into task edges and nodes"))
+		}
+	}
+
+	var endCursor *string
+	{
+		if len(edges) > 0 {
+			endCursor = &edges[len(edges)-1].Cursor
+		} else {
+			endCursor = nil
+		}
+	}
+
+	var totalCnt int64
+	{
+		var err error
+
+		if in.Status != nil {
+			if totalCnt, err = qdb.CountTasksByStatus(ctx, *in.Status); err != nil {
+				return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to count tasks by status"))
+			}
+		} else {
+			if totalCnt, err = qdb.CountAllTasks(ctx); err != nil {
+				return TaskServiceListOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to count tasks"))
+			}
+		}
+	}
+
+	return TaskServiceListOutput{
+		TaskConnection: &gqlgen.TaskConnection{
+			Edges: edges,
+			Nodes: nodes,
+			PageInfo: &gqlgen.PageInfo{
+				EndCursor:   endCursor,
+				HasNextPage: hasNextPage,
+			},
+			TotalCount: totalCnt,
+		},
+	}, nil
 }
 
 type TaskServiceCreateInput struct {
