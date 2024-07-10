@@ -1,0 +1,19 @@
+mutation CreateTask($title: String!) {
+  createTask(input: { title: $title }) {
+    task {
+      id
+      title
+      status
+    }
+  }
+}
+
+mutation CompleteTask($id: ID!) {
+  completeTask(input: { id: $id }) {
+    task {
+      id
+      title
+      status
+    }
+  }
+}

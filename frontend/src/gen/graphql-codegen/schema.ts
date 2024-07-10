@@ -129,6 +129,20 @@ export enum TaskStatus {
   Uncompleted = 'UNCOMPLETED'
 }
 
+export type CreateTaskMutationVariables = Exact<{
+  title: Scalars['String']['input'];
+}>;
+
+
+export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', task: { __typename?: 'Task', id: string, title: string, status: TaskStatus } } };
+
+export type CompleteTaskMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CompleteTaskMutation = { __typename?: 'Mutation', completeTask: { __typename?: 'CompleteTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null } };
+
 export type ListTasksQueryVariables = Exact<{
   status: TaskStatus;
   after?: InputMaybe<Scalars['String']['input']>;
@@ -138,6 +152,50 @@ export type ListTasksQueryVariables = Exact<{
 
 export type ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
 
+export const CreateTaskDocument = gql`
+    mutation CreateTask($title: String!) {
+  createTask(input: {title: $title}) {
+    task {
+      id
+      title
+      status
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateTaskGQL extends Apollo.Mutation<CreateTaskMutation, CreateTaskMutationVariables> {
+    document = CreateTaskDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CompleteTaskDocument = gql`
+    mutation CompleteTask($id: ID!) {
+  completeTask(input: {id: $id}) {
+    task {
+      id
+      title
+      status
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CompleteTaskGQL extends Apollo.Mutation<CompleteTaskMutation, CompleteTaskMutationVariables> {
+    document = CompleteTaskDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const ListTasksDocument = gql`
     query ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
   tasks(status: $status, after: $after, first: $first) {
