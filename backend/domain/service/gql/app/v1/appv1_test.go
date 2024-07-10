@@ -20,6 +20,8 @@ var (
 	mysqlCtr *container.MySQLContainer
 )
 
+type Mocks struct{}
+
 func TestMain(m *testing.M) {
 	os.Exit(testMain(m))
 }
