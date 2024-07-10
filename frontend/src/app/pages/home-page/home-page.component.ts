@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 
+import { ApolloQueryResult } from '@apollo/client/core';
 import { Apollo, QueryRef, gql } from 'apollo-angular';
 
-const LIST_TASKS = gql`
+import { NotificationService } from '../../services/notification.service';
+
+const LIST_TASKS_QUERY = gql`
   query ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
     tasks(status: $status, after: $after, first: $first) {
       edges {
@@ -33,13 +36,15 @@ export class HomePageComponent implements OnInit {
   private router = inject(Router);
   private apollo = inject(Apollo);
 
+  private notificationService = inject(NotificationService);
+
   private listTasksQuery: QueryRef<any, any>;
 
   public tasks: any[] = [];
 
   constructor() {
     this.listTasksQuery = this.apollo.watchQuery({
-      query: LIST_TASKS,
+      query: LIST_TASKS_QUERY,
       variables: {
         status: 'UNCOMPLETED',
         first: 1,
@@ -52,16 +57,27 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks() {
-    let result = await this.listTasksQuery.result();
+    let result: ApolloQueryResult<any>;
+    try {
+      result = await this.listTasksQuery.result();
+    } catch (e) {
+      this.notificationService.notifyUnexpectedError(e);
+      return;
+    }
 
     this.tasks.push(...result.data.tasks.edges.map((edge: any) => edge.node));
 
     while (result.data.tasks.pageInfo.hasNextPage) {
-      result = await this.listTasksQuery.fetchMore({
-        variables: {
-          after: result.data.tasks.pageInfo.endCursor,
-        },
-      });
+      try {
+        result = await this.listTasksQuery.fetchMore({
+          variables: {
+            after: result.data.tasks.pageInfo.endCursor,
+          },
+        });
+      } catch (e) {
+        this.notificationService.notifyUnexpectedError(e);
+        return;
+      }
 
       this.tasks.push(...result.data.tasks.edges.map((edge: any) => edge.node));
     }
