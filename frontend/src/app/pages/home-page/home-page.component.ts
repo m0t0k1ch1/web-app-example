@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 
 import { ApolloQueryResult } from '@apollo/client/core';
@@ -24,8 +23,6 @@ import { NotificationService } from '../../services/notification.service';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent implements OnInit {
-  private router = inject(Router);
-
   private listTasksGQL = inject(ListTasksGQL);
 
   private notificationService = inject(NotificationService);
@@ -75,6 +72,6 @@ export class HomePageComponent implements OnInit {
   }
 
   public onClickAddTaskButton(): void {
-    this.router.navigate(['hogepi']);
+    // TODO
   }
 }
