@@ -2,20 +2,28 @@
   <div class="flex items-center justify-center bg-orange-500 p-4 text-white">
     <h1 class="text-4xl font-bold">My Tasks</h1>
   </div>
-  <div class="flex grow flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
-    <div
-      *ngFor="let task of tasks"
-      class="flex flex-row gap-4 rounded-xl bg-white p-4"
-    >
-      <input
-        type="checkbox"
-        class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500"
-      />
-      <p class="min-w-0 break-words text-xl leading-6">
-        {{ task.title }}
-      </p>
-    </div>
-  </div>
+  @if (isTasksInitialized) {
+    @if (tasks.length > 0) {
+      <div class="flex grow flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
+        <div
+          *ngFor="let task of tasks"
+          class="flex flex-row gap-4 rounded-xl bg-white p-4"
+        >
+          <input
+            type="checkbox"
+            class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500"
+          />
+          <p class="min-w-0 break-words text-xl leading-6">
+            {{ task.title }}
+          </p>
+        </div>
+      </div>
+    } @else {
+      <div class="flex grow items-center justify-center bg-gray-200">
+        <p class="text-2xl">No tasks! Happy!</p>
+      </div>
+    }
+  }
 </div>
 <div
   class="absolute bottom-4 right-4 z-50 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-orange-500 text-white"

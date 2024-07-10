@@ -41,6 +41,7 @@ export class HomePageComponent implements OnInit {
   private listTasksQuery: QueryRef<any, any>;
 
   public tasks: any[] = [];
+  public isTasksInitialized: boolean = false;
 
   constructor() {
     this.listTasksQuery = this.apollo.watchQuery({
@@ -66,6 +67,7 @@ export class HomePageComponent implements OnInit {
     }
 
     this.tasks.push(...result.data.tasks.edges.map((edge: any) => edge.node));
+    this.isTasksInitialized = true;
 
     while (result.data.tasks.pageInfo.hasNextPage) {
       try {
