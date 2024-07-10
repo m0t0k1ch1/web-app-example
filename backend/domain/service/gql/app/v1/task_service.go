@@ -2,7 +2,9 @@ package appv1
 
 import (
 	"context"
+	"database/sql"
 
+	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v4"
 	"github.com/samber/oops"
 
@@ -10,6 +12,7 @@ import (
 	"app/domain/service/gql"
 	"app/domain/validation"
 	"app/gen/gqlgen"
+	"app/gen/sqlc/mysql"
 )
 
 type TaskService struct {
@@ -68,9 +71,35 @@ func (s *TaskService) Create(ctx context.Context, in TaskServiceCreateInput) (Ta
 		return TaskServiceCreateOutput{}, gql.NewBadUserInputError(ctx, err)
 	}
 
-	// TODO
+	var task mysql.Task
+	{
+		if err := sqlutil.Transact(ctx, s.mysqlContainer.App, func(txnCtx context.Context, txn *sql.Tx) (txnErr error) {
+			qtxn := mysql.New(txn)
 
-	return TaskServiceCreateOutput{}, nil
+			now := s.clock.Now()
+
+			var id int64
+			if id, txnErr = qtxn.CreateTask(txnCtx, mysql.CreateTaskParams{
+				Title:     in.Title,
+				UpdatedAt: now,
+				CreatedAt: now,
+			}); txnErr != nil {
+				return gql.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to create task"))
+			}
+
+			if task, txnErr = qtxn.GetTask(txnCtx, uint64(id)); txnErr != nil {
+				return gql.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to get task"))
+			}
+
+			return
+		}); err != nil {
+			return TaskServiceCreateOutput{}, err
+		}
+	}
+
+	return TaskServiceCreateOutput{
+		Task: ConvertIntoTask(task),
+	}, nil
 }
 
 type TaskServiceCompleteInput struct {
