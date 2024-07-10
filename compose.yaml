@@ -2,6 +2,8 @@ name: web-app-example
 services:
   mysql:
     image: mysql:8.0
+    ports:
+      - 3306:3306
     configs:
       - source: mysql_app_schema
         target: /docker-entrypoint-initdb.d/schema.sql
