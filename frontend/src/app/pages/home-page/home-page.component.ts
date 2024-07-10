@@ -4,26 +4,17 @@ import { Router } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Apollo, QueryRef, gql } from 'apollo-angular';
+import { QueryRef } from 'apollo-angular';
+
+import {
+  ListTasksGQL,
+  ListTasksQuery,
+  ListTasksQueryVariables,
+  Task,
+  TaskStatus,
+} from '../../../gen/graphql-codegen/schema';
 
 import { NotificationService } from '../../services/notification.service';
-
-const LIST_TASKS_QUERY = gql`
-  query ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
-    tasks(status: $status, after: $after, first: $first) {
-      edges {
-        node {
-          id
-          title
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-`;
 
 @Component({
   selector: 'app-home-page',
@@ -34,22 +25,20 @@ const LIST_TASKS_QUERY = gql`
 })
 export class HomePageComponent implements OnInit {
   private router = inject(Router);
-  private apollo = inject(Apollo);
+
+  private listTasksGQL = inject(ListTasksGQL);
 
   private notificationService = inject(NotificationService);
 
-  private listTasksQuery: QueryRef<any, any>;
+  private listTasksQuery: QueryRef<ListTasksQuery, ListTasksQueryVariables>;
 
-  public tasks: any[] = [];
+  public tasks: Task[] = [];
   public isTasksInitialized: boolean = false;
 
   constructor() {
-    this.listTasksQuery = this.apollo.watchQuery({
-      query: LIST_TASKS_QUERY,
-      variables: {
-        status: 'UNCOMPLETED',
-        first: 1,
-      },
+    this.listTasksQuery = this.listTasksGQL.watch({
+      status: TaskStatus.Uncompleted,
+      first: 100,
     });
   }
 
@@ -58,7 +47,7 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks() {
-    let result: ApolloQueryResult<any>;
+    let result: ApolloQueryResult<ListTasksQuery>;
     try {
       result = await this.listTasksQuery.result();
     } catch (e) {
@@ -66,7 +55,7 @@ export class HomePageComponent implements OnInit {
       return;
     }
 
-    this.tasks.push(...result.data.tasks.edges.map((edge: any) => edge.node));
+    this.tasks.push(...result.data.tasks.edges.map((edge) => edge.node));
     this.isTasksInitialized = true;
 
     while (result.data.tasks.pageInfo.hasNextPage) {
@@ -81,7 +70,7 @@ export class HomePageComponent implements OnInit {
         return;
       }
 
-      this.tasks.push(...result.data.tasks.edges.map((edge: any) => edge.node));
+      this.tasks.push(...result.data.tasks.edges.map((edge) => edge.node));
     }
   }
 

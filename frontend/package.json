@@ -2,7 +2,8 @@
   "name": "app",
   "scripts": {
     "build": "ng build",
-    "start": "ng serve"
+    "start": "ng serve",
+    "generate": "graphql-codegen --config graphql-codegen.ts"
   },
   "private": true,
   "dependencies": {
@@ -18,15 +19,19 @@
     "@angular/router": "18.0.6",
     "@apollo/client": "3.10.8",
     "apollo-angular": "7.0.2",
+    "graphql": "16",
     "rxjs": "7.8.1",
     "tslib": "2.6.3",
-    "zone.js": "0.14.7",
-    "graphql": "16"
+    "zone.js": "0.14.7"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "18.0.7",
     "@angular/cli": "18.0.7",
     "@angular/compiler-cli": "18.0.6",
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/typescript": "4.0.9",
+    "@graphql-codegen/typescript-apollo-angular": "4.0.0",
+    "@graphql-codegen/typescript-operations": "4.2.3",
     "@tailwindcss/forms": "0.5.7",
     "@types/jasmine": "5.1.4",
     "autoprefixer": "10.4.19",
