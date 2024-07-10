@@ -26,6 +26,28 @@ func (q *Queries) CompleteTask(ctx context.Context, arg CompleteTaskParams) erro
 	return err
 }
 
+const countAllTasks = `-- name: CountAllTasks :one
+SELECT COUNT(*) FROM task
+`
+
+func (q *Queries) CountAllTasks(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countAllTasks)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countTasksByStatus = `-- name: CountTasksByStatus :one
+SELECT COUNT(*) FROM task WHERE status = ?
+`
+
+func (q *Queries) CountTasksByStatus(ctx context.Context, status gqlgen.TaskStatus) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countTasksByStatus, status)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createTask = `-- name: CreateTask :execlastid
 INSERT INTO task (title, updated_at, created_at) VALUES (?, ?, ?)
 `
@@ -116,12 +138,12 @@ SELECT id, title, status, updated_at, created_at FROM task WHERE id > ? ORDER BY
 `
 
 type ListFirstTasksAfterCursorParams struct {
-	ID    uint64
+	After uint64
 	Limit int32
 }
 
 func (q *Queries) ListFirstTasksAfterCursor(ctx context.Context, arg ListFirstTasksAfterCursorParams) ([]Task, error) {
-	rows, err := q.db.QueryContext(ctx, listFirstTasksAfterCursor, arg.ID, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, listFirstTasksAfterCursor, arg.After, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -155,12 +177,12 @@ SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? AND 
 
 type ListFirstTasksAfterCursorByStatusParams struct {
 	Status gqlgen.TaskStatus
-	ID     uint64
+	After  uint64
 	Limit  int32
 }
 
 func (q *Queries) ListFirstTasksAfterCursorByStatus(ctx context.Context, arg ListFirstTasksAfterCursorByStatusParams) ([]Task, error) {
-	rows, err := q.db.QueryContext(ctx, listFirstTasksAfterCursorByStatus, arg.Status, arg.ID, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, listFirstTasksAfterCursorByStatus, arg.Status, arg.After, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
