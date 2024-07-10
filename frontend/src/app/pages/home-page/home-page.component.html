@@ -1,1 +1,22 @@
-<p>home-page works!</p>
+<div class="flex h-screen flex-col">
+  <div class="flex items-center justify-center bg-orange-500 p-4 text-white">
+    <h1 class="text-4xl font-bold">My Tasks</h1>
+  </div>
+  <div class="flex grow flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
+    <div class="flex flex-row gap-4 rounded-xl bg-white p-4">
+      <input
+        type="checkbox"
+        class="h-6 w-6 rounded border-orange-500 bg-orange-100 text-orange-500"
+      />
+      <p class="min-w-0 break-words text-xl leading-6">
+        Do something and something and something and something
+      </p>
+    </div>
+  </div>
+</div>
+<div
+  class="absolute bottom-4 right-4 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-white"
+  matRipple
+>
+  <div class="text-4xl font-bold">＋</div>
+</div>
