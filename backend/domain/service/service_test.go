@@ -10,8 +10,10 @@ import (
 	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v4"
 	"github.com/samber/oops"
+	"github.com/stretchr/testify/require"
 
 	"app/container"
+	"app/domain/model"
 	"app/internal/testutil"
 )
 
@@ -71,4 +73,13 @@ func teardown(t *testing.T) {
 	if err := sqlutil.TruncateAll(ctx, mysqlCtr.App); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func encodePaginationCursor(t *testing.T, cursor model.PaginationCursor) string {
+	t.Helper()
+
+	encodedCursor, err := cursor.Encode()
+	require.Nil(t, err)
+
+	return encodedCursor
 }
