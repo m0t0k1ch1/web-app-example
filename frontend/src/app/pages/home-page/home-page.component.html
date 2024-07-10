@@ -11,7 +11,9 @@
         >
           <input
             type="checkbox"
-            class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500"
+            class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500 focus:ring-transparent"
+            [disabled]="isTaskCompleting"
+            (change)="onChangeTaskStatus(task, $event)"
           />
           <p class="min-w-0 break-words text-xl leading-6">
             {{ task.title }}
