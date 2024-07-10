@@ -478,7 +478,7 @@ input CompleteTaskInput {
 
 type CompleteTaskPayload {
   clientMutationId: String
-  task: Task!
+  task: Task
 }
 
 extend type Query {
@@ -705,14 +705,11 @@ func (ec *executionContext) _CompleteTaskPayload_task(ctx context.Context, field
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖappᚋgenᚋgqlgenᚐTask(ctx, field.Selections, res)
+	return ec.marshalOTask2ᚖappᚋgenᚋgqlgenᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CompleteTaskPayload_task(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3713,9 +3710,6 @@ func (ec *executionContext) _CompleteTaskPayload(ctx context.Context, sel ast.Se
 			out.Values[i] = ec._CompleteTaskPayload_clientMutationId(ctx, field, obj)
 		case "task":
 			out.Values[i] = ec._CompleteTaskPayload_task(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5058,6 +5052,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOTask2ᚖappᚋgenᚋgqlgenᚐTask(ctx context.Context, sel ast.SelectionSet, v *Task) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Task(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOTaskStatus2ᚖappᚋgenᚋgqlgenᚐTaskStatus(ctx context.Context, v interface{}) (*TaskStatus, error) {

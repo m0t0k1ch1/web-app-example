@@ -20,7 +20,7 @@ type CompleteTaskInput struct {
 
 type CompleteTaskPayload struct {
 	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Task             *Task   `json:"task"`
+	Task             *Task   `json:"task,omitempty"`
 }
 
 type CreateTaskInput struct {

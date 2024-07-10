@@ -31,7 +31,7 @@ type NodeServiceGetInput struct {
 	ID string `validate:"required" en:"id"`
 
 	resourceName string
-	id           uint64
+	idInDB       uint64
 }
 
 func (in *NodeServiceGetInput) Validate() error {
@@ -39,13 +39,13 @@ func (in *NodeServiceGetInput) Validate() error {
 		return err
 	}
 
-	resourceName, id, err := idutil.Decode(in.ID)
+	resourceName, idInDB, err := idutil.Decode(in.ID)
 	if err != nil {
 		return oops.Errorf("invalid id")
 	}
 
 	in.resourceName = resourceName
-	in.id = id
+	in.idInDB = idInDB
 
 	return nil
 }
@@ -64,7 +64,7 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 	switch in.resourceName {
 
 	case ResourceNameTask:
-		task, err := qdb.GetTask(ctx, in.id)
+		taskInDB, err := qdb.GetTask(ctx, in.idInDB)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return NodeServiceGetOutput{}, nil
@@ -74,7 +74,7 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 		}
 
 		return NodeServiceGetOutput{
-			Node: ConvertIntoTask(task),
+			Node: ConvertIntoTask(taskInDB),
 		}, nil
 
 	default:

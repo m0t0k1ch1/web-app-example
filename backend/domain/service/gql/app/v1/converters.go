@@ -5,10 +5,10 @@ import (
 	"app/gen/sqlc/mysql"
 )
 
-func ConvertIntoTask(row mysql.Task) *gqlgen.Task {
+func ConvertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	return &gqlgen.Task{
-		Id:     EncodeTaskID(row.ID),
-		Title:  row.Title,
-		Status: row.Status,
+		Id:     EncodeTaskID(taskInDB.ID),
+		Title:  taskInDB.Title,
+		Status: taskInDB.Status,
 	}
 }
