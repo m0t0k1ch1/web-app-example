@@ -1,0 +1,15 @@
+_bin
+_schema
+_sql
+
+.dockerignore
+.env
+.env.dev
+.envrc
+.gitignore
+Dockerfile
+gqlgen.yaml
+Makefile
+README.md
+sqlc.yaml
+staticcheck.conf
