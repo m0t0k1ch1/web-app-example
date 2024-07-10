@@ -38,7 +38,7 @@ input CompleteTaskInput {
 
 type CompleteTaskPayload {
   clientMutationId: String
-  task: Task!
+  task: Task
 }
 
 extend type Query {
