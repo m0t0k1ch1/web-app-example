@@ -25,7 +25,7 @@ func InitializeApp(ctx context.Context, conf config.AppConfig) (*App, error) {
 	}
 	taskService := provideTaskService(clock, mySQLContainer)
 	nodeService := provideNodeService(mySQLContainer)
-	resolver := provideGQLResolver(taskService, nodeService)
+	resolver := provideResolver(taskService, nodeService)
 	server := provideServer(conf, resolver)
 	app := provideApp(conf, server)
 	return app, nil

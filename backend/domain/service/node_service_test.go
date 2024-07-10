@@ -1,4 +1,4 @@
-package appv1_test
+package service_test
 
 import (
 	"context"
@@ -9,14 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	here "app/domain/service/gql/app/v1"
+	"app/domain/service"
 	"app/internal/testutil"
+	"app/library/idutil"
 )
 
-func setUpNodeService(t *testing.T, _ *gomock.Controller) (*here.NodeService, *Mocks) {
+func setUpNodeService(t *testing.T, _ *gomock.Controller) (*service.NodeService, *Mocks) {
 	t.Helper()
 
-	return here.NewNodeService(
+	return service.NewNodeService(
 		mysqlCtr,
 	), &Mocks{}
 }
@@ -32,7 +33,7 @@ func TestNodeService(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
 	var (
-		task1ID = here.EncodeTaskID(1)
+		task1ID = idutil.EncodeTaskID(1)
 	)
 	{
 		var f *os.File
@@ -57,7 +58,7 @@ func TestNodeService(t *testing.T) {
 		{
 			nodeService, _ := setUpNodeService(t, mockCtrl)
 
-			out, err := nodeService.Get(ctx, here.NodeServiceGetInput{
+			out, err := nodeService.Get(ctx, service.NodeServiceGetInput{
 				ID: task1ID,
 			})
 			require.Nil(t, err)

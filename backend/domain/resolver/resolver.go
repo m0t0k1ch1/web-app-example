@@ -1,21 +1,19 @@
-package gql
+package resolver
 
-import (
-	appv1 "app/domain/service/gql/app/v1"
-)
+import "app/domain/service"
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	taskService *appv1.TaskService
-	nodeService *appv1.NodeService
+	taskService *service.TaskService
+	nodeService *service.NodeService
 }
 
 func NewResolver(
-	taskService *appv1.TaskService,
-	nodeService *appv1.NodeService,
+	taskService *service.TaskService,
+	nodeService *service.NodeService,
 ) *Resolver {
 	return &Resolver{
 		taskService: taskService,

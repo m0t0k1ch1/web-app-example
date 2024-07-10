@@ -1,27 +1,28 @@
-package appv1
+package service
 
 import (
 	"app/domain/model"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
+	"app/library/idutil"
 
 	"github.com/samber/oops"
 )
 
-func ConvertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
+func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	return &gqlgen.Task{
-		Id:     EncodeTaskID(taskInDB.ID),
+		Id:     idutil.EncodeTaskID(taskInDB.ID),
 		Title:  taskInDB.Title,
 		Status: taskInDB.Status,
 	}
 }
 
-func ConvertIntoTaskEdgesAndNodes(taskInDBs []mysql.Task, status *gqlgen.TaskStatus) ([]*gqlgen.TaskEdge, []*gqlgen.Task, error) {
+func convertIntoTaskEdgesAndTasks(taskInDBs []mysql.Task, status *gqlgen.TaskStatus) ([]*gqlgen.TaskEdge, []*gqlgen.Task, error) {
 	taskEdges := make([]*gqlgen.TaskEdge, len(taskInDBs))
 	tasks := make([]*gqlgen.Task, len(taskInDBs))
 	{
 		for idx, taskInDB := range taskInDBs {
-			task := ConvertIntoTask(taskInDB)
+			task := convertIntoTask(taskInDB)
 
 			taskCursor := model.PaginationCursor{
 				ID:         task.Id,

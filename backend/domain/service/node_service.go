@@ -1,4 +1,4 @@
-package appv1
+package service
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"github.com/samber/oops"
 
 	"app/container"
-	"app/domain/service/gql"
 	"app/domain/validation"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
+	"app/library/gqlerrutil"
 	"app/library/idutil"
 )
 
@@ -56,28 +56,28 @@ type NodeServiceGetOutput struct {
 
 func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServiceGetOutput, error) {
 	if err := in.Validate(); err != nil {
-		return NodeServiceGetOutput{}, gql.NewBadUserInputError(ctx, err)
+		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, err)
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
 
 	switch in.resourceName {
 
-	case ResourceNameTask:
+	case idutil.ResourceNameTask:
 		taskInDB, err := qdb.GetTask(ctx, in.idInDB)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return NodeServiceGetOutput{}, nil
 			}
 
-			return NodeServiceGetOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to get task"))
+			return NodeServiceGetOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to get task"))
 		}
 
 		return NodeServiceGetOutput{
-			Node: ConvertIntoTask(taskInDB),
+			Node: convertIntoTask(taskInDB),
 		}, nil
 
 	default:
-		return NodeServiceGetOutput{}, gql.NewBadUserInputError(ctx, oops.Errorf("unexpected resource name: %s", in.resourceName))
+		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected resource name: %s", in.resourceName))
 	}
 }

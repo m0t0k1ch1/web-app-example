@@ -10,6 +10,8 @@ import (
 
 const (
 	separator = ":"
+
+	ResourceNameTask = "Task"
 )
 
 var (
@@ -37,4 +39,24 @@ func Decode(encoded string) (string, uint64, error) {
 	}
 
 	return parts[0], id, nil
+}
+
+func EncodeTaskID(id uint64) string {
+	return Encode(ResourceNameTask, id)
+}
+
+func DecodeTaskID(encodedID string) (uint64, error) {
+	return decodeResourceID(ResourceNameTask, encodedID)
+}
+
+func decodeResourceID(resourceNameExpected string, encodedID string) (uint64, error) {
+	resourceName, id, err := Decode(encodedID)
+	if err != nil {
+		return 0, err
+	}
+	if resourceName != resourceNameExpected {
+		return 0, oops.Errorf("unexpected resource name: %s", resourceName)
+	}
+
+	return id, nil
 }

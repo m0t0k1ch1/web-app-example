@@ -1,20 +1,23 @@
-package gql
+package gqlerrutil
 
 import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+)
 
-	"app/gql/errcode"
+const (
+	CodeBadUserInput        = "BAD_USER_INPUT"
+	CodeInternalServerError = "INTERNAL_SERVER_ERROR"
 )
 
 func NewBadUserInputError(ctx context.Context, err error) error {
-	return newErrorWithStatusCode(ctx, err, errcode.BadUserInput)
+	return newErrorWithStatusCode(ctx, err, CodeBadUserInput)
 }
 
 func NewInternalServerError(ctx context.Context, err error) error {
-	return newErrorWithStatusCode(ctx, err, errcode.InternalServerError)
+	return newErrorWithStatusCode(ctx, err, CodeInternalServerError)
 }
 
 func newErrorWithStatusCode(ctx context.Context, err error, code string) error {

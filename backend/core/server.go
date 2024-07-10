@@ -17,9 +17,9 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"app/config"
+	"app/domain/resolver"
 	"app/gen/gqlgen"
-	"app/gql"
-	"app/gql/errcode"
+	"app/library/gqlerrutil"
 )
 
 var (
@@ -43,14 +43,14 @@ type Server struct {
 
 func NewServer(
 	srvConf config.ServerConfig,
-	gqlResolver *gql.Resolver,
+	resolver *resolver.Resolver,
 ) *Server {
 	var gqlHandler http.Handler
 	{
 		r := chi.NewRouter()
 		{
 			h := graphqlhandler.NewDefaultServer(gqlgen.NewExecutableSchema(gqlgen.Config{
-				Resolvers: gqlResolver,
+				Resolvers: resolver,
 			}))
 			{
 				h.SetRecoverFunc(func(ctx context.Context, panicErr any) error {
@@ -65,7 +65,7 @@ func NewServer(
 				h.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
 					var gqlErr *gqlerror.Error
 					if errors.As(err, &gqlErr) {
-						if code, ok := gqlErr.Extensions["code"]; ok && code != errcode.InternalServerError {
+						if code, ok := gqlErr.Extensions["code"]; ok && code != gqlerrutil.CodeInternalServerError {
 							return gqlErr
 						}
 					}
@@ -77,7 +77,7 @@ func NewServer(
 						Message: "something went wrong",
 						Path:    graphql.GetPath(ctx),
 						Extensions: map[string]any{
-							"code": errcode.InternalServerError,
+							"code": gqlerrutil.CodeInternalServerError,
 						},
 					}
 				})
