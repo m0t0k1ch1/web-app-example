@@ -2,6 +2,8 @@ package appv1
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/samber/oops"
 
@@ -9,6 +11,7 @@ import (
 	"app/domain/service/gql"
 	"app/domain/validation"
 	"app/gen/gqlgen"
+	"app/gen/sqlc/mysql"
 	"app/library/idutil"
 )
 
@@ -56,9 +59,23 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 		return NodeServiceGetOutput{}, gql.NewBadUserInputError(ctx, err)
 	}
 
+	qdb := mysql.New(s.mysqlContainer.App)
+
 	switch in.resourceName {
 
-	// TODO
+	case ResourceNameTask:
+		task, err := qdb.GetTask(ctx, in.id)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return NodeServiceGetOutput{}, nil
+			}
+
+			return NodeServiceGetOutput{}, gql.NewInternalServerError(ctx, oops.Wrapf(err, "failed to get task"))
+		}
+
+		return NodeServiceGetOutput{
+			Node: ConvertIntoTask(task),
+		}, nil
 
 	default:
 		return NodeServiceGetOutput{}, gql.NewBadUserInputError(ctx, oops.Errorf("unexpected resource name: %s", in.resourceName))

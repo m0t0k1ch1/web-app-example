@@ -8,6 +8,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 
+	"app/gen/gqlgen"
 	timeutil "github.com/m0t0k1ch1-go/timeutil/v4"
 )
 
@@ -56,7 +57,7 @@ func (ns NullTaskStatus) Value() (driver.Value, error) {
 type Task struct {
 	ID        uint64
 	Title     string
-	Status    TaskStatus
+	Status    gqlgen.TaskStatus
 	UpdatedAt timeutil.Timestamp
 	CreatedAt timeutil.Timestamp
 }

@@ -10,6 +10,8 @@ sql:
         package: "mysql"
         out: "gen/sqlc/mysql"
         overrides:
+          - column: "task.status"
+            go_type: "app/gen/gqlgen.TaskStatus"
           - column: "*.updated_at"
             go_type:
               import: "github.com/m0t0k1ch1-go/timeutil/v4"

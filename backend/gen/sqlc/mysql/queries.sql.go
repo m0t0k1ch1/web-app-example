@@ -8,6 +8,7 @@ package mysql
 import (
 	"context"
 
+	"app/gen/gqlgen"
 	timeutil "github.com/m0t0k1ch1-go/timeutil/v4"
 )
 
@@ -153,7 +154,7 @@ SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? AND 
 `
 
 type ListFirstTasksAfterCursorByStatusParams struct {
-	Status TaskStatus
+	Status gqlgen.TaskStatus
 	ID     uint64
 	Limit  int32
 }
@@ -192,7 +193,7 @@ SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? ORDE
 `
 
 type ListFirstTasksByStatusParams struct {
-	Status TaskStatus
+	Status gqlgen.TaskStatus
 	Limit  int32
 }
 
