@@ -11,23 +11,19 @@
         type="text"
         pInputText
         formControlName="title"
-        [ngClass]="
+        class="w-full"
+        [ngStyle]="
           this.shouldShowTitleError
-            ? 'w-full border-2 border-red-500'
-            : 'w-full'
+            ? {
+                borderColor: 'var(--red-500)',
+                borderWidth: '2px',
+              }
+            : {}
         "
       />
-      @if (
-        titleControl.invalid && (titleControl.dirty || titleControl.touched)
-      ) {
+      @if (shouldShowTitleError) {
         <small [ngStyle]="{ color: 'var(--red-500)' }">
-          @if (titleControl.hasError("required")) {
-            required
-          } @else if (titleControl.hasError("maxlength")) {
-            must be
-            {{ titleControl.getError("maxlength").requiredLength }} characters
-            or less
-          }
+          {{ titleError }}
         </small>
       }
     </div>

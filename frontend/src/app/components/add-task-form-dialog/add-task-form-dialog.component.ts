@@ -56,6 +56,16 @@ export class AddTaskFormDialogComponent {
     );
   }
 
+  public get titleError(): string | null {
+    if (this.titleControl.hasError('required')) {
+      return 'required';
+    } else if (this.titleControl.hasError('maxlength')) {
+      return `must be ${this.titleControl.getError('maxlength').requiredLength} characters or less`;
+    }
+
+    return null;
+  }
+
   public async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       return;
