@@ -7,7 +7,10 @@
   </div>
   @if (isTasksReady) {
     @if (tasks.length > 0) {
-      <div class="flex grow flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
+      <div
+        [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
+        class="flex grow flex-col gap-4 overflow-y-auto p-4"
+      >
         <div
           *ngFor="let task of tasks"
           class="flex flex-row items-start gap-4 rounded-xl bg-white p-4"
@@ -24,7 +27,10 @@
         </div>
       </div>
     } @else {
-      <div class="flex grow items-center justify-center bg-gray-200">
+      <div
+        [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
+        class="flex grow items-center justify-center"
+      >
         <p class="text-xl">No tasks! Happy!</p>
       </div>
     }
