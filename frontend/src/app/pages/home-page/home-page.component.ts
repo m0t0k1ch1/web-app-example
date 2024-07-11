@@ -53,6 +53,8 @@ export class HomePageComponent implements OnInit {
     const pushIntoTasks = (_query: ListTasksQuery): void => {
       this.tasks.push(
         ..._query.tasks.edges
+          // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
+          // 該当 Task が ListTasksQuery のキャッシュから除外されるわけではないことを考慮する必要がある。
           .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
           .map((_edge) => _edge.node),
       );
