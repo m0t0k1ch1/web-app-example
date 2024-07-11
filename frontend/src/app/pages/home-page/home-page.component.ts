@@ -6,7 +6,9 @@ import { firstValueFrom } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { QueryRef } from 'apollo-angular';
 
+import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
 import { RippleModule } from 'primeng/ripple';
 
 import {
@@ -25,7 +27,14 @@ import * as utils from '../../utils';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, CheckboxModule, RippleModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    CheckboxModule,
+    DialogModule,
+    RippleModule,
+  ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
@@ -43,6 +52,7 @@ export class HomePageComponent implements OnInit {
   public isTaskCompleting: boolean = false;
 
   public isAddTaskButtonHovered: boolean = false;
+  public isAddTaskDialogVisible: boolean = false;
 
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
@@ -120,6 +130,12 @@ export class HomePageComponent implements OnInit {
   }
 
   public onClickAddTaskButton(): void {
+    this.isAddTaskDialogVisible = true;
+  }
+
+  public async onSubmitAddTaskForm(): Promise<void> {
     // TODO
+
+    this.isAddTaskDialogVisible = false;
   }
 }
