@@ -70,7 +70,7 @@ export class HomePageComponent implements OnInit {
     try {
       result = await this.listTasksQuery.result();
     } catch (e) {
-      this.notificationService.notifyUnexpectedError(e);
+      this.notificationService.unexpectedError(e);
       return;
     }
 
@@ -86,7 +86,7 @@ export class HomePageComponent implements OnInit {
           },
         });
       } catch (e) {
-        this.notificationService.notifyUnexpectedError(e);
+        this.notificationService.unexpectedError(e);
         return;
       }
 
@@ -108,7 +108,7 @@ export class HomePageComponent implements OnInit {
         }),
       );
     } catch (e) {
-      this.notificationService.notifyUnexpectedError(e);
+      this.notificationService.unexpectedError(e);
       this.isTaskCompleting = false;
       return;
     }
