@@ -7,7 +7,8 @@ import { ApolloQueryResult } from '@apollo/client/core';
 import { QueryRef } from 'apollo-angular';
 
 import { CheckboxModule } from 'primeng/checkbox';
-import { RippleModule } from 'primeng/ripple';
+
+import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
 
 import {
   CompleteTaskGQL,
@@ -20,20 +21,12 @@ import {
 
 import { NotificationService } from '../../services/notification.service';
 
-import { AddTaskFormDialogComponent } from '../../components/add-task-form-dialog/add-task-form-dialog.component';
-
 import * as utils from '../../utils';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CheckboxModule,
-    RippleModule,
-    AddTaskFormDialogComponent,
-  ],
+  imports: [CommonModule, FormsModule, CheckboxModule, AddTaskButtonComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
@@ -49,9 +42,6 @@ export class HomePageComponent implements OnInit {
   public checkedTaskIDs: string[] = [];
   public isTasksReady: boolean = false;
   public isTaskCompleting: boolean = false;
-
-  public isAddTaskButtonHovered: boolean = false;
-  public isAddTaskFormDialogVisible: boolean = false;
 
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
@@ -130,10 +120,6 @@ export class HomePageComponent implements OnInit {
 
     this.tasks = this.tasks.filter((_task) => _task.id !== task.id);
     this.isTaskCompleting = false;
-  }
-
-  public onClickAddTaskButton(): void {
-    this.isAddTaskFormDialogVisible = true;
   }
 
   public onCompleteAddTask(): void {

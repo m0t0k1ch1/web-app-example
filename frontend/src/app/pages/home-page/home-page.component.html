@@ -36,21 +36,7 @@
     }
   }
 </div>
-<div
-  [ngStyle]="
-    isAddTaskButtonHovered
-      ? { backgroundColor: 'var(--primary-600)' }
-      : { backgroundColor: 'var(--primary-500)' }
-  "
-  class="absolute bottom-4 right-4 z-10 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full text-white"
-  pRipple
-  (mouseover)="isAddTaskButtonHovered = true"
-  (mouseleave)="isAddTaskButtonHovered = false"
-  (click)="onClickAddTaskButton()"
->
-  <div class="text-4xl font-bold">＋</div>
-</div>
-<app-add-task-form-dialog
-  [(isVisible)]="isAddTaskFormDialogVisible"
+<app-add-task-button
+  class="absolute bottom-4 right-4 z-10"
   (complete)="onCompleteAddTask()"
-></app-add-task-form-dialog>
+></app-add-task-button>

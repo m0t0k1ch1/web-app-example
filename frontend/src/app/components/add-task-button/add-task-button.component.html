@@ -1,0 +1,19 @@
+<div
+  [ngStyle]="
+    isHovered
+      ? { backgroundColor: 'var(--primary-600)' }
+      : { backgroundColor: 'var(--primary-500)' }
+  "
+  class="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full text-white"
+  pRipple
+  (mouseover)="isHovered = true"
+  (mouseleave)="isHovered = false"
+  (click)="onClick()"
+>
+  <div class="text-4xl font-bold">＋</div>
+</div>
+
+<app-add-task-form-dialog
+  [(isVisible)]="isFormDialogVisible"
+  (complete)="complete.emit()"
+></app-add-task-form-dialog>
