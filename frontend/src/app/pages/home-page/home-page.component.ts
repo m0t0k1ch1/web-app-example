@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatRippleModule } from '@angular/material/core';
 import { firstValueFrom } from 'rxjs';
 
 import { ApolloQueryResult } from '@apollo/client/core';
@@ -22,7 +21,7 @@ import * as utils from '../../utils';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, MatRippleModule],
+  imports: [CommonModule],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
