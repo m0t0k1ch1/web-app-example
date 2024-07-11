@@ -11,7 +11,7 @@
         >
           <input
             type="checkbox"
-            class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500 focus:ring-transparent"
+            class="h-6 w-6 cursor-pointer rounded border-orange-500 bg-orange-100 text-orange-500 hover:bg-orange-200 focus:ring-transparent"
             [disabled]="isTaskCompleting"
             (change)="onChangeTaskStatus(task, $event)"
           />
@@ -28,7 +28,7 @@
   }
 </div>
 <div
-  class="absolute bottom-4 right-4 z-50 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-orange-500 text-white"
+  class="absolute bottom-4 right-4 z-50 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600"
 >
   <div class="text-4xl font-bold" (click)="onClickAddTaskButton()">＋</div>
 </div>
