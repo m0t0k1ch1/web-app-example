@@ -35,7 +35,7 @@ export class HomePageComponent implements OnInit {
   private listTasksQuery: QueryRef<ListTasksQuery, ListTasksQueryVariables>;
 
   public tasks: Task[] = [];
-  public isTasksInitialized: boolean = false;
+  public isTasksReady: boolean = false;
   public isTaskCompleting: boolean = false;
 
   constructor() {
@@ -50,6 +50,14 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks(): Promise<void> {
+    const pushIntoTasks = (_query: ListTasksQuery): void => {
+      this.tasks.push(
+        ..._query.tasks.edges
+          .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
+          .map((_edge) => _edge.node),
+      );
+    };
+
     let result: ApolloQueryResult<ListTasksQuery>;
     try {
       result = await this.listTasksQuery.result();
@@ -58,8 +66,9 @@ export class HomePageComponent implements OnInit {
       return;
     }
 
-    this.tasks.push(...result.data.tasks.edges.map((edge) => edge.node));
-    this.isTasksInitialized = true;
+    pushIntoTasks(result.data);
+
+    this.isTasksReady = true;
 
     while (result.data.tasks.pageInfo.hasNextPage) {
       try {
@@ -73,7 +82,7 @@ export class HomePageComponent implements OnInit {
         return;
       }
 
-      this.tasks.push(...result.data.tasks.edges.map((edge) => edge.node));
+      pushIntoTasks(result.data);
     }
   }
 
@@ -93,6 +102,7 @@ export class HomePageComponent implements OnInit {
       );
     } catch (e) {
       this.notificationService.notifyUnexpectedError(e);
+      this.isTaskCompleting = false;
       return;
     }
 

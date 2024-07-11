@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center bg-orange-500 p-4 text-white">
     <h1 class="text-4xl font-bold">My Tasks</h1>
   </div>
-  @if (isTasksInitialized) {
+  @if (isTasksReady) {
     @if (tasks.length > 0) {
       <div class="flex grow flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
         <div
