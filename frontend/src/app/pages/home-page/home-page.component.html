@@ -50,16 +50,6 @@
 >
   <div class="text-4xl font-bold">＋</div>
 </div>
-<p-dialog header="Add task" [modal]="true" [(visible)]="isAddTaskDialogVisible">
-  <div class="mb-6">
-    <p>TODO</p>
-  </div>
-  <div class="flex flex-row justify-end gap-4">
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      (click)="isAddTaskDialogVisible = false"
-    />
-    <p-button label="Add" (click)="onSubmitAddTaskForm()" />
-  </div>
-</p-dialog>
+<app-add-task-form-dialog
+  [(isVisible)]="isAddTaskFormDialogVisible"
+></app-add-task-form-dialog>

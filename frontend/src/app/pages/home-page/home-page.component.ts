@@ -6,9 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { QueryRef } from 'apollo-angular';
 
-import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { DialogModule } from 'primeng/dialog';
 import { RippleModule } from 'primeng/ripple';
 
 import {
@@ -22,6 +20,8 @@ import {
 
 import { NotificationService } from '../../services/notification.service';
 
+import { AddTaskFormDialogComponent } from '../../components/add-task-form-dialog/add-task-form-dialog.component';
+
 import * as utils from '../../utils';
 
 @Component({
@@ -30,10 +30,9 @@ import * as utils from '../../utils';
   imports: [
     CommonModule,
     FormsModule,
-    ButtonModule,
     CheckboxModule,
-    DialogModule,
     RippleModule,
+    AddTaskFormDialogComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
@@ -52,7 +51,7 @@ export class HomePageComponent implements OnInit {
   public isTaskCompleting: boolean = false;
 
   public isAddTaskButtonHovered: boolean = false;
-  public isAddTaskDialogVisible: boolean = false;
+  public isAddTaskFormDialogVisible: boolean = false;
 
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
@@ -130,12 +129,6 @@ export class HomePageComponent implements OnInit {
   }
 
   public onClickAddTaskButton(): void {
-    this.isAddTaskDialogVisible = true;
-  }
-
-  public async onSubmitAddTaskForm(): Promise<void> {
-    // TODO
-
-    this.isAddTaskDialogVisible = false;
+    this.isAddTaskFormDialogVisible = true;
   }
 }
