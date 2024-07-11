@@ -52,4 +52,5 @@
 </div>
 <app-add-task-form-dialog
   [(isVisible)]="isAddTaskFormDialogVisible"
+  (complete)="onCompleteAddTask()"
 ></app-add-task-form-dialog>

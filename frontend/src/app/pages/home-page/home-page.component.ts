@@ -60,31 +60,35 @@ export class HomePageComponent implements OnInit {
     });
   }
 
-  public async ngOnInit(): Promise<void> {
-    await this.initTasks();
+  public ngOnInit(): void {
+    this.initTasks();
   }
 
-  private async initTasks(): Promise<void> {
-    const pushIntoTasks = (_query: ListTasksQuery): void => {
-      this.tasks.push(
-        ..._query.tasks.edges
+  private async initTasks(refetch: boolean = false): Promise<void> {
+    const extractTasks = (_query: ListTasksQuery): Task[] => {
+      return (
+        _query.tasks.edges
           // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
           // 該当 Task が ListTasksQuery のキャッシュから除外されるわけではないことを考慮する必要がある。
           .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
-          .map((_edge) => _edge.node),
+          .map((_edge) => _edge.node)
       );
     };
 
     let result: ApolloQueryResult<ListTasksQuery>;
+
     try {
-      result = await this.listTasksQuery.result();
+      if (refetch) {
+        result = await this.listTasksQuery.refetch();
+      } else {
+        result = await this.listTasksQuery.result();
+      }
     } catch (e) {
       this.notificationService.unexpectedError(e);
       return;
     }
 
-    pushIntoTasks(result.data);
-
+    this.tasks = extractTasks(result.data);
     this.isTasksReady = true;
 
     while (result.data.tasks.pageInfo.hasNextPage) {
@@ -99,7 +103,7 @@ export class HomePageComponent implements OnInit {
         return;
       }
 
-      pushIntoTasks(result.data);
+      this.tasks.push(...extractTasks(result.data));
     }
   }
 
@@ -130,5 +134,9 @@ export class HomePageComponent implements OnInit {
 
   public onClickAddTaskButton(): void {
     this.isAddTaskFormDialogVisible = true;
+  }
+
+  public onCompleteAddTask(): void {
+    this.initTasks(true);
   }
 }
