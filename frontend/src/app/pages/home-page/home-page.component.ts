@@ -1,9 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
 import { ApolloQueryResult } from '@apollo/client/core';
 import { QueryRef } from 'apollo-angular';
+
+import { CheckboxModule } from 'primeng/checkbox';
+import { RippleModule } from 'primeng/ripple';
 
 import {
   CompleteTaskGQL,
@@ -21,7 +25,7 @@ import * as utils from '../../utils';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, CheckboxModule, RippleModule],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
@@ -34,8 +38,11 @@ export class HomePageComponent implements OnInit {
   private listTasksQuery: QueryRef<ListTasksQuery, ListTasksQueryVariables>;
 
   public tasks: Task[] = [];
+  public checkedTaskIDs: string[] = [];
   public isTasksReady: boolean = false;
   public isTaskCompleting: boolean = false;
+
+  public isAddTaskButtonHovered: boolean = false;
 
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
@@ -87,9 +94,8 @@ export class HomePageComponent implements OnInit {
     }
   }
 
-  public async onChangeTaskStatus(task: Task, event: Event): Promise<void> {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    if (!isChecked) {
+  public async onChangeTaskCheckbox(task: Task): Promise<void> {
+    if (!this.checkedTaskIDs.includes(task.id)) {
       return;
     }
 
