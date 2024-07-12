@@ -14,10 +14,9 @@ const config: CodegenConfig = {
       config: {
         scalars: {
           Int32: 'number',
-          Int64: 'number',
-          Uint: 'number',
+          Int64: 'string',
           Uint32: 'number',
-          Uint64: 'number',
+          Uint64: 'string',
         },
       },
     },

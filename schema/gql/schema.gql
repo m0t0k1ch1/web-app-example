@@ -2,8 +2,6 @@ scalar Int32
 
 scalar Int64
 
-scalar Uint
-
 scalar Uint32
 
 scalar Uint64

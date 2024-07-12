@@ -16,10 +16,9 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Int32: { input: number; output: number; }
-  Int64: { input: number; output: number; }
-  Uint: { input: number; output: number; }
+  Int64: { input: string; output: string; }
   Uint32: { input: number; output: number; }
-  Uint64: { input: number; output: number; }
+  Uint64: { input: string; output: string; }
 };
 
 export type CompleteTaskInput = {

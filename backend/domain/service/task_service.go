@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/m0t0k1ch1-go/gqlutil"
 	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/m0t0k1ch1-go/timeutil/v4"
 	"github.com/samber/oops"
@@ -172,7 +173,7 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 				EndCursor:   endCursor,
 				HasNextPage: hasNextPage,
 			},
-			TotalCount: totalCnt,
+			TotalCount: gqlutil.Int64(totalCnt),
 		},
 	}, nil
 }
