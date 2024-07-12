@@ -27,6 +27,7 @@
     "@angular-devkit/build-angular": "18.1.0",
     "@angular/cli": "18.1.0",
     "@angular/compiler-cli": "18.1.0",
+    "@graphql-codegen/add": "5.0.3",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-apollo-angular": "4.0.0",
