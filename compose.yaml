@@ -1,5 +1,11 @@
 name: web-app-example
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - 4200:4200
+    depends_on:
+      - backend
   backend:
     build: ./backend
     ports:

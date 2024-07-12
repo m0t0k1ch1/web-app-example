@@ -1,0 +1,13 @@
+.angular
+.vscode
+gql
+node_modules
+schema
+
+.dockerignore
+.editorconfig
+.gitignore
+.prettierrc
+graphql-codegen.ts
+README.md
+tailwind.config.js

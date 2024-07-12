@@ -7,3 +7,5 @@ a web app example built with [gqlgen](https://gqlgen.com) and [Angular](https://
 ```
 docker compose up --build -d
 ```
+
+Open http://localhost:4200 🚀
