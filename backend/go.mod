@@ -14,6 +14,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/kayac/go-config v0.7.0
 	github.com/m0t0k1ch1-go/coreutil v1.0.1
+	github.com/m0t0k1ch1-go/gqlutil v1.1.0
 	github.com/m0t0k1ch1-go/sqlutil v1.3.0
 	github.com/m0t0k1ch1-go/timeutil/v4 v4.1.0
 	github.com/rs/cors v1.11.0

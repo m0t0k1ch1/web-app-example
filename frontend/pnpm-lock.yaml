@@ -63,6 +63,9 @@ importers:
       '@angular/compiler-cli':
         specifier: 18.1.0
         version: 18.1.0(@angular/compiler@18.1.0(@angular/core@18.1.0(rxjs@7.8.1)(zone.js@0.14.7)))(typescript@5.4.5)
+      '@graphql-codegen/add':
+        specifier: 5.0.3
+        version: 5.0.3(graphql@16.9.0)
       '@graphql-codegen/cli':
         specifier: 5.0.2
         version: 5.0.2(@types/node@20.14.10)(encoding@0.1.13)(graphql@16.9.0)(typescript@5.4.5)

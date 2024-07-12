@@ -116,6 +116,8 @@ github.com/lufia/plan9stats v0.0.0-20240226150601-1dcf7310316a h1:3Bm7EwfUQUvhNe
 github.com/lufia/plan9stats v0.0.0-20240226150601-1dcf7310316a/go.mod h1:ilwx/Dta8jXAgpFYFvSWEMwxmbWXyiUHkd5FwyKhb5k=
 github.com/m0t0k1ch1-go/coreutil v1.0.1 h1:SU+8eVGsai6Ztz8ZOIFpqL0N3OyUgB/rH+jo2gQg/l0=
 github.com/m0t0k1ch1-go/coreutil v1.0.1/go.mod h1:MUUn5A3DbQB9egWxVgJNtCBl6sVL7CNDCPWwdvH6pKg=
+github.com/m0t0k1ch1-go/gqlutil v1.1.0 h1:rVAqRAUPdsZXRUKAZX2li4f3mO/v6O95/bxj7u+tiBQ=
+github.com/m0t0k1ch1-go/gqlutil v1.1.0/go.mod h1:GK2RB0Kco0DpOZ/oqVTD1hX2DNI6v54J0pYAqp8xQXQ=
 github.com/m0t0k1ch1-go/sqlutil v1.3.0 h1:XBfK3lr/J5qyKDVxjJHGfB57rM0x8xOpKW08+xNaKq8=
 github.com/m0t0k1ch1-go/sqlutil v1.3.0/go.mod h1:hMoSS0KYtQYdmWDnjoNMrvdOUvUpFHMNeUfCXhTHD5s=
 github.com/m0t0k1ch1-go/timeutil/v4 v4.1.0 h1:1R6kEy/Se3Uh6dFjWywy2lAka4gpiatP8SvhKSTFXVU=

@@ -13,6 +13,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/m0t0k1ch1-go/gqlutil"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -406,8 +407,6 @@ var sources = []*ast.Source{
 	{Name: "../../_schema/gql/schema.gql", Input: `scalar Int32
 
 scalar Int64
-
-scalar Uint
 
 scalar Uint32
 
@@ -1689,9 +1688,9 @@ func (ec *executionContext) _TaskConnection_totalCount(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(gqlutil.Int64)
 	fc.Result = res
-	return ec.marshalNInt642int64(ctx, field.Selections, res)
+	return ec.marshalNInt642githubᚗcomᚋm0t0k1ch1ᚑgoᚋgqlutilᚐInt64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TaskConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4561,19 +4560,14 @@ func (ec *executionContext) marshalNInt322int32(ctx context.Context, sel ast.Sel
 	return res
 }
 
-func (ec *executionContext) unmarshalNInt642int64(ctx context.Context, v interface{}) (int64, error) {
-	res, err := graphql.UnmarshalInt64(v)
+func (ec *executionContext) unmarshalNInt642githubᚗcomᚋm0t0k1ch1ᚑgoᚋgqlutilᚐInt64(ctx context.Context, v interface{}) (gqlutil.Int64, error) {
+	var res gqlutil.Int64
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNInt642int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
-	res := graphql.MarshalInt64(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
+func (ec *executionContext) marshalNInt642githubᚗcomᚋm0t0k1ch1ᚑgoᚋgqlutilᚐInt64(ctx context.Context, sel ast.SelectionSet, v gqlutil.Int64) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNNoopInput2appᚋgenᚋgqlgenᚐNoopInput(ctx context.Context, v interface{}) (NoopInput, error) {
