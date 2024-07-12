@@ -15,7 +15,7 @@ type MySQLConfig struct {
 
 type MySQLDBConfig struct {
 	Host     string `yaml:"host" validate:"required,hostname_rfc1123" en:"host"`
-	Port     int    `yaml:"port" validate:"required,gte=1,lte=65535" en:"port"`
+	Port     int    `yaml:"port" validate:"gte=1,lte=65535" en:"port"`
 	User     string `yaml:"user" validate:"required" en:"user"`
 	Password string `yaml:"password" validate:"required" en:"password"`
 	Name     string `yaml:"name" validate:"required" en:"name"`
@@ -29,7 +29,8 @@ func (conf MySQLDBConfig) DSN() string {
 }
 
 type ServerConfig struct {
-	Port int `yaml:"port" validate:"required,gte=1,lte=65535" en:"port"`
+	Port           int  `yaml:"port" validate:"gte=1,lte=65535" en:"port"`
+	WithPlayground bool `yaml:"with_playground" en:"with_playground"`
 }
 
 func (conf ServerConfig) Addr() string {

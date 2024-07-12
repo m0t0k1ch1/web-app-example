@@ -1,11 +1,13 @@
-.next
+.angular
+.vscode
+gql
 node_modules
 schema
 
 .dockerignore
-.eslintrc.json
+.editorconfig
 .gitignore
-buf.gen.yaml
-Dockerfile
-next-env.d.ts
+.prettierrc
+graphql-codegen.ts
 README.md
+tailwind.config.js

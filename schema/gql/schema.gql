@@ -1,0 +1,34 @@
+scalar Int32
+
+scalar Int64
+
+scalar Uint
+
+scalar Uint32
+
+scalar Uint64
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+input NoopInput {
+  clientMutationId: String
+}
+
+type NoopPayload {
+  clientMutationId: String
+}
+
+type Query {
+  node(id: ID!): Node
+}
+
+type Mutation {
+  noop(input: NoopInput!): NoopPayload!
+}

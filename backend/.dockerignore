@@ -1,9 +1,14 @@
+_bin
 _schema
 _sql
 
 .dockerignore
-buf.gen.yaml
+.env
+.env.dev
+.envrc
+.gitignore
 Dockerfile
+gqlgen.yaml
 Makefile
 README.md
 sqlc.yaml

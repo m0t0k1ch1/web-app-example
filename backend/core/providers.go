@@ -5,51 +5,29 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
-	configloader "github.com/kayac/go-config"
-	"github.com/m0t0k1ch1-go/timeutil/v3"
-	"github.com/pkg/errors"
+	"github.com/m0t0k1ch1-go/timeutil/v4"
+	"github.com/samber/oops"
 
 	"app/config"
 	"app/container"
-	appv1 "app/domain/service/proto/app/v1"
-	"app/domain/validation"
+	"app/domain/resolver"
+	"app/domain/service"
 )
 
 var (
 	ProviderSet = wire.NewSet(
-		provideAppConfig,
-
 		provideClock,
 		provideMySQLContainer,
+
 		provideTaskService,
+		provideNodeService,
+
+		provideResolver,
 		provideServer,
 
 		provideApp,
 	)
 )
-
-type ConfigPath string
-
-func (confPath ConfigPath) String() string {
-	return string(confPath)
-}
-
-func init() {
-	configloader.Delims("<%", "%>")
-}
-
-func provideAppConfig(confPath ConfigPath) (config.AppConfig, error) {
-	var conf config.AppConfig
-	if err := configloader.LoadWithEnv(&conf, confPath.String()); err != nil {
-		return config.AppConfig{}, errors.Wrap(err, "failed to load config")
-	}
-
-	if err := validation.Struct(conf); err != nil {
-		return config.AppConfig{}, errors.Wrap(err, "invalid config")
-	}
-
-	return conf, nil
-}
 
 func provideClock() timeutil.Clock {
 	return timeutil.NewClock()
@@ -60,7 +38,7 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 	{
 		db, err := sql.Open("mysql", conf.MySQL.App.DSN())
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.App.Name)
+			return nil, oops.Wrapf(err, "failed to open mysql db: %s", conf.MySQL.App.Name)
 		}
 
 		ctr.App = db
@@ -72,20 +50,38 @@ func provideMySQLContainer(conf config.AppConfig) (*container.MySQLContainer, er
 func provideTaskService(
 	clock timeutil.Clock,
 	mysqlCtr *container.MySQLContainer,
-) *appv1.TaskService {
-	return appv1.NewTaskService(
+) *service.TaskService {
+	return service.NewTaskService(
 		clock,
 		mysqlCtr,
 	)
 }
 
+func provideNodeService(
+	mysqlCtr *container.MySQLContainer,
+) *service.NodeService {
+	return service.NewNodeService(
+		mysqlCtr,
+	)
+}
+
+func provideResolver(
+	taskService *service.TaskService,
+	nodeService *service.NodeService,
+) *resolver.Resolver {
+	return resolver.NewResolver(
+		taskService,
+		nodeService,
+	)
+}
+
 func provideServer(
 	conf config.AppConfig,
-	taskService *appv1.TaskService,
+	resolver *resolver.Resolver,
 ) *Server {
 	return NewServer(
 		conf.Server,
-		taskService,
+		resolver,
 	)
 }
 

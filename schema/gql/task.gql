@@ -1,0 +1,51 @@
+enum TaskStatus {
+  UNCOMPLETED
+  COMPLETED
+}
+
+type Task implements Node {
+  id: ID!
+  title: String!
+  status: TaskStatus!
+}
+
+type TaskEdge {
+  cursor: String!
+  node: Task!
+}
+
+type TaskConnection {
+  edges: [TaskEdge!]!
+  nodes: [Task!]!
+  pageInfo: PageInfo!
+  totalCount: Int64!
+}
+
+input CreateTaskInput {
+  clientMutationId: String
+  title: String!
+}
+
+type CreateTaskPayload {
+  clientMutationId: String
+  task: Task!
+}
+
+input CompleteTaskInput {
+  clientMutationId: String
+  id: ID!
+}
+
+type CompleteTaskPayload {
+  clientMutationId: String
+  task: Task
+}
+
+extend type Query {
+  tasks(status: TaskStatus, after: String, first: Int32!): TaskConnection!
+}
+
+extend type Mutation {
+  createTask(input: CreateTaskInput!): CreateTaskPayload!
+  completeTask(input: CompleteTaskInput!): CompleteTaskPayload!
+}

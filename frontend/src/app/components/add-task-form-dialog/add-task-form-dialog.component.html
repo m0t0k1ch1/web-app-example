@@ -1,0 +1,35 @@
+<p-dialog
+  header="Add task"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '90vw' }"
+  [(visible)]="isVisible"
+>
+  <form [formGroup]="form" (submit)="onSubmit()">
+    <div class="mb-6 flex flex-col items-end">
+      <input
+        type="text"
+        pInputText
+        formControlName="title"
+        class="w-full"
+        [ngStyle]="
+          this.shouldShowTitleError
+            ? {
+                borderColor: 'var(--red-500)',
+                borderWidth: '2px',
+              }
+            : {}
+        "
+      />
+      @if (shouldShowTitleError) {
+        <small [ngStyle]="{ color: 'var(--red-500)' }">
+          {{ titleError }}
+        </small>
+      }
+    </div>
+    <div class="flex flex-row justify-end gap-4">
+      <p-button label="Cancel" severity="secondary" (click)="onCancel()" />
+      <p-button type="submit" label="Add" />
+    </div>
+  </form>
+</p-dialog>

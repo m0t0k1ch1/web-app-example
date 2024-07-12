@@ -8,13 +8,15 @@ import (
 )
 
 type App struct {
-	config config.AppConfig
+	Config config.AppConfig
+
 	server *Server
 }
 
 func NewApp(conf config.AppConfig, srv *Server) *App {
 	return &App{
-		config: conf,
+		Config: conf,
+
 		server: srv,
 	}
 }
