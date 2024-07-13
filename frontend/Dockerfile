@@ -7,4 +7,4 @@ RUN corepack enable pnpm && pnpm i
 
 COPY . .
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "ng", "serve", "--host", "0.0.0.0"]
