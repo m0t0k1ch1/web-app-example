@@ -8,8 +8,6 @@ import { QueryRef } from 'apollo-angular';
 
 import { CheckboxModule } from 'primeng/checkbox';
 
-import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
-
 import {
   CompleteTaskGQL,
   ListTasksGQL,
@@ -18,6 +16,8 @@ import {
   Task,
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
+
+import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
 
 import { NotificationService } from '../../services/notification.service';
 
