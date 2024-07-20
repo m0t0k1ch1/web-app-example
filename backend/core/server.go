@@ -27,6 +27,12 @@ var (
 		AllowedOrigins: []string{
 			"*",
 		},
+		AllowedMethods: []string{
+			http.MethodPost,
+		},
+		AllowedHeaders: []string{
+			"Content-Type",
+		},
 	}
 )
 
