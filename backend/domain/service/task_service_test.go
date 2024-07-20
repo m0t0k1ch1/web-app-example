@@ -121,11 +121,6 @@ func TestTaskService(t *testing.T) {
 						Node: task3,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task1,
-					task2,
-					task3,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 						ID: task3.Id,
@@ -161,10 +156,6 @@ func TestTaskService(t *testing.T) {
 						Node: task5,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task4,
-					task5,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 						ID: task5.Id,
@@ -194,35 +185,38 @@ func TestTaskService(t *testing.T) {
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task1.Id,
-							TaskStatus: &status,
+							ID: task1.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task1,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task2.Id,
-							TaskStatus: &status,
+							ID: task2.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task2,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task3.Id,
-							TaskStatus: &status,
+							ID: task3.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task3,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task1,
-					task2,
-					task3,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
-						ID:         task3.Id,
-						TaskStatus: &status,
+						ID: task3.Id,
+						Params: model.PaginationCursorParams{
+							TaskStatus: &status,
+						},
 					})),
 					HasNextPage: true,
 				},
@@ -239,8 +233,10 @@ func TestTaskService(t *testing.T) {
 			out, err := taskService.List(ctx, service.TaskServiceListInput{
 				Status: &status,
 				After: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
-					ID:         task3.Id,
-					TaskStatus: &status,
+					ID: task3.Id,
+					Params: model.PaginationCursorParams{
+						TaskStatus: &status,
+					},
 				})),
 				First: 3,
 			})
@@ -250,27 +246,29 @@ func TestTaskService(t *testing.T) {
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task4.Id,
-							TaskStatus: &status,
+							ID: task4.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task4,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task5.Id,
-							TaskStatus: &status,
+							ID: task5.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task5,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task4,
-					task5,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
-						ID:         task5.Id,
-						TaskStatus: &status,
+						ID: task5.Id,
+						Params: model.PaginationCursorParams{
+							TaskStatus: &status,
+						},
 					})),
 					HasNextPage: false,
 				},
@@ -295,7 +293,6 @@ func TestTaskService(t *testing.T) {
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{},
-				Nodes: []*gqlgen.Task{},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor:   nil,
 					HasNextPage: false,
@@ -355,11 +352,6 @@ func TestTaskService(t *testing.T) {
 						Node: task3,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task1,
-					task2,
-					task3,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 						ID: task3.Id,
@@ -395,10 +387,6 @@ func TestTaskService(t *testing.T) {
 						Node: task5,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task4,
-					task5,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 						ID: task5.Id,
@@ -428,35 +416,38 @@ func TestTaskService(t *testing.T) {
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task1.Id,
-							TaskStatus: &status,
+							ID: task1.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task1,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task3.Id,
-							TaskStatus: &status,
+							ID: task3.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task3,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task5.Id,
-							TaskStatus: &status,
+							ID: task5.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task5,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task1,
-					task3,
-					task5,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
-						ID:         task5.Id,
-						TaskStatus: &status,
+						ID: task5.Id,
+						Params: model.PaginationCursorParams{
+							TaskStatus: &status,
+						},
 					})),
 					HasNextPage: false,
 				},
@@ -483,27 +474,29 @@ func TestTaskService(t *testing.T) {
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task2.Id,
-							TaskStatus: &status,
+							ID: task2.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task2,
 					},
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
-							ID:         task4.Id,
-							TaskStatus: &status,
+							ID: task4.Id,
+							Params: model.PaginationCursorParams{
+								TaskStatus: &status,
+							},
 						}),
 						Node: task4,
 					},
 				},
-				Nodes: []*gqlgen.Task{
-					task2,
-					task4,
-				},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
-						ID:         task4.Id,
-						TaskStatus: &status,
+						ID: task4.Id,
+						Params: model.PaginationCursorParams{
+							TaskStatus: &status,
+						},
 					})),
 					HasNextPage: false,
 				},

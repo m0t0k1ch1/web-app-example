@@ -55,7 +55,7 @@ func (in *TaskServiceListInput) Validate() error {
 			if err != nil {
 				return oops.Errorf("invalid after")
 			}
-			if !cmp.Equal(cursor.TaskStatus, in.Status) {
+			if !cmp.Equal(cursor.Params.TaskStatus, in.Status) {
 				return oops.Errorf("invalid after")
 			}
 
@@ -86,7 +86,6 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 
 	var (
 		edges       []*gqlgen.TaskEdge
-		nodes       []*gqlgen.Task
 		hasNextPage bool
 	)
 	{
@@ -135,9 +134,11 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 			taskInDBs = taskInDBs[:in.First]
 		}
 
-		edges, nodes, err = convertIntoTaskEdgesAndTasks(taskInDBs, in.Status)
+		edges, err = convertIntoTaskEdges(taskInDBs, model.PaginationCursorParams{
+			TaskStatus: in.Status,
+		})
 		if err != nil {
-			return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to convert into task edges and tasks"))
+			return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to convert into task edges"))
 		}
 	}
 
@@ -168,7 +169,6 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 	return TaskServiceListOutput{
 		TaskConnection: &gqlgen.TaskConnection{
 			Edges: edges,
-			Nodes: nodes,
 			PageInfo: &gqlgen.PageInfo{
 				EndCursor:   endCursor,
 				HasNextPage: hasNextPage,

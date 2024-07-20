@@ -65,7 +65,6 @@ func (this Task) GetId() string { return this.Id }
 
 type TaskConnection struct {
 	Edges      []*TaskEdge   `json:"edges"`
-	Nodes      []*Task       `json:"nodes"`
 	PageInfo   *PageInfo     `json:"pageInfo"`
 	TotalCount gqlutil.Int64 `json:"totalCount"`
 }

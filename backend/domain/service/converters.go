@@ -1,12 +1,12 @@
 package service
 
 import (
+	"github.com/samber/oops"
+
 	"app/domain/model"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
 	"app/library/idutil"
-
-	"github.com/samber/oops"
 )
 
 func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
@@ -17,30 +17,28 @@ func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	}
 }
 
-func convertIntoTaskEdgesAndTasks(taskInDBs []mysql.Task, status *gqlgen.TaskStatus) ([]*gqlgen.TaskEdge, []*gqlgen.Task, error) {
+func convertIntoTaskEdges(taskInDBs []mysql.Task, paginationCursorParams model.PaginationCursorParams) ([]*gqlgen.TaskEdge, error) {
 	taskEdges := make([]*gqlgen.TaskEdge, len(taskInDBs))
-	tasks := make([]*gqlgen.Task, len(taskInDBs))
 	{
 		for idx, taskInDB := range taskInDBs {
 			task := convertIntoTask(taskInDB)
 
 			taskCursor := model.PaginationCursor{
-				ID:         task.Id,
-				TaskStatus: status,
+				ID:     task.Id,
+				Params: paginationCursorParams,
 			}
 
 			encodedTaskCursor, err := taskCursor.Encode()
 			if err != nil {
-				return nil, nil, oops.Wrapf(err, "failed to encode task cursor")
+				return nil, oops.Wrapf(err, "failed to encode task cursor")
 			}
 
 			taskEdges[idx] = &gqlgen.TaskEdge{
 				Cursor: encodedTaskCursor,
 				Node:   task,
 			}
-			tasks[idx] = task
 		}
 	}
 
-	return taskEdges, tasks, nil
+	return taskEdges, nil
 }

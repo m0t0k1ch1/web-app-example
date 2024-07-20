@@ -21,12 +21,14 @@ var (
 func main() {
 	flag.Parse()
 
+	ctx := context.Background()
+
 	appConf, err := core.LoadAppConfig(*confPath)
 	if err != nil {
 		fatal(oops.Wrapf(err, "failed to load app config"))
 	}
 
-	app, err := core.InitializeApp(context.Background(), appConf)
+	app, err := core.InitializeApp(ctx, appConf)
 	if err != nil {
 		fatal(oops.Wrapf(err, "failed to initialize app"))
 	}
@@ -51,7 +53,7 @@ func main() {
 	}
 
 	slog.Info("stop app")
-	if err := app.Stop(context.Background()); err != nil {
+	if err := app.Stop(ctx); err != nil {
 		fatal(oops.Wrapf(err, "failed to stop app"))
 	}
 
