@@ -2,8 +2,8 @@
   "name": "app",
   "scripts": {
     "build": "ng build",
-    "start": "ng serve",
-    "generate": "graphql-codegen --config graphql-codegen.ts"
+    "generate": "graphql-codegen --config graphql-codegen.ts",
+    "start": "ng serve"
   },
   "private": true,
   "dependencies": {
