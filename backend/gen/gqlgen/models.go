@@ -10,6 +10,12 @@ import (
 	"github.com/m0t0k1ch1-go/gqlutil"
 )
 
+type IConnection interface {
+	IsIConnection()
+	GetPageInfo() *PageInfo
+	GetTotalCount() gqlutil.Int64
+}
+
 type Node interface {
 	IsNode()
 	GetId() string
@@ -68,6 +74,10 @@ type TaskConnection struct {
 	PageInfo   *PageInfo     `json:"pageInfo"`
 	TotalCount gqlutil.Int64 `json:"totalCount"`
 }
+
+func (TaskConnection) IsIConnection()                    {}
+func (this TaskConnection) GetPageInfo() *PageInfo       { return this.PageInfo }
+func (this TaskConnection) GetTotalCount() gqlutil.Int64 { return this.TotalCount }
 
 type TaskEdge struct {
 	Cursor string `json:"cursor"`

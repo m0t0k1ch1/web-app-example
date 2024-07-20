@@ -46,6 +46,11 @@ export type CreateTaskPayload = {
   task: Task;
 };
 
+export type IConnection = {
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int64']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   completeTask: CompleteTaskPayload;
@@ -112,10 +117,9 @@ export type Task = Node & {
   title: Scalars['String']['output'];
 };
 
-export type TaskConnection = {
+export type TaskConnection = IConnection & {
   __typename?: 'TaskConnection';
   edges: Array<TaskEdge>;
-  nodes: Array<Task>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int64']['output'];
 };
