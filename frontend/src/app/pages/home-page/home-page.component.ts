@@ -12,9 +12,9 @@ import { AddTaskButtonComponent } from '../../components/add-task-button/add-tas
 
 import {
   CompleteTaskGQL,
+  ListTasksGQL,
   ListTasksQuery,
   ListTasksQueryVariables,
-  ListTasksGQL,
   Task,
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
