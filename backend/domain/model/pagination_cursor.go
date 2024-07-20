@@ -8,8 +8,11 @@ import (
 )
 
 type PaginationCursor struct {
-	ID string `json:"id"`
+	ID     string                 `json:"id"`
+	Params PaginationCursorParams `json:"params"`
+}
 
+type PaginationCursorParams struct {
 	TaskStatus *gqlgen.TaskStatus `json:"taskStatus,omitempty"`
 }
 
