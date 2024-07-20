@@ -7,11 +7,9 @@ export const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
-    title: 'Home',
   },
   {
     path: '**',
     component: NotFoundPageComponent,
-    title: 'Not Found',
   },
 ];
