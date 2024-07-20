@@ -14,7 +14,7 @@ type TaskEdge {
   node: Task!
 }
 
-type TaskConnection {
+type TaskConnection implements IConnection {
   edges: [TaskEdge!]!
   pageInfo: PageInfo!
   totalCount: Int64!

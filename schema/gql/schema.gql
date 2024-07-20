@@ -10,6 +10,11 @@ interface Node {
   id: ID!
 }
 
+interface IConnection {
+  pageInfo: PageInfo!
+  totalCount: Int64!
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!

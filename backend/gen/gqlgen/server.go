@@ -408,6 +408,11 @@ interface Node {
   id: ID!
 }
 
+interface IConnection {
+  pageInfo: PageInfo!
+  totalCount: Int64!
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
@@ -445,7 +450,7 @@ type TaskEdge {
   node: Task!
 }
 
-type TaskConnection {
+type TaskConnection implements IConnection {
   edges: [TaskEdge!]!
   pageInfo: PageInfo!
   totalCount: Int64!
@@ -3611,6 +3616,22 @@ func (ec *executionContext) unmarshalInputNoopInput(ctx context.Context, obj int
 
 // region    ************************** interface.gotpl ***************************
 
+func (ec *executionContext) _IConnection(ctx context.Context, sel ast.SelectionSet, obj IConnection) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case TaskConnection:
+		return ec._TaskConnection(ctx, sel, &obj)
+	case *TaskConnection:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._TaskConnection(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj Node) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
@@ -3990,7 +4011,7 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
-var taskConnectionImplementors = []string{"TaskConnection"}
+var taskConnectionImplementors = []string{"TaskConnection", "IConnection"}
 
 func (ec *executionContext) _TaskConnection(ctx context.Context, sel ast.SelectionSet, obj *TaskConnection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, taskConnectionImplementors)
