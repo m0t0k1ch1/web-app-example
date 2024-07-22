@@ -76,7 +76,9 @@ export class AddTaskFormDialogComponent {
     try {
       await firstValueFrom(
         this.createTaskGQL.mutate({
-          title: title,
+          input: {
+            title: title,
+          },
         }),
       );
     } catch (e) {

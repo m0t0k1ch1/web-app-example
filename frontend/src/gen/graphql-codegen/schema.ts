@@ -136,14 +136,14 @@ export enum TaskStatus {
 }
 
 export type CreateTaskMutationVariables = Exact<{
-  title: Scalars['String']['input'];
+  input: CreateTaskInput;
 }>;
 
 
 export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', task: { __typename?: 'Task', id: string, title: string, status: TaskStatus } } };
 
 export type CompleteTaskMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
+  input: CompleteTaskInput;
 }>;
 
 
@@ -159,8 +159,8 @@ export type ListTasksQueryVariables = Exact<{
 export type ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
 
 export const CreateTaskDocument = gql`
-    mutation CreateTask($title: String!) {
-  createTask(input: {title: $title}) {
+    mutation CreateTask($input: CreateTaskInput!) {
+  createTask(input: $input) {
     task {
       id
       title
@@ -181,8 +181,8 @@ export const CreateTaskDocument = gql`
     }
   }
 export const CompleteTaskDocument = gql`
-    mutation CompleteTask($id: ID!) {
-  completeTask(input: {id: $id}) {
+    mutation CompleteTask($input: CompleteTaskInput!) {
+  completeTask(input: $input) {
     task {
       id
       title

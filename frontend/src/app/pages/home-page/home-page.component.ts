@@ -107,7 +107,9 @@ export class HomePageComponent implements OnInit {
     try {
       await firstValueFrom(
         this.completeTaskGQL.mutate({
-          id: task.id,
+          input: {
+            id: task.id,
+          },
         }),
       );
     } catch (e) {
