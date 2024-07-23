@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	"app/domain/nodeid"
 	"app/domain/service"
 	"app/internal/testutil"
-	"app/library/idutil"
 )
 
 func setUpNodeService(t *testing.T, _ *gomock.Controller) (*service.NodeService, *Mocks) {
@@ -33,7 +33,7 @@ func TestNodeService(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
 	var (
-		task1ID = idutil.EncodeTaskID(1)
+		task1ID = nodeid.Encode(1, nodeid.TypeTask)
 	)
 	{
 		var f *os.File

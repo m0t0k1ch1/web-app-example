@@ -13,11 +13,11 @@ import (
 
 	"app/container"
 	"app/domain/model"
+	"app/domain/nodeid"
 	"app/domain/validation"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
 	"app/library/gqlerrutil"
-	"app/library/idutil"
 )
 
 type TaskService struct {
@@ -59,7 +59,7 @@ func (in *TaskServiceListInput) Validate() error {
 				return oops.Errorf("invalid after")
 			}
 
-			idInDB, err := idutil.DecodeTaskID(cursor.ID)
+			idInDB, err := nodeid.DecodeByType(cursor.ID, nodeid.TypeTask)
 			if err != nil {
 				return oops.Errorf("invalid after")
 			}
@@ -237,7 +237,7 @@ func (in *TaskServiceCompleteInput) Validate() error {
 		return err
 	}
 
-	idInDB, err := idutil.DecodeTaskID(in.ID)
+	idInDB, err := nodeid.DecodeByType(in.ID, nodeid.TypeTask)
 	if err != nil {
 		return oops.Errorf("invalid id")
 	}

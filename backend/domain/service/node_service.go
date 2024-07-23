@@ -8,11 +8,11 @@ import (
 	"github.com/samber/oops"
 
 	"app/container"
+	"app/domain/nodeid"
 	"app/domain/validation"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
 	"app/library/gqlerrutil"
-	"app/library/idutil"
 )
 
 type NodeService struct {
@@ -30,8 +30,8 @@ func NewNodeService(
 type NodeServiceGetInput struct {
 	ID string `validate:"required" en:"id"`
 
-	resourceName string
-	idInDB       uint64
+	idInDB     uint64
+	nodeIDType nodeid.Type
 }
 
 func (in *NodeServiceGetInput) Validate() error {
@@ -39,13 +39,13 @@ func (in *NodeServiceGetInput) Validate() error {
 		return err
 	}
 
-	resourceName, idInDB, err := idutil.Decode(in.ID)
+	idInDB, nodeIDType, err := nodeid.Decode(in.ID)
 	if err != nil {
 		return oops.Errorf("invalid id")
 	}
 
-	in.resourceName = resourceName
 	in.idInDB = idInDB
+	in.nodeIDType = nodeIDType
 
 	return nil
 }
@@ -61,9 +61,9 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 
 	qdb := mysql.New(s.mysqlContainer.App)
 
-	switch in.resourceName {
+	switch in.nodeIDType {
 
-	case idutil.ResourceNameTask:
+	case nodeid.TypeTask:
 		taskInDB, err := qdb.GetTask(ctx, in.idInDB)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -78,6 +78,6 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 		}, nil
 
 	default:
-		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected resource name: %s", in.resourceName))
+		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected node id type: %s", in.nodeIDType))
 	}
 }
