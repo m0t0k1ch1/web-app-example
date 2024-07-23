@@ -4,14 +4,14 @@ import (
 	"github.com/samber/oops"
 
 	"app/domain/model"
+	"app/domain/nodeid"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
-	"app/library/idutil"
 )
 
 func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	return &gqlgen.Task{
-		Id:     idutil.EncodeTaskID(taskInDB.ID),
+		Id:     nodeid.Encode(taskInDB.ID, nodeid.TypeTask),
 		Title:  taskInDB.Title,
 		Status: taskInDB.Status,
 	}
