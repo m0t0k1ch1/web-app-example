@@ -74,7 +74,7 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 		}
 
 		return NodeServiceGetOutput{
-			Node: convertIntoTask(taskInDB),
+			Node: ConvertIntoTask(taskInDB),
 		}, nil
 
 	default:

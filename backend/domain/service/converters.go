@@ -9,7 +9,7 @@ import (
 	"app/gen/sqlc/mysql"
 )
 
-func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
+func ConvertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	return &gqlgen.Task{
 		Id:     nodeid.Encode(taskInDB.ID, nodeid.TypeTask),
 		Title:  taskInDB.Title,
@@ -17,11 +17,11 @@ func convertIntoTask(taskInDB mysql.Task) *gqlgen.Task {
 	}
 }
 
-func convertIntoTaskEdges(taskInDBs []mysql.Task, paginationCursorParams model.PaginationCursorParams) ([]*gqlgen.TaskEdge, error) {
+func ConvertIntoTaskEdges(taskInDBs []mysql.Task, paginationCursorParams model.PaginationCursorParams) ([]*gqlgen.TaskEdge, error) {
 	taskEdges := make([]*gqlgen.TaskEdge, len(taskInDBs))
 	{
 		for idx, taskInDB := range taskInDBs {
-			task := convertIntoTask(taskInDB)
+			task := ConvertIntoTask(taskInDB)
 
 			taskCursor := model.PaginationCursor{
 				ID:     task.Id,

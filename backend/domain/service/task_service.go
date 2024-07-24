@@ -134,7 +134,7 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 			taskInDBs = taskInDBs[:in.First]
 		}
 
-		edges, err = convertIntoTaskEdges(taskInDBs, model.PaginationCursorParams{
+		edges, err = ConvertIntoTaskEdges(taskInDBs, model.PaginationCursorParams{
 			TaskStatus: in.Status,
 		})
 		if err != nil {
@@ -222,7 +222,7 @@ func (s *TaskService) Create(ctx context.Context, in TaskServiceCreateInput) (Ta
 	}
 
 	return TaskServiceCreateOutput{
-		Task: convertIntoTask(taskInDB),
+		Task: ConvertIntoTask(taskInDB),
 	}, nil
 }
 
@@ -309,6 +309,6 @@ func (s *TaskService) Complete(ctx context.Context, in TaskServiceCompleteInput)
 	}
 
 	return TaskServiceCompleteOutput{
-		Task: convertIntoTask(taskInDB),
+		Task: ConvertIntoTask(taskInDB),
 	}, nil
 }
