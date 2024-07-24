@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	TypeTask = "Task"
+	TypeTask Type = "Task"
 
 	separator = ":"
 )
