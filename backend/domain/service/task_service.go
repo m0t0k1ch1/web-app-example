@@ -103,14 +103,14 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 						After:  *in.idInDBInAfter,
 						Limit:  limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks after cursor by status"))
+						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks after cursor by status")
 					}
 				} else {
 					if taskInDBs, err = qdb.ListFirstTasksByStatus(ctx, mysql.ListFirstTasksByStatusParams{
 						Status: *in.Status,
 						Limit:  limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks by status"))
+						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks by status")
 					}
 				}
 			} else {
@@ -119,11 +119,11 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 						After: *in.idInDBInAfter,
 						Limit: limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks after cursor"))
+						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks after cursor")
 					}
 				} else {
 					if taskInDBs, err = qdb.ListFirstTasks(ctx, limit); err != nil {
-						return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to list first tasks"))
+						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks")
 					}
 				}
 			}
@@ -138,7 +138,7 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 			TaskStatus: in.Status,
 		})
 		if err != nil {
-			return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to convert into task edges"))
+			return TaskServiceListOutput{}, oops.Wrapf(err, "failed to convert into task edges")
 		}
 	}
 
@@ -157,11 +157,11 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 
 		if in.Status != nil {
 			if totalCnt, err = qdb.CountTasksByStatus(ctx, *in.Status); err != nil {
-				return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to count tasks by status"))
+				return TaskServiceListOutput{}, oops.Wrapf(err, "failed to count tasks by status")
 			}
 		} else {
 			if totalCnt, err = qdb.CountAllTasks(ctx); err != nil {
-				return TaskServiceListOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to count tasks"))
+				return TaskServiceListOutput{}, oops.Wrapf(err, "failed to count tasks")
 			}
 		}
 	}
@@ -208,11 +208,11 @@ func (s *TaskService) Create(ctx context.Context, in TaskServiceCreateInput) (Ta
 				UpdatedAt: now,
 				CreatedAt: now,
 			}); txnErr != nil {
-				return gqlerrutil.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to create task"))
+				return oops.Wrapf(txnErr, "failed to create task")
 			}
 
 			if taskInDB, txnErr = qtxn.GetTask(txnCtx, uint64(id)); txnErr != nil {
-				return gqlerrutil.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to get task"))
+				return oops.Wrapf(txnErr, "failed to get task")
 			}
 
 			return
@@ -264,7 +264,7 @@ func (s *TaskService) Complete(ctx context.Context, in TaskServiceCompleteInput)
 			return TaskServiceCompleteOutput{}, nil
 		}
 
-		return TaskServiceCompleteOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to get task"))
+		return TaskServiceCompleteOutput{}, oops.Wrapf(err, "failed to get task")
 	}
 	if taskInDB.Status == gqlgen.TaskStatusCompleted {
 		return TaskServiceCompleteOutput{}, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("task already completed"))
@@ -280,7 +280,7 @@ func (s *TaskService) Complete(ctx context.Context, in TaskServiceCompleteInput)
 				return nil
 			}
 
-			return gqlerrutil.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to get task for update"))
+			return oops.Wrapf(txnErr, "failed to get task for update")
 		}
 		if taskInDB.Status == gqlgen.TaskStatusCompleted {
 			return gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("task already completed"))
@@ -292,11 +292,11 @@ func (s *TaskService) Complete(ctx context.Context, in TaskServiceCompleteInput)
 			ID:        taskInDB.ID,
 			UpdatedAt: now,
 		}); txnErr != nil {
-			return gqlerrutil.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to complete task"))
+			return oops.Wrapf(txnErr, "failed to complete task")
 		}
 
 		if taskInDB, txnErr = qtxn.GetTask(txnCtx, taskInDB.ID); txnErr != nil {
-			return gqlerrutil.NewInternalServerError(txnCtx, oops.Wrapf(txnErr, "failed to get task"))
+			return oops.Wrapf(txnErr, "failed to get task")
 		}
 
 		return
