@@ -70,7 +70,7 @@ func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServ
 				return NodeServiceGetOutput{}, nil
 			}
 
-			return NodeServiceGetOutput{}, gqlerrutil.NewInternalServerError(ctx, oops.Wrapf(err, "failed to get task"))
+			return NodeServiceGetOutput{}, oops.Wrapf(err, "failed to get task")
 		}
 
 		return NodeServiceGetOutput{
