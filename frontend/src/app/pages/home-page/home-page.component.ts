@@ -19,7 +19,7 @@ import {
 
 import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
 
-import { NotificationService } from '../../services/notification.service';
+import { ErrorService } from '../../services/error.service';
 
 import * as utils from '../../utils';
 
@@ -36,7 +36,7 @@ export class HomePageComponent implements OnInit {
   private listTasksGQL = inject(ListTasksForHomePageGQL);
   private completeTaskGQL = inject(CompleteTaskGQL);
 
-  private notificationService = inject(NotificationService);
+  private errorService = inject(ErrorService);
 
   private listTasksQuery: QueryRef<
     ListTasksForHomePageQuery,
@@ -79,7 +79,7 @@ export class HomePageComponent implements OnInit {
         result = await this.listTasksQuery.result();
       }
     } catch (e) {
-      this.notificationService.unexpectedError(e);
+      this.errorService.handle(e);
       return;
     }
 
@@ -94,7 +94,7 @@ export class HomePageComponent implements OnInit {
           },
         });
       } catch (e) {
-        this.notificationService.unexpectedError(e);
+        this.errorService.handle(e);
         return;
       }
 
@@ -118,7 +118,7 @@ export class HomePageComponent implements OnInit {
         }),
       );
     } catch (e) {
-      this.notificationService.unexpectedError(e);
+      this.errorService.handle(e);
       this.isTaskCompleting = false;
       return;
     }

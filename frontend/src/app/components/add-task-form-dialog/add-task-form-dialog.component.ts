@@ -15,7 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 
 import { CreateTaskGQL } from '../../../gen/graphql-codegen/schema';
 
-import { NotificationService } from '../../services/notification.service';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-add-task-form-dialog',
@@ -37,7 +37,7 @@ export class AddTaskFormDialogComponent {
 
   private createTaskGQL = inject(CreateTaskGQL);
 
-  private notificationService = inject(NotificationService);
+  private errorService = inject(ErrorService);
 
   public form = new FormGroup({
     title: new FormControl('', [Validators.required, Validators.maxLength(32)]),
@@ -82,7 +82,7 @@ export class AddTaskFormDialogComponent {
         }),
       );
     } catch (e) {
-      this.notificationService.unexpectedError(e);
+      this.errorService.handle(e);
       return;
     }
 
