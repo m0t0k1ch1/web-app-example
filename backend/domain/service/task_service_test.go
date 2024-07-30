@@ -95,9 +95,11 @@ func TestTaskService(t *testing.T) {
 		{
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				First: 3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				nil,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -128,17 +130,18 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: true,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 		{
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				After: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
+			taskConnection, err := taskService.List(ctx,
+				nil,
+				coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 					ID: task3.Id,
 				})),
-				First: 3,
-			})
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -163,7 +166,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 
@@ -175,10 +178,11 @@ func TestTaskService(t *testing.T) {
 
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				Status: &status,
-				First:  3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				&status,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -221,7 +225,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: true,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 		{
 			var (
@@ -230,16 +234,16 @@ func TestTaskService(t *testing.T) {
 
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				Status: &status,
-				After: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
+			taskConnection, err := taskService.List(ctx,
+				&status,
+				coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 					ID: task3.Id,
 					Params: model.PaginationCursorParams{
 						TaskStatus: &status,
 					},
 				})),
-				First: 3,
-			})
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -273,7 +277,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 
@@ -285,10 +289,11 @@ func TestTaskService(t *testing.T) {
 
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				Status: &status,
-				First:  3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				&status,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -298,7 +303,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 0,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 
@@ -326,9 +331,11 @@ func TestTaskService(t *testing.T) {
 		{
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				First: 3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				nil,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -359,17 +366,18 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: true,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 		{
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				After: coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
+			taskConnection, err := taskService.List(ctx,
+				nil,
+				coreutil.Ptr(encodePaginationCursor(t, model.PaginationCursor{
 					ID: task3.Id,
 				})),
-				First: 3,
-			})
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -394,7 +402,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 5,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 
@@ -406,10 +414,11 @@ func TestTaskService(t *testing.T) {
 
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				Status: &status,
-				First:  3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				&status,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -452,7 +461,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 3,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 
@@ -464,10 +473,11 @@ func TestTaskService(t *testing.T) {
 
 			taskService, _ := setUpTaskService(t, mockCtrl)
 
-			out, err := taskService.List(ctx, service.TaskServiceListInput{
-				Status: &status,
-				First:  3,
-			})
+			taskConnection, err := taskService.List(ctx,
+				&status,
+				nil,
+				3,
+			)
 			require.Nil(t, err)
 
 			testutil.Equal(t, &gqlgen.TaskConnection{
@@ -501,7 +511,7 @@ func TestTaskService(t *testing.T) {
 					HasNextPage: false,
 				},
 				TotalCount: 2,
-			}, out.TaskConnection)
+			}, taskConnection)
 		}
 	})
 }

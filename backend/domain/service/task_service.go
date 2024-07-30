@@ -35,51 +35,39 @@ func NewTaskService(
 	}
 }
 
-type TaskServiceListInput struct {
-	Status *gqlgen.TaskStatus `validate:"" en:"status"`
-	After  *string            `validate:"" en:"after"`
-	First  int32              `validate:"gte=0,lte=100" en:"first"`
-
-	idInDBInAfter *uint64
-}
-
-func (in *TaskServiceListInput) Validate() error {
-	if err := validation.Struct(in); err != nil {
-		return err
-	}
-
-	var idInDBInAfter *uint64
+func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after *string, first int32) (*gqlgen.TaskConnection, error) {
+	var (
+		taskIDInDBInAfter *uint64
+	)
 	{
-		if in.After != nil {
-			cursor, err := model.DecodePaginationCursor(*in.After)
+		var (
+			errInvalidAfter = oops.Errorf("invalid after")
+		)
+
+		if after != nil {
+			cursor, err := model.DecodePaginationCursor(*after)
 			if err != nil {
-				return oops.Errorf("invalid after")
+				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
 			}
-			if !cmp.Equal(cursor.Params.TaskStatus, in.Status) {
-				return oops.Errorf("invalid after")
+			if !cmp.Equal(cursor.Params.TaskStatus, status) {
+				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
 			}
 
-			idInDB, err := nodeid.DecodeByType(cursor.ID, nodeid.TypeTask)
+			taskIDInDB, err := nodeid.DecodeByType(cursor.ID, nodeid.TypeTask)
 			if err != nil {
-				return oops.Errorf("invalid after")
+				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
 			}
 
-			idInDBInAfter = &idInDB
+			taskIDInDBInAfter = &taskIDInDB
 		}
-	}
 
-	in.idInDBInAfter = idInDBInAfter
-
-	return nil
-}
-
-type TaskServiceListOutput struct {
-	TaskConnection *gqlgen.TaskConnection
-}
-
-func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskServiceListOutput, error) {
-	if err := in.Validate(); err != nil {
-		return TaskServiceListOutput{}, gqlerrutil.NewBadUserInputError(ctx, err)
+		if err := validation.Struct(struct {
+			First int32 `validate:"gte=0,lte=100" en:"first"`
+		}{
+			First: first,
+		}); err != nil {
+			return nil, gqlerrutil.NewBadUserInputError(ctx, err)
+		}
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
@@ -94,51 +82,51 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 			err       error
 		)
 		{
-			limit := in.First + 1
+			limit := first + 1
 
-			if in.Status != nil {
-				if in.After != nil {
+			if status != nil {
+				if after != nil {
 					if taskInDBs, err = qdb.ListFirstTasksAfterCursorByStatus(ctx, mysql.ListFirstTasksAfterCursorByStatusParams{
-						Status: *in.Status,
-						After:  *in.idInDBInAfter,
+						Status: *status,
+						After:  *taskIDInDBInAfter,
 						Limit:  limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks after cursor by status")
+						return nil, oops.Wrapf(err, "failed to list first tasks after cursor by status")
 					}
 				} else {
 					if taskInDBs, err = qdb.ListFirstTasksByStatus(ctx, mysql.ListFirstTasksByStatusParams{
-						Status: *in.Status,
+						Status: *status,
 						Limit:  limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks by status")
+						return nil, oops.Wrapf(err, "failed to list first tasks by status")
 					}
 				}
 			} else {
-				if in.After != nil {
+				if after != nil {
 					if taskInDBs, err = qdb.ListFirstTasksAfterCursor(ctx, mysql.ListFirstTasksAfterCursorParams{
-						After: *in.idInDBInAfter,
+						After: *taskIDInDBInAfter,
 						Limit: limit,
 					}); err != nil {
-						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks after cursor")
+						return nil, oops.Wrapf(err, "failed to list first tasks after cursor")
 					}
 				} else {
 					if taskInDBs, err = qdb.ListFirstTasks(ctx, limit); err != nil {
-						return TaskServiceListOutput{}, oops.Wrapf(err, "failed to list first tasks")
+						return nil, oops.Wrapf(err, "failed to list first tasks")
 					}
 				}
 			}
 		}
 
-		hasNextPage = len(taskInDBs) > int(in.First)
+		hasNextPage = len(taskInDBs) > int(first)
 		if hasNextPage {
-			taskInDBs = taskInDBs[:in.First]
+			taskInDBs = taskInDBs[:first]
 		}
 
 		edges, err = ConvertIntoTaskEdges(taskInDBs, model.PaginationCursorParams{
-			TaskStatus: in.Status,
+			TaskStatus: status,
 		})
 		if err != nil {
-			return TaskServiceListOutput{}, oops.Wrapf(err, "failed to convert into task edges")
+			return nil, oops.Wrapf(err, "failed to convert into task edges")
 		}
 	}
 
@@ -155,26 +143,24 @@ func (s *TaskService) List(ctx context.Context, in TaskServiceListInput) (TaskSe
 	{
 		var err error
 
-		if in.Status != nil {
-			if totalCnt, err = qdb.CountTasksByStatus(ctx, *in.Status); err != nil {
-				return TaskServiceListOutput{}, oops.Wrapf(err, "failed to count tasks by status")
+		if status != nil {
+			if totalCnt, err = qdb.CountTasksByStatus(ctx, *status); err != nil {
+				return nil, oops.Wrapf(err, "failed to count tasks by status")
 			}
 		} else {
 			if totalCnt, err = qdb.CountAllTasks(ctx); err != nil {
-				return TaskServiceListOutput{}, oops.Wrapf(err, "failed to count tasks")
+				return nil, oops.Wrapf(err, "failed to count tasks")
 			}
 		}
 	}
 
-	return TaskServiceListOutput{
-		TaskConnection: &gqlgen.TaskConnection{
-			Edges: edges,
-			PageInfo: &gqlgen.PageInfo{
-				EndCursor:   endCursor,
-				HasNextPage: hasNextPage,
-			},
-			TotalCount: gqlutil.Int64(totalCnt),
+	return &gqlgen.TaskConnection{
+		Edges: edges,
+		PageInfo: &gqlgen.PageInfo{
+			EndCursor:   endCursor,
+			HasNextPage: hasNextPage,
 		},
+		TotalCount: gqlutil.Int64(totalCnt),
 	}, nil
 }
 
