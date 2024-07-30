@@ -47,7 +47,7 @@ func (BadRequestError) IsCompleteTaskError() {}
 
 type CompleteTaskInput struct {
 	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Id               string  `json:"id" validate:"required"`
+	Id               string  `json:"id" validate:"required" en:"id"`
 }
 
 type CompleteTaskPayload struct {
@@ -58,7 +58,7 @@ type CompleteTaskPayload struct {
 
 type CreateTaskInput struct {
 	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Title            string  `json:"title" validate:"min=1,max=32"`
+	Title            string  `json:"title" validate:"min=1,max=32" en:"title"`
 }
 
 type CreateTaskPayload struct {

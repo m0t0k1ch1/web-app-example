@@ -498,7 +498,9 @@ type TaskConnection implements IConnection {
 
 input CreateTaskInput {
   clientMutationId: String
-  title: String! @goTag(key: "validate", value: "min=1,max=32")
+  title: String!
+    @goTag(key: "validate", value: "min=1,max=32")
+    @goTag(key: "en", value: "title")
 }
 
 type CreateTaskPayload {
@@ -512,7 +514,9 @@ union CreateTaskError = BadRequestError
 
 input CompleteTaskInput {
   clientMutationId: String
-  id: ID! @goTag(key: "validate", value: "required")
+  id: ID!
+    @goTag(key: "validate", value: "required")
+    @goTag(key: "en", value: "id")
 }
 
 type CompleteTaskPayload {
