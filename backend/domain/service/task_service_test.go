@@ -43,51 +43,51 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: create task1", func(t *testing.T) {
 		{
-			out := testTaskServiceCreateSuccess(t, ctx, service.TaskServiceCreateInput{
+			payload := testTaskServiceCreateSuccess(t, ctx, gqlgen.CreateTaskInput{
 				Title: "task1.title",
 			})
 
-			task1 = out.Task
+			task1 = payload.Task
 		}
 	})
 
 	t.Run("success: create task2", func(t *testing.T) {
 		{
-			out := testTaskServiceCreateSuccess(t, ctx, service.TaskServiceCreateInput{
+			payload := testTaskServiceCreateSuccess(t, ctx, gqlgen.CreateTaskInput{
 				Title: "task2.title",
 			})
 
-			task2 = out.Task
+			task2 = payload.Task
 		}
 	})
 
 	t.Run("success: create task3", func(t *testing.T) {
 		{
-			out := testTaskServiceCreateSuccess(t, ctx, service.TaskServiceCreateInput{
+			payload := testTaskServiceCreateSuccess(t, ctx, gqlgen.CreateTaskInput{
 				Title: "task3.title",
 			})
 
-			task3 = out.Task
+			task3 = payload.Task
 		}
 	})
 
 	t.Run("success: create task4", func(t *testing.T) {
 		{
-			out := testTaskServiceCreateSuccess(t, ctx, service.TaskServiceCreateInput{
+			payload := testTaskServiceCreateSuccess(t, ctx, gqlgen.CreateTaskInput{
 				Title: "task4.title",
 			})
 
-			task4 = out.Task
+			task4 = payload.Task
 		}
 	})
 
 	t.Run("success: create task5", func(t *testing.T) {
 		{
-			out := testTaskServiceCreateSuccess(t, ctx, service.TaskServiceCreateInput{
+			payload := testTaskServiceCreateSuccess(t, ctx, gqlgen.CreateTaskInput{
 				Title: "task5.title",
 			})
 
-			task5 = out.Task
+			task5 = payload.Task
 		}
 	})
 
@@ -304,21 +304,21 @@ func TestTaskService(t *testing.T) {
 
 	t.Run("success: complete task2", func(t *testing.T) {
 		{
-			out := testTaskServiceCompleteSuccess(t, ctx, service.TaskServiceCompleteInput{
-				ID: task2.Id,
+			payload := testTaskServiceCompleteSuccess(t, ctx, gqlgen.CompleteTaskInput{
+				Id: task2.Id,
 			})
 
-			task2 = out.Task
+			task2 = payload.Task
 		}
 	})
 
 	t.Run("success: complete task4", func(t *testing.T) {
 		{
-			out := testTaskServiceCompleteSuccess(t, ctx, service.TaskServiceCompleteInput{
-				ID: task4.Id,
+			payload := testTaskServiceCompleteSuccess(t, ctx, gqlgen.CompleteTaskInput{
+				Id: task4.Id,
 			})
 
-			task4 = out.Task
+			task4 = payload.Task
 		}
 	})
 
@@ -506,30 +506,30 @@ func TestTaskService(t *testing.T) {
 	})
 }
 
-func testTaskServiceCreateSuccess(t *testing.T, ctx context.Context, in service.TaskServiceCreateInput) service.TaskServiceCreateOutput {
+func testTaskServiceCreateSuccess(t *testing.T, ctx context.Context, input gqlgen.CreateTaskInput) *gqlgen.CreateTaskPayload {
 	t.Helper()
 
 	taskService, _ := setUpTaskService(t, nil)
 
-	out, err := taskService.Create(ctx, in)
+	payload, err := taskService.Create(ctx, input)
 	require.Nil(t, err)
 
-	testutil.Equal(t, in.Title, out.Task.Title)
-	testutil.Equal(t, gqlgen.TaskStatusUncompleted, out.Task.Status)
+	testutil.Equal(t, input.Title, payload.Task.Title)
+	testutil.Equal(t, gqlgen.TaskStatusUncompleted, payload.Task.Status)
 
-	return out
+	return payload
 }
 
-func testTaskServiceCompleteSuccess(t *testing.T, ctx context.Context, in service.TaskServiceCompleteInput) service.TaskServiceCompleteOutput {
+func testTaskServiceCompleteSuccess(t *testing.T, ctx context.Context, input gqlgen.CompleteTaskInput) *gqlgen.CompleteTaskPayload {
 	t.Helper()
 
 	taskService, _ := setUpTaskService(t, nil)
 
-	out, err := taskService.Complete(ctx, in)
+	payload, err := taskService.Complete(ctx, input)
 	require.Nil(t, err)
 
-	testutil.Equal(t, in.ID, out.Task.Id)
-	testutil.Equal(t, gqlgen.TaskStatusCompleted, out.Task.Status)
+	testutil.Equal(t, input.Id, payload.Task.Id)
+	testutil.Equal(t, gqlgen.TaskStatusCompleted, payload.Task.Status)
 
-	return out
+	return payload
 }

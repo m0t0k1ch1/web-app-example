@@ -12,42 +12,12 @@ import (
 
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input gqlgen.CreateTaskInput) (*gqlgen.CreateTaskPayload, error) {
-	var task *gqlgen.Task
-	{
-		out, err := r.taskService.Create(ctx, service.TaskServiceCreateInput{
-			Title: input.Title,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		task = out.Task
-	}
-
-	return &gqlgen.CreateTaskPayload{
-		ClientMutationId: input.ClientMutationId,
-		Task:             task,
-	}, nil
+	return r.taskService.Create(ctx, input)
 }
 
 // CompleteTask is the resolver for the completeTask field.
 func (r *mutationResolver) CompleteTask(ctx context.Context, input gqlgen.CompleteTaskInput) (*gqlgen.CompleteTaskPayload, error) {
-	var task *gqlgen.Task
-	{
-		out, err := r.taskService.Complete(ctx, service.TaskServiceCompleteInput{
-			ID: input.Id,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		task = out.Task
-	}
-
-	return &gqlgen.CompleteTaskPayload{
-		ClientMutationId: input.ClientMutationId,
-		Task:             task,
-	}, nil
+	return r.taskService.Complete(ctx, input)
 }
 
 // Tasks is the resolver for the tasks field.
