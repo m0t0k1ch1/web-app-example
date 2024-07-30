@@ -22,7 +22,7 @@ type TaskConnection implements IConnection {
 
 input CreateTaskInput {
   clientMutationId: String
-  title: String!
+  title: String! @goTag(key: "validate", value: "min=1,max=32")
 }
 
 type CreateTaskPayload {
@@ -36,7 +36,7 @@ union CreateTaskError = BadRequestError
 
 input CompleteTaskInput {
   clientMutationId: String
-  id: ID!
+  id: ID! @goTag(key: "validate", value: "required")
 }
 
 type CompleteTaskPayload {
