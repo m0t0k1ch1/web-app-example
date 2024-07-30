@@ -29,7 +29,7 @@ input CreateTaskInput {
 
 type CreateTaskPayload {
   clientMutationId: String
-  task: Task!
+  task: Task
 
   error: CreateTaskError
 }
