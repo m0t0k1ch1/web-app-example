@@ -28,7 +28,11 @@ input CreateTaskInput {
 type CreateTaskPayload {
   clientMutationId: String
   task: Task!
+
+  error: CreateTaskError
 }
+
+union CreateTaskError = BadRequestError
 
 input CompleteTaskInput {
   clientMutationId: String
@@ -38,7 +42,11 @@ input CompleteTaskInput {
 type CompleteTaskPayload {
   clientMutationId: String
   task: Task
+
+  error: CompleteTaskError
 }
+
+union CompleteTaskError = BadRequestError
 
 extend type Query {
   tasks(status: TaskStatus, after: String, first: Int32!): TaskConnection!

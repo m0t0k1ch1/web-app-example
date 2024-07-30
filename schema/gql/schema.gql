@@ -28,6 +28,14 @@ type NoopPayload {
   clientMutationId: String
 }
 
+interface Error {
+  message: String!
+}
+
+type BadRequestError implements Error {
+  message: String!
+}
+
 type Query {
   node(id: ID!): Node
 }
