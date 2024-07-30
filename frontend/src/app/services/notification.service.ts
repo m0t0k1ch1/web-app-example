@@ -12,6 +12,15 @@ export class NotificationService {
 
   constructor() {}
 
+  public badRequest(err: any): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'BAD REQUEST',
+      detail: utils.stringifyError(err),
+      life: 5_000,
+    });
+  }
+
   public unexpectedError(err: any): void {
     this.messageService.add({
       severity: 'error',

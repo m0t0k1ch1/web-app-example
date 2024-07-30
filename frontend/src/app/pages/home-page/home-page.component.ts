@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
 import { ApolloQueryResult } from '@apollo/client/core';
-import { QueryRef } from 'apollo-angular';
+import { MutationResult, QueryRef } from 'apollo-angular';
 
 import { CheckboxModule } from 'primeng/checkbox';
 
 import {
   CompleteTaskGQL,
+  CompleteTaskMutation,
   ListTasksForHomePageGQL,
   ListTasksForHomePageQuery,
   ListTasksForHomePageQueryVariables,
@@ -20,6 +21,7 @@ import {
 import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
 
 import { ErrorService } from '../../services/error.service';
+import { NotificationService } from '../../services/notification.service';
 
 import * as utils from '../../utils';
 
@@ -37,6 +39,7 @@ export class HomePageComponent implements OnInit {
   private completeTaskGQL = inject(CompleteTaskGQL);
 
   private errorService = inject(ErrorService);
+  private notificationService = inject(NotificationService);
 
   private listTasksQuery: QueryRef<
     ListTasksForHomePageQuery,
@@ -109,18 +112,35 @@ export class HomePageComponent implements OnInit {
 
     this.isTaskCompleting = true;
 
-    try {
-      await firstValueFrom(
-        this.completeTaskGQL.mutate({
-          input: {
-            id: task.id,
-          },
-        }),
-      );
-    } catch (e) {
-      this.errorService.handle(e);
-      this.isTaskCompleting = false;
-      return;
+    let payload: MutationResult<CompleteTaskMutation>;
+    {
+      try {
+        payload = await firstValueFrom(
+          this.completeTaskGQL.mutate({
+            input: {
+              id: task.id,
+            },
+          }),
+        );
+      } catch (e) {
+        this.errorService.handle(e);
+        this.isTaskCompleting = false;
+        return;
+      }
+    }
+    {
+      const err = payload.data!.completeTask.error;
+      if (err !== undefined && err !== null) {
+        switch (err.__typename) {
+          case 'BadRequestError':
+            this.notificationService.badRequest(err.message);
+            break;
+          default:
+            this.errorService.handle(new Error(err.message));
+        }
+        this.isTaskCompleting = false;
+        return;
+      }
     }
 
     await utils.sleep(500);
