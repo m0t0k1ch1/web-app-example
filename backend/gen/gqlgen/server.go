@@ -505,7 +505,7 @@ input CreateTaskInput {
 
 type CreateTaskPayload {
   clientMutationId: String
-  task: Task!
+  task: Task
 
   error: CreateTaskError
 }
@@ -927,14 +927,11 @@ func (ec *executionContext) _CreateTaskPayload_task(ctx context.Context, field g
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖappᚋgenᚋgqlgenᚐTask(ctx, field.Selections, res)
+	return ec.marshalOTask2ᚖappᚋgenᚋgqlgenᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CreateTaskPayload_task(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3976,9 +3973,6 @@ func (ec *executionContext) _CreateTaskPayload(ctx context.Context, sel ast.Sele
 			out.Values[i] = ec._CreateTaskPayload_clientMutationId(ctx, field, obj)
 		case "task":
 			out.Values[i] = ec._CreateTaskPayload_task(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "error":
 			out.Values[i] = ec._CreateTaskPayload_error(ctx, field, obj)
 		default:

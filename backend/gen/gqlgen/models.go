@@ -63,7 +63,7 @@ type CreateTaskInput struct {
 
 type CreateTaskPayload struct {
 	ClientMutationId *string         `json:"clientMutationId,omitempty"`
-	Task             *Task           `json:"task"`
+	Task             *Task           `json:"task,omitempty"`
 	Error            CreateTaskError `json:"error,omitempty"`
 }
 
