@@ -5,6 +5,11 @@ mutation CreateTask($input: CreateTaskInput!) {
       title
       status
     }
+    error {
+      ... on BadRequestError {
+        message
+      }
+    }
   }
 }
 
@@ -14,6 +19,11 @@ mutation CompleteTask($input: CompleteTaskInput!) {
       id
       title
       status
+    }
+    error {
+      ... on BadRequestError {
+        message
+      }
     }
   }
 }

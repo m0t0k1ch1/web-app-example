@@ -10,9 +10,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 import {
   CompleteTaskGQL,
-  ListTasksGQL,
-  ListTasksQuery,
-  ListTasksQueryVariables,
+  ListTasksForHomePageGQL,
+  ListTasksForHomePageQuery,
+  ListTasksForHomePageQueryVariables,
   Task,
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
@@ -23,6 +23,8 @@ import { NotificationService } from '../../services/notification.service';
 
 import * as utils from '../../utils';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-home-page',
   standalone: true,
@@ -31,12 +33,15 @@ import * as utils from '../../utils';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent implements OnInit {
-  private listTasksGQL = inject(ListTasksGQL);
+  private listTasksGQL = inject(ListTasksForHomePageGQL);
   private completeTaskGQL = inject(CompleteTaskGQL);
 
   private notificationService = inject(NotificationService);
 
-  private listTasksQuery: QueryRef<ListTasksQuery, ListTasksQueryVariables>;
+  private listTasksQuery: QueryRef<
+    ListTasksForHomePageQuery,
+    ListTasksForHomePageQueryVariables
+  >;
 
   public tasks: Task[] = [];
   public checkedTaskIDs: string[] = [];
@@ -46,7 +51,7 @@ export class HomePageComponent implements OnInit {
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
       status: TaskStatus.Uncompleted,
-      first: 100,
+      first: environment.graphql.edgeCountInPage,
     });
   }
 
@@ -55,7 +60,7 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks(refetch: boolean = false): Promise<void> {
-    const extractTasks = (_query: ListTasksQuery): Task[] => {
+    const extractTasks = (_query: ListTasksForHomePageQuery): Task[] => {
       return (
         _query.tasks.edges
           // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
@@ -65,7 +70,7 @@ export class HomePageComponent implements OnInit {
       );
     };
 
-    let result: ApolloQueryResult<ListTasksQuery>;
+    let result: ApolloQueryResult<ListTasksForHomePageQuery>;
 
     try {
       if (refetch) {
