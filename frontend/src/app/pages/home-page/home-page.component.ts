@@ -4,24 +4,28 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
 import { ApolloQueryResult } from '@apollo/client/core';
-import { QueryRef } from 'apollo-angular';
+import { MutationResult, QueryRef } from 'apollo-angular';
 
 import { CheckboxModule } from 'primeng/checkbox';
 
 import {
   CompleteTaskGQL,
-  ListTasksGQL,
-  ListTasksQuery,
-  ListTasksQueryVariables,
+  CompleteTaskMutation,
+  ListTasksForHomePageGQL,
+  ListTasksForHomePageQuery,
+  ListTasksForHomePageQueryVariables,
   Task,
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
 
 import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
 
+import { ErrorService } from '../../services/error.service';
 import { NotificationService } from '../../services/notification.service';
 
 import * as utils from '../../utils';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-page',
@@ -31,12 +35,16 @@ import * as utils from '../../utils';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent implements OnInit {
-  private listTasksGQL = inject(ListTasksGQL);
+  private listTasksGQL = inject(ListTasksForHomePageGQL);
   private completeTaskGQL = inject(CompleteTaskGQL);
 
+  private errorService = inject(ErrorService);
   private notificationService = inject(NotificationService);
 
-  private listTasksQuery: QueryRef<ListTasksQuery, ListTasksQueryVariables>;
+  private listTasksQuery: QueryRef<
+    ListTasksForHomePageQuery,
+    ListTasksForHomePageQueryVariables
+  >;
 
   public tasks: Task[] = [];
   public checkedTaskIDs: string[] = [];
@@ -46,7 +54,7 @@ export class HomePageComponent implements OnInit {
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
       status: TaskStatus.Uncompleted,
-      first: 100,
+      first: environment.graphql.edgeCountInPage,
     });
   }
 
@@ -55,7 +63,7 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks(refetch: boolean = false): Promise<void> {
-    const extractTasks = (_query: ListTasksQuery): Task[] => {
+    const extractTasks = (_query: ListTasksForHomePageQuery): Task[] => {
       return (
         _query.tasks.edges
           // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
@@ -65,7 +73,7 @@ export class HomePageComponent implements OnInit {
       );
     };
 
-    let result: ApolloQueryResult<ListTasksQuery>;
+    let result: ApolloQueryResult<ListTasksForHomePageQuery>;
 
     try {
       if (refetch) {
@@ -74,7 +82,7 @@ export class HomePageComponent implements OnInit {
         result = await this.listTasksQuery.result();
       }
     } catch (e) {
-      this.notificationService.unexpectedError(e);
+      this.errorService.handle(e);
       return;
     }
 
@@ -89,7 +97,7 @@ export class HomePageComponent implements OnInit {
           },
         });
       } catch (e) {
-        this.notificationService.unexpectedError(e);
+        this.errorService.handle(e);
         return;
       }
 
@@ -104,18 +112,35 @@ export class HomePageComponent implements OnInit {
 
     this.isTaskCompleting = true;
 
-    try {
-      await firstValueFrom(
-        this.completeTaskGQL.mutate({
-          input: {
-            id: task.id,
-          },
-        }),
-      );
-    } catch (e) {
-      this.notificationService.unexpectedError(e);
-      this.isTaskCompleting = false;
-      return;
+    let payload: MutationResult<CompleteTaskMutation>;
+    {
+      try {
+        payload = await firstValueFrom(
+          this.completeTaskGQL.mutate({
+            input: {
+              id: task.id,
+            },
+          }),
+        );
+      } catch (e) {
+        this.errorService.handle(e);
+        this.isTaskCompleting = false;
+        return;
+      }
+    }
+    {
+      const err = payload.data!.completeTask.error;
+      if (err !== undefined && err !== null) {
+        switch (err.__typename) {
+          case 'BadRequestError':
+            this.notificationService.badRequest(err.message);
+            break;
+          default:
+            this.errorService.handle(new Error(err.message));
+        }
+        this.isTaskCompleting = false;
+        return;
+      }
     }
 
     await utils.sleep(500);

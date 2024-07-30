@@ -9,12 +9,18 @@ import {
 } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
+import { MutationResult } from 'apollo-angular';
+
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 
-import { CreateTaskGQL } from '../../../gen/graphql-codegen/schema';
+import {
+  CreateTaskGQL,
+  CreateTaskMutation,
+} from '../../../gen/graphql-codegen/schema';
 
+import { ErrorService } from '../../services/error.service';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
@@ -37,6 +43,7 @@ export class AddTaskFormDialogComponent {
 
   private createTaskGQL = inject(CreateTaskGQL);
 
+  private errorService = inject(ErrorService);
   private notificationService = inject(NotificationService);
 
   public form = new FormGroup({
@@ -73,17 +80,33 @@ export class AddTaskFormDialogComponent {
 
     const title = this.titleControl.value;
 
-    try {
-      await firstValueFrom(
-        this.createTaskGQL.mutate({
-          input: {
-            title: title,
-          },
-        }),
-      );
-    } catch (e) {
-      this.notificationService.unexpectedError(e);
-      return;
+    let payload: MutationResult<CreateTaskMutation>;
+    {
+      try {
+        payload = await firstValueFrom(
+          this.createTaskGQL.mutate({
+            input: {
+              title: title,
+            },
+          }),
+        );
+      } catch (e) {
+        this.errorService.handle(e);
+        return;
+      }
+    }
+    {
+      const err = payload.data!.createTask.error;
+      if (err !== undefined && err !== null) {
+        switch (err.__typename) {
+          case 'BadRequestError':
+            this.notificationService.badRequest(err.message);
+            break;
+          default:
+            this.errorService.handle(new Error(err.message));
+        }
+        return;
+      }
     }
 
     this.complete.emit();

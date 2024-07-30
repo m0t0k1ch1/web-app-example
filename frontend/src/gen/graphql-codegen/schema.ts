@@ -24,6 +24,13 @@ export type Scalars = {
   Uint64: { input: Uint64String; output: Uint64String; }
 };
 
+export type BadRequestError = Error & {
+  __typename?: 'BadRequestError';
+  message: Scalars['String']['output'];
+};
+
+export type CompleteTaskError = BadRequestError;
+
 export type CompleteTaskInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -32,8 +39,11 @@ export type CompleteTaskInput = {
 export type CompleteTaskPayload = {
   __typename?: 'CompleteTaskPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
+  error?: Maybe<CompleteTaskError>;
   task?: Maybe<Task>;
 };
+
+export type CreateTaskError = BadRequestError;
 
 export type CreateTaskInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
@@ -43,7 +53,12 @@ export type CreateTaskInput = {
 export type CreateTaskPayload = {
   __typename?: 'CreateTaskPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
-  task: Task;
+  error?: Maybe<CreateTaskError>;
+  task?: Maybe<Task>;
+};
+
+export type Error = {
+  message: Scalars['String']['output'];
 };
 
 export type IConnection = {
@@ -140,23 +155,23 @@ export type CreateTaskMutationVariables = Exact<{
 }>;
 
 
-export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', task: { __typename?: 'Task', id: string, title: string, status: TaskStatus } } };
+export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null, error?: { __typename?: 'BadRequestError', message: string } | null } };
 
 export type CompleteTaskMutationVariables = Exact<{
   input: CompleteTaskInput;
 }>;
 
 
-export type CompleteTaskMutation = { __typename?: 'Mutation', completeTask: { __typename?: 'CompleteTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null } };
+export type CompleteTaskMutation = { __typename?: 'Mutation', completeTask: { __typename?: 'CompleteTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null, error?: { __typename?: 'BadRequestError', message: string } | null } };
 
-export type ListTasksQueryVariables = Exact<{
+export type ListTasksForHomePageQueryVariables = Exact<{
   status: TaskStatus;
   after?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int32']['input'];
 }>;
 
 
-export type ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
+export type ListTasksForHomePageQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
 
 export const CreateTaskDocument = gql`
     mutation CreateTask($input: CreateTaskInput!) {
@@ -165,6 +180,11 @@ export const CreateTaskDocument = gql`
       id
       title
       status
+    }
+    error {
+      ... on BadRequestError {
+        message
+      }
     }
   }
 }
@@ -188,6 +208,11 @@ export const CompleteTaskDocument = gql`
       title
       status
     }
+    error {
+      ... on BadRequestError {
+        message
+      }
+    }
   }
 }
     `;
@@ -202,8 +227,8 @@ export const CompleteTaskDocument = gql`
       super(apollo);
     }
   }
-export const ListTasksDocument = gql`
-    query ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
+export const ListTasksForHomePageDocument = gql`
+    query ListTasksForHomePage($status: TaskStatus!, $after: String, $first: Int32!) {
   tasks(status: $status, after: $after, first: $first) {
     edges {
       node {
@@ -223,8 +248,8 @@ export const ListTasksDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class ListTasksGQL extends Apollo.Query<ListTasksQuery, ListTasksQueryVariables> {
-    document = ListTasksDocument;
+  export class ListTasksForHomePageGQL extends Apollo.Query<ListTasksForHomePageQuery, ListTasksForHomePageQueryVariables> {
+    document = ListTasksForHomePageDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -6,6 +6,11 @@ scalar Uint32
 
 scalar Uint64
 
+directive @goTag(
+  key: String!
+  value: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
 interface Node {
   id: ID!
 }
@@ -26,6 +31,14 @@ input NoopInput {
 
 type NoopPayload {
   clientMutationId: String
+}
+
+interface Error {
+  message: String!
+}
+
+type BadRequestError implements Error {
+  message: String!
 }
 
 type Query {
