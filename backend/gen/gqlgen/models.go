@@ -10,6 +10,19 @@ import (
 	"github.com/m0t0k1ch1-go/gqlutil"
 )
 
+type CompleteTaskError interface {
+	IsCompleteTaskError()
+}
+
+type CreateTaskError interface {
+	IsCreateTaskError()
+}
+
+type Error interface {
+	IsError()
+	GetMessage() string
+}
+
 type IConnection interface {
 	IsIConnection()
 	GetPageInfo() *PageInfo
@@ -21,24 +34,37 @@ type Node interface {
 	GetId() string
 }
 
+type BadRequestError struct {
+	Message string `json:"message"`
+}
+
+func (BadRequestError) IsError()                {}
+func (this BadRequestError) GetMessage() string { return this.Message }
+
+func (BadRequestError) IsCreateTaskError() {}
+
+func (BadRequestError) IsCompleteTaskError() {}
+
 type CompleteTaskInput struct {
 	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Id               string  `json:"id"`
+	Id               string  `json:"id" validate:"required"`
 }
 
 type CompleteTaskPayload struct {
-	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Task             *Task   `json:"task,omitempty"`
+	ClientMutationId *string           `json:"clientMutationId,omitempty"`
+	Task             *Task             `json:"task,omitempty"`
+	Error            CompleteTaskError `json:"error,omitempty"`
 }
 
 type CreateTaskInput struct {
 	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Title            string  `json:"title"`
+	Title            string  `json:"title" validate:"min=1,max=32"`
 }
 
 type CreateTaskPayload struct {
-	ClientMutationId *string `json:"clientMutationId,omitempty"`
-	Task             *Task   `json:"task"`
+	ClientMutationId *string         `json:"clientMutationId,omitempty"`
+	Task             *Task           `json:"task"`
+	Error            CreateTaskError `json:"error,omitempty"`
 }
 
 type Mutation struct {

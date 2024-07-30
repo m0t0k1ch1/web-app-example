@@ -46,13 +46,19 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	BadRequestError struct {
+		Message func(childComplexity int) int
+	}
+
 	CompleteTaskPayload struct {
 		ClientMutationId func(childComplexity int) int
+		Error            func(childComplexity int) int
 		Task             func(childComplexity int) int
 	}
 
 	CreateTaskPayload struct {
 		ClientMutationId func(childComplexity int) int
+		Error            func(childComplexity int) int
 		Task             func(childComplexity int) int
 	}
 
@@ -123,12 +129,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "BadRequestError.message":
+		if e.complexity.BadRequestError.Message == nil {
+			break
+		}
+
+		return e.complexity.BadRequestError.Message(childComplexity), true
+
 	case "CompleteTaskPayload.clientMutationId":
 		if e.complexity.CompleteTaskPayload.ClientMutationId == nil {
 			break
 		}
 
 		return e.complexity.CompleteTaskPayload.ClientMutationId(childComplexity), true
+
+	case "CompleteTaskPayload.error":
+		if e.complexity.CompleteTaskPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.CompleteTaskPayload.Error(childComplexity), true
 
 	case "CompleteTaskPayload.task":
 		if e.complexity.CompleteTaskPayload.Task == nil {
@@ -143,6 +163,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CreateTaskPayload.ClientMutationId(childComplexity), true
+
+	case "CreateTaskPayload.error":
+		if e.complexity.CreateTaskPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.CreateTaskPayload.Error(childComplexity), true
 
 	case "CreateTaskPayload.task":
 		if e.complexity.CreateTaskPayload.Task == nil {
@@ -404,6 +431,11 @@ scalar Uint32
 
 scalar Uint64
 
+directive @goTag(
+  key: String!
+  value: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
 interface Node {
   id: ID!
 }
@@ -424,6 +456,14 @@ input NoopInput {
 
 type NoopPayload {
   clientMutationId: String
+}
+
+interface Error {
+  message: String!
+}
+
+type BadRequestError implements Error {
+  message: String!
 }
 
 type Query {
@@ -458,23 +498,31 @@ type TaskConnection implements IConnection {
 
 input CreateTaskInput {
   clientMutationId: String
-  title: String!
+  title: String! @goTag(key: "validate", value: "min=1,max=32")
 }
 
 type CreateTaskPayload {
   clientMutationId: String
   task: Task!
+
+  error: CreateTaskError
 }
+
+union CreateTaskError = BadRequestError
 
 input CompleteTaskInput {
   clientMutationId: String
-  id: ID!
+  id: ID! @goTag(key: "validate", value: "required")
 }
 
 type CompleteTaskPayload {
   clientMutationId: String
   task: Task
+
+  error: CompleteTaskError
 }
+
+union CompleteTaskError = BadRequestError
 
 extend type Query {
   tasks(status: TaskStatus, after: String, first: Int32!): TaskConnection!
@@ -638,6 +686,50 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _BadRequestError_message(ctx context.Context, field graphql.CollectedField, obj *BadRequestError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BadRequestError_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BadRequestError_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BadRequestError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CompleteTaskPayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *CompleteTaskPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CompleteTaskPayload_clientMutationId(ctx, field)
 	if err != nil {
@@ -723,6 +815,47 @@ func (ec *executionContext) fieldContext_CompleteTaskPayload_task(_ context.Cont
 				return ec.fieldContext_Task_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CompleteTaskPayload_error(ctx context.Context, field graphql.CollectedField, obj *CompleteTaskPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CompleteTaskPayload_error(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(CompleteTaskError)
+	fc.Result = res
+	return ec.marshalOCompleteTaskError2appᚋgenᚋgqlgenᚐCompleteTaskError(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CompleteTaskPayload_error(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CompleteTaskPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CompleteTaskError does not have child fields")
 		},
 	}
 	return fc, nil
@@ -816,6 +949,47 @@ func (ec *executionContext) fieldContext_CreateTaskPayload_task(_ context.Contex
 				return ec.fieldContext_Task_status(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateTaskPayload_error(ctx context.Context, field graphql.CollectedField, obj *CreateTaskPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateTaskPayload_error(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(CreateTaskError)
+	fc.Result = res
+	return ec.marshalOCreateTaskError2appᚋgenᚋgqlgenᚐCreateTaskError(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateTaskPayload_error(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateTaskPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type CreateTaskError does not have child fields")
 		},
 	}
 	return fc, nil
@@ -923,6 +1097,8 @@ func (ec *executionContext) fieldContext_Mutation_createTask(ctx context.Context
 				return ec.fieldContext_CreateTaskPayload_clientMutationId(ctx, field)
 			case "task":
 				return ec.fieldContext_CreateTaskPayload_task(ctx, field)
+			case "error":
+				return ec.fieldContext_CreateTaskPayload_error(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CreateTaskPayload", field.Name)
 		},
@@ -984,6 +1160,8 @@ func (ec *executionContext) fieldContext_Mutation_completeTask(ctx context.Conte
 				return ec.fieldContext_CompleteTaskPayload_clientMutationId(ctx, field)
 			case "task":
 				return ec.fieldContext_CompleteTaskPayload_task(ctx, field)
+			case "error":
+				return ec.fieldContext_CompleteTaskPayload_error(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CompleteTaskPayload", field.Name)
 		},
@@ -3616,6 +3794,54 @@ func (ec *executionContext) unmarshalInputNoopInput(ctx context.Context, obj int
 
 // region    ************************** interface.gotpl ***************************
 
+func (ec *executionContext) _CompleteTaskError(ctx context.Context, sel ast.SelectionSet, obj CompleteTaskError) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case BadRequestError:
+		return ec._BadRequestError(ctx, sel, &obj)
+	case *BadRequestError:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._BadRequestError(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
+func (ec *executionContext) _CreateTaskError(ctx context.Context, sel ast.SelectionSet, obj CreateTaskError) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case BadRequestError:
+		return ec._BadRequestError(ctx, sel, &obj)
+	case *BadRequestError:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._BadRequestError(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
+func (ec *executionContext) _Error(ctx context.Context, sel ast.SelectionSet, obj Error) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case BadRequestError:
+		return ec._BadRequestError(ctx, sel, &obj)
+	case *BadRequestError:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._BadRequestError(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 func (ec *executionContext) _IConnection(ctx context.Context, sel ast.SelectionSet, obj IConnection) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
@@ -3652,6 +3878,45 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 
 // region    **************************** object.gotpl ****************************
 
+var badRequestErrorImplementors = []string{"BadRequestError", "Error", "CreateTaskError", "CompleteTaskError"}
+
+func (ec *executionContext) _BadRequestError(ctx context.Context, sel ast.SelectionSet, obj *BadRequestError) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, badRequestErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BadRequestError")
+		case "message":
+			out.Values[i] = ec._BadRequestError_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var completeTaskPayloadImplementors = []string{"CompleteTaskPayload"}
 
 func (ec *executionContext) _CompleteTaskPayload(ctx context.Context, sel ast.SelectionSet, obj *CompleteTaskPayload) graphql.Marshaler {
@@ -3667,6 +3932,8 @@ func (ec *executionContext) _CompleteTaskPayload(ctx context.Context, sel ast.Se
 			out.Values[i] = ec._CompleteTaskPayload_clientMutationId(ctx, field, obj)
 		case "task":
 			out.Values[i] = ec._CompleteTaskPayload_task(ctx, field, obj)
+		case "error":
+			out.Values[i] = ec._CompleteTaskPayload_error(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3708,6 +3975,8 @@ func (ec *executionContext) _CreateTaskPayload(ctx context.Context, sel ast.Sele
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "error":
+			out.Values[i] = ec._CreateTaskPayload_error(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4932,6 +5201,20 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCompleteTaskError2appᚋgenᚋgqlgenᚐCompleteTaskError(ctx context.Context, sel ast.SelectionSet, v CompleteTaskError) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CompleteTaskError(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCreateTaskError2appᚋgenᚋgqlgenᚐCreateTaskError(ctx context.Context, sel ast.SelectionSet, v CreateTaskError) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CreateTaskError(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalONode2appᚋgenᚋgqlgenᚐNode(ctx context.Context, sel ast.SelectionSet, v Node) graphql.Marshaler {
