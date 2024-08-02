@@ -9,7 +9,6 @@ import (
 
 	"app/container"
 	"app/domain/nodeid"
-	"app/domain/validation"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
 	"app/library/gqlerrutil"
@@ -27,57 +26,29 @@ func NewNodeService(
 	}
 }
 
-type NodeServiceGetInput struct {
-	ID string `validate:"required" en:"id"`
-
-	idInDB     uint64
-	nodeIDType nodeid.Type
-}
-
-func (in *NodeServiceGetInput) Validate() error {
-	if err := validation.Struct(in); err != nil {
-		return err
-	}
-
-	idInDB, nodeIDType, err := nodeid.Decode(in.ID)
+func (s *NodeService) Get(ctx context.Context, id string) (gqlgen.Node, error) {
+	idInDB, nodeIDType, err := nodeid.Decode(id)
 	if err != nil {
-		return oops.Errorf("invalid id")
-	}
-
-	in.idInDB = idInDB
-	in.nodeIDType = nodeIDType
-
-	return nil
-}
-
-type NodeServiceGetOutput struct {
-	Node gqlgen.Node
-}
-
-func (s *NodeService) Get(ctx context.Context, in NodeServiceGetInput) (NodeServiceGetOutput, error) {
-	if err := in.Validate(); err != nil {
-		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, err)
+		return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("invalid id"))
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
 
-	switch in.nodeIDType {
+	switch nodeIDType {
 
 	case nodeid.TypeTask:
-		taskInDB, err := qdb.GetTask(ctx, in.idInDB)
+		taskInDB, err := qdb.GetTask(ctx, idInDB)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return NodeServiceGetOutput{}, nil
+				return nil, nil
 			}
 
-			return NodeServiceGetOutput{}, oops.Wrapf(err, "failed to get task")
+			return nil, oops.Wrapf(err, "failed to get task")
 		}
 
-		return NodeServiceGetOutput{
-			Node: ConvertIntoTask(taskInDB),
-		}, nil
+		return ConvertIntoTask(taskInDB), nil
 
 	default:
-		return NodeServiceGetOutput{}, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected node id type: %s", in.nodeIDType))
+		return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected node id type: %s", nodeIDType))
 	}
 }

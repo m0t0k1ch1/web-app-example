@@ -58,12 +58,10 @@ func TestNodeService(t *testing.T) {
 		{
 			nodeService, _ := setUpNodeService(t, mockCtrl)
 
-			out, err := nodeService.Get(ctx, service.NodeServiceGetInput{
-				ID: task1ID,
-			})
+			node, err := nodeService.Get(ctx, task1ID)
 			require.Nil(t, err)
 
-			testutil.Equal(t, task1ID, out.Node.GetId())
+			testutil.Equal(t, task1ID, node.GetId())
 		}
 	})
 }
