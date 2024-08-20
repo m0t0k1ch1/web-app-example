@@ -9,6 +9,7 @@ import (
 
 type PaginationCursor struct {
 	ID     string                 `json:"id"`
+	Offset int32                  `json:"offset"`
 	Params PaginationCursorParams `json:"params"`
 }
 
