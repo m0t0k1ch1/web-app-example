@@ -26,23 +26,22 @@ func (q *Queries) CompleteTask(ctx context.Context, arg CompleteTaskParams) erro
 	return err
 }
 
-const countAllTasks = `-- name: CountAllTasks :one
+const countTasks = `-- name: CountTasks :one
 SELECT COUNT(*) FROM task
+WHERE
+  CASE WHEN CAST(? AS UNSIGNED) > 0
+    THEN status = ?
+    ELSE 1
+  END
 `
 
-func (q *Queries) CountAllTasks(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countAllTasks)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+type CountTasksParams struct {
+	SetStatus int64
+	Status    gqlgen.TaskStatus
 }
 
-const countTasksByStatus = `-- name: CountTasksByStatus :one
-SELECT COUNT(*) FROM task WHERE status = ?
-`
-
-func (q *Queries) CountTasksByStatus(ctx context.Context, status gqlgen.TaskStatus) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countTasksByStatus, status)
+func (q *Queries) CountTasks(ctx context.Context, arg CountTasksParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countTasks, arg.SetStatus, arg.Status)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
