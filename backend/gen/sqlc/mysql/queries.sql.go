@@ -101,55 +101,29 @@ func (q *Queries) GetTaskForUpdate(ctx context.Context, id uint64) (Task, error)
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, title, status, updated_at, created_at FROM task ORDER BY id LIMIT ? OFFSET ?
+SELECT id, title, status, updated_at, created_at FROM task
+WHERE
+  CASE WHEN CAST(? AS UNSIGNED) > 0
+    THEN status = ?
+    ELSE 1
+  END
+ORDER BY id LIMIT ? OFFSET ?
 `
 
 type ListTasksParams struct {
-	Limit  int32
-	Offset int32
+	SetStatus int64
+	Status    gqlgen.TaskStatus
+	Limit     int32
+	Offset    int32
 }
 
 func (q *Queries) ListTasks(ctx context.Context, arg ListTasksParams) ([]Task, error) {
-	rows, err := q.db.QueryContext(ctx, listTasks, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Task
-	for rows.Next() {
-		var i Task
-		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Status,
-			&i.UpdatedAt,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listTasksByStatus = `-- name: ListTasksByStatus :many
-SELECT id, title, status, updated_at, created_at FROM task WHERE status = ? ORDER BY id LIMIT ? OFFSET ?
-`
-
-type ListTasksByStatusParams struct {
-	Status gqlgen.TaskStatus
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) ListTasksByStatus(ctx context.Context, arg ListTasksByStatusParams) ([]Task, error) {
-	rows, err := q.db.QueryContext(ctx, listTasksByStatus, arg.Status, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listTasks,
+		arg.SetStatus,
+		arg.Status,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}

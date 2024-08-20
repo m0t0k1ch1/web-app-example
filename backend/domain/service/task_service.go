@@ -37,12 +37,17 @@ func NewTaskService(
 
 func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after *string, first int32) (*gqlgen.TaskConnection, error) {
 	var (
-		offset int32
+		params mysql.ListTasksParams
 	)
 	{
 		var (
 			errInvalidAfter = oops.Errorf("invalid after")
 		)
+
+		if status != nil {
+			params.SetStatus = 1
+			params.Status = *status
+		}
 
 		if after != nil {
 			cursor, err := model.DecodePaginationCursor(*after)
@@ -53,7 +58,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
 			}
 
-			offset = cursor.Offset
+			params.Offset = cursor.Offset
 		}
 
 		if err := validation.Struct(struct {
@@ -63,6 +68,8 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 		}); err != nil {
 			return nil, gqlerrutil.NewBadUserInputError(ctx, err)
 		}
+
+		params.Limit = first + 1
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
@@ -72,29 +79,9 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 		hasNextPage bool
 	)
 	{
-		var (
-			taskInDBs []mysql.Task
-			err       error
-		)
-		{
-			limit := first + 1
-
-			if status != nil {
-				if taskInDBs, err = qdb.ListTasksByStatus(ctx, mysql.ListTasksByStatusParams{
-					Status: *status,
-					Limit:  limit,
-					Offset: offset,
-				}); err != nil {
-					return nil, oops.Wrapf(err, "failed to list tasks by status")
-				}
-			} else {
-				if taskInDBs, err = qdb.ListTasks(ctx, mysql.ListTasksParams{
-					Limit:  limit,
-					Offset: offset,
-				}); err != nil {
-					return nil, oops.Wrapf(err, "failed to list tasks")
-				}
-			}
+		taskInDBs, err := qdb.ListTasks(ctx, params)
+		if err != nil {
+			return nil, oops.Wrapf(err, "failed to list tasks")
 		}
 
 		hasNextPage = len(taskInDBs) > int(first)
@@ -109,7 +96,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 
 				cursor, err := model.PaginationCursor{
 					ID:     task.Id,
-					Offset: offset + int32(idx) + 1,
+					Offset: params.Offset + int32(idx) + 1,
 					Params: model.PaginationCursorParams{
 						TaskStatus: status,
 					},
