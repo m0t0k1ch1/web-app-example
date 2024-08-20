@@ -37,7 +37,7 @@ func NewTaskService(
 
 func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after *string, first int32) (*gqlgen.TaskConnection, error) {
 	var (
-		taskIDInDBInAfter *uint64
+		offset int32
 	)
 	{
 		var (
@@ -53,12 +53,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
 			}
 
-			taskIDInDB, err := nodeid.DecodeByType(cursor.ID, nodeid.TypeTask)
-			if err != nil {
-				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
-			}
-
-			taskIDInDBInAfter = &taskIDInDB
+			offset = cursor.Offset
 		}
 
 		if err := validation.Struct(struct {
@@ -85,34 +80,19 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 			limit := first + 1
 
 			if status != nil {
-				if after != nil {
-					if taskInDBs, err = qdb.ListFirstTasksAfterCursorByStatus(ctx, mysql.ListFirstTasksAfterCursorByStatusParams{
-						Status: *status,
-						After:  *taskIDInDBInAfter,
-						Limit:  limit,
-					}); err != nil {
-						return nil, oops.Wrapf(err, "failed to list first tasks after cursor by status")
-					}
-				} else {
-					if taskInDBs, err = qdb.ListFirstTasksByStatus(ctx, mysql.ListFirstTasksByStatusParams{
-						Status: *status,
-						Limit:  limit,
-					}); err != nil {
-						return nil, oops.Wrapf(err, "failed to list first tasks by status")
-					}
+				if taskInDBs, err = qdb.ListTasksByStatus(ctx, mysql.ListTasksByStatusParams{
+					Status: *status,
+					Limit:  limit,
+					Offset: offset,
+				}); err != nil {
+					return nil, oops.Wrapf(err, "failed to list tasks by status")
 				}
 			} else {
-				if after != nil {
-					if taskInDBs, err = qdb.ListFirstTasksAfterCursor(ctx, mysql.ListFirstTasksAfterCursorParams{
-						After: *taskIDInDBInAfter,
-						Limit: limit,
-					}); err != nil {
-						return nil, oops.Wrapf(err, "failed to list first tasks after cursor")
-					}
-				} else {
-					if taskInDBs, err = qdb.ListFirstTasks(ctx, limit); err != nil {
-						return nil, oops.Wrapf(err, "failed to list first tasks")
-					}
+				if taskInDBs, err = qdb.ListTasks(ctx, mysql.ListTasksParams{
+					Limit:  limit,
+					Offset: offset,
+				}); err != nil {
+					return nil, oops.Wrapf(err, "failed to list tasks")
 				}
 			}
 		}
@@ -122,11 +102,27 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 			taskInDBs = taskInDBs[:first]
 		}
 
-		edges, err = ConvertIntoTaskEdges(taskInDBs, model.PaginationCursorParams{
-			TaskStatus: status,
-		})
-		if err != nil {
-			return nil, oops.Wrapf(err, "failed to convert into task edges")
+		edges = make([]*gqlgen.TaskEdge, len(taskInDBs))
+		{
+			for idx, taskInDB := range taskInDBs {
+				task := ConvertIntoTask(taskInDB)
+
+				cursor, err := model.PaginationCursor{
+					ID:     task.Id,
+					Offset: offset + int32(idx) + 1,
+					Params: model.PaginationCursorParams{
+						TaskStatus: status,
+					},
+				}.Encode()
+				if err != nil {
+					return nil, oops.Wrapf(err, "failed to encode cursor")
+				}
+
+				edges[idx] = &gqlgen.TaskEdge{
+					Cursor: cursor,
+					Node:   task,
+				}
+			}
 		}
 	}
 
