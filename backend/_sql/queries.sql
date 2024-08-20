@@ -14,10 +14,13 @@ SELECT * FROM task WHERE id = ?;
 SELECT * FROM task WHERE id = ? FOR UPDATE;
 
 -- name: ListTasks :many
-SELECT * FROM task ORDER BY id LIMIT ? OFFSET ?;
-
--- name: ListTasksByStatus :many
-SELECT * FROM task WHERE status = ? ORDER BY id LIMIT ? OFFSET ?;
+SELECT * FROM task
+WHERE
+  CASE WHEN CAST(sqlc.arg(set_status) AS UNSIGNED) > 0
+    THEN status = sqlc.arg(status)
+    ELSE 1
+  END
+ORDER BY id LIMIT ? OFFSET ?;
 
 -- name: CompleteTask :exec
 UPDATE task SET status = 'COMPLETED', updated_at = ? WHERE id = ?;
