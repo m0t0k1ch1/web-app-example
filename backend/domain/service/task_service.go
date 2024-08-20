@@ -37,39 +37,52 @@ func NewTaskService(
 
 func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after *string, first int32) (*gqlgen.TaskConnection, error) {
 	var (
-		params mysql.ListTasksParams
+		afterCursor model.PaginationCursor
 	)
 	{
-		var (
-			errInvalidAfter = oops.Errorf("invalid after")
-		)
+		{
+			if after != nil {
+				var (
+					err             error
+					errInvalidAfter = oops.Errorf("invalid after")
+				)
 
+				if afterCursor, err = model.DecodePaginationCursor(*after); err != nil {
+					return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
+				}
+				if !cmp.Equal(afterCursor.Params.TaskStatus, status) {
+					return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
+				}
+			}
+		}
+		{
+			if err := validation.Struct(struct {
+				First int32 `validate:"gte=0,lte=100" en:"first"`
+			}{
+				First: first,
+			}); err != nil {
+				return nil, gqlerrutil.NewBadUserInputError(ctx, err)
+			}
+		}
+	}
+
+	var listTasksParams mysql.ListTasksParams
+	{
 		if status != nil {
-			params.SetStatus = 1
-			params.Status = *status
+			listTasksParams.SetStatus = 1
+			listTasksParams.Status = *status
 		}
 
-		if after != nil {
-			cursor, err := model.DecodePaginationCursor(*after)
-			if err != nil {
-				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
-			}
-			if !cmp.Equal(cursor.Params.TaskStatus, status) {
-				return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
-			}
+		listTasksParams.Limit = first + 1
+		listTasksParams.Offset = afterCursor.Offset
+	}
 
-			params.Offset = cursor.Offset
+	var countTasksParams mysql.CountTasksParams
+	{
+		if status != nil {
+			countTasksParams.SetStatus = 1
+			countTasksParams.Status = *status
 		}
-
-		if err := validation.Struct(struct {
-			First int32 `validate:"gte=0,lte=100" en:"first"`
-		}{
-			First: first,
-		}); err != nil {
-			return nil, gqlerrutil.NewBadUserInputError(ctx, err)
-		}
-
-		params.Limit = first + 1
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
@@ -79,7 +92,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 		hasNextPage bool
 	)
 	{
-		taskInDBs, err := qdb.ListTasks(ctx, params)
+		taskInDBs, err := qdb.ListTasks(ctx, listTasksParams)
 		if err != nil {
 			return nil, oops.Wrapf(err, "failed to list tasks")
 		}
@@ -96,7 +109,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 
 				cursor, err := model.PaginationCursor{
 					ID:     task.Id,
-					Offset: params.Offset + int32(idx) + 1,
+					Offset: listTasksParams.Offset + int32(idx) + 1,
 					Params: model.PaginationCursorParams{
 						TaskStatus: status,
 					},
@@ -122,19 +135,9 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 		}
 	}
 
-	var totalCnt int64
-	{
-		var err error
-
-		if status != nil {
-			if totalCnt, err = qdb.CountTasksByStatus(ctx, *status); err != nil {
-				return nil, oops.Wrapf(err, "failed to count tasks by status")
-			}
-		} else {
-			if totalCnt, err = qdb.CountAllTasks(ctx); err != nil {
-				return nil, oops.Wrapf(err, "failed to count tasks")
-			}
-		}
+	totalCnt, err := qdb.CountTasks(ctx, countTasksParams)
+	if err != nil {
+		return nil, oops.Wrapf(err, "failed to count tasks")
 	}
 
 	return &gqlgen.TaskConnection{
