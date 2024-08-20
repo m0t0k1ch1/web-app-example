@@ -27,9 +27,19 @@ func NewNodeService(
 }
 
 func (s *NodeService) Get(ctx context.Context, id string) (gqlgen.Node, error) {
-	idInDB, nodeIDType, err := nodeid.Decode(id)
-	if err != nil {
-		return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("invalid id"))
+	var (
+		idInDB     uint64
+		nodeIDType nodeid.Type
+	)
+	{
+		{
+			var err error
+
+			idInDB, nodeIDType, err = nodeid.Decode(id)
+			if err != nil {
+				return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("invalid id"))
+			}
+		}
 	}
 
 	qdb := mysql.New(s.mysqlContainer.App)
