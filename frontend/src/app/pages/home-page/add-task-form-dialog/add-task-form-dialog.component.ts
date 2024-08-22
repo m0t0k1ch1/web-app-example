@@ -18,10 +18,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import {
   CreateTaskGQL,
   CreateTaskMutation,
-} from '../../../gen/graphql-codegen/schema';
+} from '../../../../gen/graphql-codegen/schema';
 
-import { ErrorService } from '../../services/error.service';
-import { NotificationService } from '../../services/notification.service';
+import { ErrorService } from '../../../services/error.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-add-task-form-dialog',

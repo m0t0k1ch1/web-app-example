@@ -18,7 +18,7 @@ import {
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
 
-import { AddTaskButtonComponent } from '../../components/add-task-button/add-task-button.component';
+import { AddTaskButtonComponent } from './add-task-button/add-task-button.component';
 
 import { ErrorService } from '../../services/error.service';
 import { NotificationService } from '../../services/notification.service';
