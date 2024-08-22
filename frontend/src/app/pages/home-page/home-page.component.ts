@@ -9,12 +9,12 @@ import { MutationResult, QueryRef } from 'apollo-angular';
 import { CheckboxModule } from 'primeng/checkbox';
 
 import {
-  HomePage_CompleteTaskGQL,
-  HomePage_CompleteTaskMutation,
+  TaskStatus,
   HomePage_ListTasksGQL,
   HomePage_ListTasksQuery,
   HomePage_ListTasksQueryVariables,
-  TaskStatus,
+  HomePage_CompleteTaskGQL,
+  HomePage_CompleteTaskMutation,
 } from '../../../gen/graphql-codegen/schema';
 
 import { AddTaskButtonComponent } from './add-task-button/add-task-button.component';
@@ -64,45 +64,47 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks(refetch: boolean = false): Promise<void> {
-    const extractTasks = (_query: HomePage_ListTasksQuery): Task[] => {
-      return (
-        _query.tasks.edges
-          // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
-          // 該当 Task がクエリ結果のキャッシュから除外されるわけではないことを考慮する必要がある。
-          .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
-          .map((_edge) => _edge.node)
-      );
-    };
+    {
+      const extractTasks = (_query: HomePage_ListTasksQuery): Task[] => {
+        return (
+          _query.tasks.edges
+            // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
+            // 該当 Task がクエリ結果のキャッシュから除外されるわけではないことを考慮する必要がある。
+            .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
+            .map((_edge) => _edge.node)
+        );
+      };
 
-    let result: ApolloQueryResult<HomePage_ListTasksQuery>;
+      let result: ApolloQueryResult<HomePage_ListTasksQuery>;
 
-    try {
-      if (refetch) {
-        result = await this.listTasksQuery.refetch();
-      } else {
-        result = await this.listTasksQuery.result();
-      }
-    } catch (e) {
-      this.errorService.handle(e);
-      return;
-    }
-
-    this.tasks = extractTasks(result.data);
-    this.isTasksReady = true;
-
-    while (result.data.tasks.pageInfo.hasNextPage) {
       try {
-        result = await this.listTasksQuery.fetchMore({
-          variables: {
-            after: result.data.tasks.pageInfo.endCursor,
-          },
-        });
+        if (refetch) {
+          result = await this.listTasksQuery.refetch();
+        } else {
+          result = await this.listTasksQuery.result();
+        }
       } catch (e) {
         this.errorService.handle(e);
         return;
       }
 
-      this.tasks.push(...extractTasks(result.data));
+      this.tasks = extractTasks(result.data);
+      this.isTasksReady = true;
+
+      while (result.data.tasks.pageInfo.hasNextPage) {
+        try {
+          result = await this.listTasksQuery.fetchMore({
+            variables: {
+              after: result.data.tasks.pageInfo.endCursor,
+            },
+          });
+        } catch (e) {
+          this.errorService.handle(e);
+          return;
+        }
+
+        this.tasks.push(...extractTasks(result.data));
+      }
     }
   }
 
@@ -114,10 +116,10 @@ export class HomePageComponent implements OnInit {
     this.isTaskCompleting = true;
 
     {
-      let payload: MutationResult<HomePage_CompleteTaskMutation>;
+      let result: MutationResult<HomePage_CompleteTaskMutation>;
       {
         try {
-          payload = await firstValueFrom(
+          result = await firstValueFrom(
             this.completeTaskGQL.mutate({
               input: {
                 id: task.id,
@@ -131,19 +133,17 @@ export class HomePageComponent implements OnInit {
         }
       }
 
-      {
-        const err = payload.data!.completeTask.error;
-        if (err !== undefined && err !== null) {
-          switch (err.__typename) {
-            case 'BadRequestError':
-              this.notificationService.badRequest(err.message);
-              break;
-            default:
-              this.errorService.handle(new Error(err.message));
-          }
-          this.isTaskCompleting = false;
-          return;
+      const err = result.data!.completeTask.error;
+      if (err !== undefined && err !== null) {
+        switch (err.__typename) {
+          case 'BadRequestError':
+            this.notificationService.badRequest(err.message);
+            break;
+          default:
+            this.errorService.handle(new Error(err.message));
         }
+        this.isTaskCompleting = false;
+        return;
       }
     }
 
