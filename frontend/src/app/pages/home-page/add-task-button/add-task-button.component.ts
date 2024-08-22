@@ -6,7 +6,7 @@ import { RippleModule } from 'primeng/ripple';
 import { AddTaskFormDialogComponent } from '../add-task-form-dialog/add-task-form-dialog.component';
 
 @Component({
-  selector: 'app-add-task-button',
+  selector: 'page-add-task-button',
   standalone: true,
   imports: [CommonModule, RippleModule, AddTaskFormDialogComponent],
   templateUrl: './add-task-button.component.html',

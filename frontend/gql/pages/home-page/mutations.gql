@@ -1,10 +1,5 @@
-mutation CreateTask($input: CreateTaskInput!) {
+mutation HomePage_CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
-    task {
-      id
-      title
-      status
-    }
     error {
       ... on BadRequestError {
         message
@@ -13,13 +8,8 @@ mutation CreateTask($input: CreateTaskInput!) {
   }
 }
 
-mutation CompleteTask($input: CompleteTaskInput!) {
+mutation HomePage_CompleteTask($input: CompleteTaskInput!) {
   completeTask(input: $input) {
-    task {
-      id
-      title
-      status
-    }
     error {
       ... on BadRequestError {
         message
