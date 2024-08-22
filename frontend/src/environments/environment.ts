@@ -3,6 +3,6 @@ export const environment = {
     url: 'http://localhost:8080/graphql',
   },
   graphql: {
-    edgeCountInPage: 100,
+    defaultEdgeCountInPage: 100,
   },
 };
