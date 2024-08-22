@@ -81,10 +81,10 @@ export class AddTaskFormDialogComponent {
     const title = this.titleControl.value;
 
     {
-      let payload: MutationResult<HomePage_CreateTaskMutation>;
+      let result: MutationResult<HomePage_CreateTaskMutation>;
       {
         try {
-          payload = await firstValueFrom(
+          result = await firstValueFrom(
             this.createTaskGQL.mutate({
               input: {
                 title: title,
@@ -97,18 +97,16 @@ export class AddTaskFormDialogComponent {
         }
       }
 
-      {
-        const err = payload.data!.createTask.error;
-        if (err !== undefined && err !== null) {
-          switch (err.__typename) {
-            case 'BadRequestError':
-              this.notificationService.badRequest(err.message);
-              break;
-            default:
-              this.errorService.handle(new Error(err.message));
-          }
-          return;
+      const err = result.data!.createTask.error;
+      if (err !== undefined && err !== null) {
+        switch (err.__typename) {
+          case 'BadRequestError':
+            this.notificationService.badRequest(err.message);
+            break;
+          default:
+            this.errorService.handle(new Error(err.message));
         }
+        return;
       }
     }
 
