@@ -80,32 +80,35 @@ export class AddTaskFormDialogComponent {
 
     const title = this.titleControl.value;
 
-    let payload: MutationResult<HomePage_CreateTaskMutation>;
     {
-      try {
-        payload = await firstValueFrom(
-          this.createTaskGQL.mutate({
-            input: {
-              title: title,
-            },
-          }),
-        );
-      } catch (e) {
-        this.errorService.handle(e);
-        return;
-      }
-    }
-    {
-      const err = payload.data!.createTask.error;
-      if (err !== undefined && err !== null) {
-        switch (err.__typename) {
-          case 'BadRequestError':
-            this.notificationService.badRequest(err.message);
-            break;
-          default:
-            this.errorService.handle(new Error(err.message));
+      let payload: MutationResult<HomePage_CreateTaskMutation>;
+      {
+        try {
+          payload = await firstValueFrom(
+            this.createTaskGQL.mutate({
+              input: {
+                title: title,
+              },
+            }),
+          );
+        } catch (e) {
+          this.errorService.handle(e);
+          return;
         }
-        return;
+      }
+
+      {
+        const err = payload.data!.createTask.error;
+        if (err !== undefined && err !== null) {
+          switch (err.__typename) {
+            case 'BadRequestError':
+              this.notificationService.badRequest(err.message);
+              break;
+            default:
+              this.errorService.handle(new Error(err.message));
+          }
+          return;
+        }
       }
     }
 

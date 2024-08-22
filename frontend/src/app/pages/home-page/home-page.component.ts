@@ -113,34 +113,37 @@ export class HomePageComponent implements OnInit {
 
     this.isTaskCompleting = true;
 
-    let payload: MutationResult<HomePage_CompleteTaskMutation>;
     {
-      try {
-        payload = await firstValueFrom(
-          this.completeTaskGQL.mutate({
-            input: {
-              id: task.id,
-            },
-          }),
-        );
-      } catch (e) {
-        this.errorService.handle(e);
-        this.isTaskCompleting = false;
-        return;
-      }
-    }
-    {
-      const err = payload.data!.completeTask.error;
-      if (err !== undefined && err !== null) {
-        switch (err.__typename) {
-          case 'BadRequestError':
-            this.notificationService.badRequest(err.message);
-            break;
-          default:
-            this.errorService.handle(new Error(err.message));
+      let payload: MutationResult<HomePage_CompleteTaskMutation>;
+      {
+        try {
+          payload = await firstValueFrom(
+            this.completeTaskGQL.mutate({
+              input: {
+                id: task.id,
+              },
+            }),
+          );
+        } catch (e) {
+          this.errorService.handle(e);
+          this.isTaskCompleting = false;
+          return;
         }
-        this.isTaskCompleting = false;
-        return;
+      }
+
+      {
+        const err = payload.data!.completeTask.error;
+        if (err !== undefined && err !== null) {
+          switch (err.__typename) {
+            case 'BadRequestError':
+              this.notificationService.badRequest(err.message);
+              break;
+            default:
+              this.errorService.handle(new Error(err.message));
+          }
+          this.isTaskCompleting = false;
+          return;
+        }
       }
     }
 
