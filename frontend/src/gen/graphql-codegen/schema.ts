@@ -150,37 +150,32 @@ export enum TaskStatus {
   Uncompleted = 'UNCOMPLETED'
 }
 
-export type CreateTaskMutationVariables = Exact<{
+export type HomePage_CreateTaskMutationVariables = Exact<{
   input: CreateTaskInput;
 }>;
 
 
-export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null, error?: { __typename?: 'BadRequestError', message: string } | null } };
+export type HomePage_CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'CreateTaskPayload', error?: { __typename?: 'BadRequestError', message: string } | null } };
 
-export type CompleteTaskMutationVariables = Exact<{
+export type HomePage_CompleteTaskMutationVariables = Exact<{
   input: CompleteTaskInput;
 }>;
 
 
-export type CompleteTaskMutation = { __typename?: 'Mutation', completeTask: { __typename?: 'CompleteTaskPayload', task?: { __typename?: 'Task', id: string, title: string, status: TaskStatus } | null, error?: { __typename?: 'BadRequestError', message: string } | null } };
+export type HomePage_CompleteTaskMutation = { __typename?: 'Mutation', completeTask: { __typename?: 'CompleteTaskPayload', error?: { __typename?: 'BadRequestError', message: string } | null } };
 
-export type ListTasksForHomePageQueryVariables = Exact<{
+export type HomePage_ListTasksQueryVariables = Exact<{
   status: TaskStatus;
   after?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int32']['input'];
 }>;
 
 
-export type ListTasksForHomePageQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
+export type HomePage_ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
 
-export const CreateTaskDocument = gql`
-    mutation CreateTask($input: CreateTaskInput!) {
+export const HomePage_CreateTaskDocument = gql`
+    mutation HomePage_CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
-    task {
-      id
-      title
-      status
-    }
     error {
       ... on BadRequestError {
         message
@@ -193,21 +188,16 @@ export const CreateTaskDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class CreateTaskGQL extends Apollo.Mutation<CreateTaskMutation, CreateTaskMutationVariables> {
-    document = CreateTaskDocument;
+  export class HomePage_CreateTaskGQL extends Apollo.Mutation<HomePage_CreateTaskMutation, HomePage_CreateTaskMutationVariables> {
+    document = HomePage_CreateTaskDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
     }
   }
-export const CompleteTaskDocument = gql`
-    mutation CompleteTask($input: CompleteTaskInput!) {
+export const HomePage_CompleteTaskDocument = gql`
+    mutation HomePage_CompleteTask($input: CompleteTaskInput!) {
   completeTask(input: $input) {
-    task {
-      id
-      title
-      status
-    }
     error {
       ... on BadRequestError {
         message
@@ -220,15 +210,15 @@ export const CompleteTaskDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class CompleteTaskGQL extends Apollo.Mutation<CompleteTaskMutation, CompleteTaskMutationVariables> {
-    document = CompleteTaskDocument;
+  export class HomePage_CompleteTaskGQL extends Apollo.Mutation<HomePage_CompleteTaskMutation, HomePage_CompleteTaskMutationVariables> {
+    document = HomePage_CompleteTaskDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
     }
   }
-export const ListTasksForHomePageDocument = gql`
-    query ListTasksForHomePage($status: TaskStatus!, $after: String, $first: Int32!) {
+export const HomePage_ListTasksDocument = gql`
+    query HomePage_ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
   tasks(status: $status, after: $after, first: $first) {
     edges {
       node {
@@ -248,8 +238,8 @@ export const ListTasksForHomePageDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class ListTasksForHomePageGQL extends Apollo.Query<ListTasksForHomePageQuery, ListTasksForHomePageQueryVariables> {
-    document = ListTasksForHomePageDocument;
+  export class HomePage_ListTasksGQL extends Apollo.Query<HomePage_ListTasksQuery, HomePage_ListTasksQueryVariables> {
+    document = HomePage_ListTasksDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

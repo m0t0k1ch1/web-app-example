@@ -1,8 +1,4 @@
-query ListTasksForHomePage(
-  $status: TaskStatus!
-  $after: String
-  $first: Int32!
-) {
+query HomePage_ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
   tasks(status: $status, after: $after, first: $first) {
     edges {
       node {

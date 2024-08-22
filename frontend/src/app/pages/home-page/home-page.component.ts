@@ -9,16 +9,17 @@ import { MutationResult, QueryRef } from 'apollo-angular';
 import { CheckboxModule } from 'primeng/checkbox';
 
 import {
-  CompleteTaskGQL,
-  CompleteTaskMutation,
-  ListTasksForHomePageGQL,
-  ListTasksForHomePageQuery,
-  ListTasksForHomePageQueryVariables,
-  Task,
+  HomePage_CompleteTaskGQL,
+  HomePage_CompleteTaskMutation,
+  HomePage_ListTasksGQL,
+  HomePage_ListTasksQuery,
+  HomePage_ListTasksQueryVariables,
   TaskStatus,
 } from '../../../gen/graphql-codegen/schema';
 
 import { AddTaskButtonComponent } from './add-task-button/add-task-button.component';
+
+import { Task } from '../../interfaces/pages/home-page';
 
 import { ErrorService } from '../../services/error.service';
 import { NotificationService } from '../../services/notification.service';
@@ -35,15 +36,15 @@ import { environment } from '../../../environments/environment';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent implements OnInit {
-  private listTasksGQL = inject(ListTasksForHomePageGQL);
-  private completeTaskGQL = inject(CompleteTaskGQL);
+  private listTasksGQL = inject(HomePage_ListTasksGQL);
+  private completeTaskGQL = inject(HomePage_CompleteTaskGQL);
 
   private errorService = inject(ErrorService);
   private notificationService = inject(NotificationService);
 
   private listTasksQuery: QueryRef<
-    ListTasksForHomePageQuery,
-    ListTasksForHomePageQueryVariables
+    HomePage_ListTasksQuery,
+    HomePage_ListTasksQueryVariables
   >;
 
   public tasks: Task[] = [];
@@ -63,17 +64,17 @@ export class HomePageComponent implements OnInit {
   }
 
   private async initTasks(refetch: boolean = false): Promise<void> {
-    const extractTasks = (_query: ListTasksForHomePageQuery): Task[] => {
+    const extractTasks = (_query: HomePage_ListTasksQuery): Task[] => {
       return (
         _query.tasks.edges
           // CompleteTask を実行した際、完了した Task 単体のキャッシュは更新される（status は TaskStatus.Completed になる）が、
-          // 該当 Task が ListTasksForHomePageQuery の結果のキャッシュから除外されるわけではないことを考慮する必要がある。
+          // 該当 Task がクエリ結果のキャッシュから除外されるわけではないことを考慮する必要がある。
           .filter((_edge) => _edge.node.status === TaskStatus.Uncompleted)
           .map((_edge) => _edge.node)
       );
     };
 
-    let result: ApolloQueryResult<ListTasksForHomePageQuery>;
+    let result: ApolloQueryResult<HomePage_ListTasksQuery>;
 
     try {
       if (refetch) {
@@ -112,7 +113,7 @@ export class HomePageComponent implements OnInit {
 
     this.isTaskCompleting = true;
 
-    let payload: MutationResult<CompleteTaskMutation>;
+    let payload: MutationResult<HomePage_CompleteTaskMutation>;
     {
       try {
         payload = await firstValueFrom(
