@@ -8,12 +8,12 @@ import * as utils from '../utils';
   providedIn: 'root',
 })
 export class NotificationService {
-  private messageService = inject(MessageService);
+  private primengMessageService = inject(MessageService);
 
   constructor() {}
 
   public badRequest(err: any): void {
-    this.messageService.add({
+    this.primengMessageService.add({
       severity: 'error',
       summary: 'BAD REQUEST',
       detail: utils.stringifyError(err),
@@ -22,7 +22,7 @@ export class NotificationService {
   }
 
   public unexpectedError(err: any): void {
-    this.messageService.add({
+    this.primengMessageService.add({
       severity: 'error',
       summary: 'UNEXPECTED ERROR',
       detail: utils.stringifyError(err),
