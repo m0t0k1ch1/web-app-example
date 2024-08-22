@@ -37,15 +37,15 @@ import { environment } from '../../../environments/environment';
 })
 export class HomePageComponent implements OnInit {
   private listTasksGQL = inject(HomePage_ListTasksGQL);
-  private completeTaskGQL = inject(HomePage_CompleteTaskGQL);
-
-  private errorService = inject(ErrorService);
-  private notificationService = inject(NotificationService);
-
   private listTasksQuery: QueryRef<
     HomePage_ListTasksQuery,
     HomePage_ListTasksQueryVariables
   >;
+
+  private completeTaskGQL = inject(HomePage_CompleteTaskGQL);
+
+  private errorService = inject(ErrorService);
+  private notificationService = inject(NotificationService);
 
   public tasks: Task[] = [];
   public checkedTaskIDs: string[] = [];
