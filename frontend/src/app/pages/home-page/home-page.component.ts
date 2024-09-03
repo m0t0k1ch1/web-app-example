@@ -55,7 +55,7 @@ export class HomePageComponent implements OnInit {
   constructor() {
     this.listTasksQuery = this.listTasksGQL.watch({
       status: TaskStatus.Uncompleted,
-      first: environment.graphql.defaultEdgeCountInPage,
+      first: environment.gql.defaultEdgeCountPerPage,
     });
   }
 
