@@ -12,7 +12,7 @@
         pInputText
         formControlName="title"
         class="w-full"
-        [ngClass]="this.shouldShowTitleError ? 'ng-invalid ng-dirty' : ''"
+        [ngClass]="shouldShowTitleError ? 'ng-invalid ng-dirty' : ''"
       />
       @if (shouldShowTitleError) {
         <small [ngStyle]="{ color: 'var(--red-500)' }">
