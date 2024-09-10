@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
 import { ApolloQueryResult } from '@apollo/client/core';
-import { MutationResult, QueryRef } from 'apollo-angular';
+import { MutationResult } from 'apollo-angular';
 
 import { CheckboxModule } from 'primeng/checkbox';
 
@@ -12,7 +12,6 @@ import {
   TaskStatus,
   HomePage_ListTasksGQL,
   HomePage_ListTasksQuery,
-  HomePage_ListTasksQueryVariables,
   HomePage_CompleteTaskGQL,
   HomePage_CompleteTaskMutation,
 } from '../../../gen/graphql-codegen/schema';
@@ -37,11 +36,6 @@ import { environment } from '../../../environments/environment';
 })
 export class HomePageComponent implements OnInit {
   private listTasksGQL = inject(HomePage_ListTasksGQL);
-  private listTasksQuery: QueryRef<
-    HomePage_ListTasksQuery,
-    HomePage_ListTasksQueryVariables
-  >;
-
   private completeTaskGQL = inject(HomePage_CompleteTaskGQL);
 
   private errorService = inject(ErrorService);
@@ -51,13 +45,6 @@ export class HomePageComponent implements OnInit {
   public checkedTaskIDs: string[] = [];
   public isTasksReady: boolean = false;
   public isTaskCompleting: boolean = false;
-
-  constructor() {
-    this.listTasksQuery = this.listTasksGQL.watch({
-      status: TaskStatus.Uncompleted,
-      first: environment.gql.defaultEdgeCountPerPage,
-    });
-  }
 
   public ngOnInit(): void {
     this.initTasks();
@@ -75,17 +62,23 @@ export class HomePageComponent implements OnInit {
         );
       };
 
-      let result: ApolloQueryResult<HomePage_ListTasksQuery>;
+      const query = this.listTasksGQL.watch({
+        status: TaskStatus.Uncompleted,
+        first: environment.gql.defaultEdgeCountPerPage,
+      });
 
-      try {
-        if (refetch) {
-          result = await this.listTasksQuery.refetch();
-        } else {
-          result = await this.listTasksQuery.result();
+      let result: ApolloQueryResult<HomePage_ListTasksQuery>;
+      {
+        try {
+          if (refetch) {
+            result = await query.refetch();
+          } else {
+            result = await query.result();
+          }
+        } catch (e) {
+          this.errorService.handle(e);
+          return;
         }
-      } catch (e) {
-        this.errorService.handle(e);
-        return;
       }
 
       this.tasks = extractTasks(result.data);
@@ -93,7 +86,7 @@ export class HomePageComponent implements OnInit {
 
       while (result.data.tasks.pageInfo.hasNextPage) {
         try {
-          result = await this.listTasksQuery.fetchMore({
+          result = await query.fetchMore({
             variables: {
               after: result.data.tasks.pageInfo.endCursor,
             },
