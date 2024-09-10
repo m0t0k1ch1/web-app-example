@@ -50,8 +50,6 @@ export class AddTaskFormDialogComponent {
     title: new FormControl('', [Validators.required, Validators.maxLength(32)]),
   });
 
-  constructor() {}
-
   public get titleControl(): AbstractControl {
     return this.form.get('title')!;
   }

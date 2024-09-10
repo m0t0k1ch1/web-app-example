@@ -18,8 +18,6 @@ export class AddTaskButtonComponent {
   public isHovered = false;
   public isFormDialogVisible = false;
 
-  constructor() {}
-
   public onClick(): void {
     this.isFormDialogVisible = true;
   }
