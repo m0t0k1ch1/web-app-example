@@ -166,12 +166,12 @@ export type HomePage_CompleteTaskMutation = { __typename?: 'Mutation', completeT
 
 export type HomePage_ListTasksQueryVariables = Exact<{
   status: TaskStatus;
-  after?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int32']['input'];
+  after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type HomePage_ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } };
+export type HomePage_ListTasksQuery = { __typename?: 'Query', tasks: { __typename?: 'TaskConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'Task', id: string, title: string, status: TaskStatus } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
 
 export const HomePage_CreateTaskDocument = gql`
     mutation HomePage_CreateTask($input: CreateTaskInput!) {
@@ -218,8 +218,8 @@ export const HomePage_CompleteTaskDocument = gql`
     }
   }
 export const HomePage_ListTasksDocument = gql`
-    query HomePage_ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
-  tasks(status: $status, after: $after, first: $first) {
+    query HomePage_ListTasks($status: TaskStatus!, $first: Int32!, $after: String) {
+  tasks(status: $status, first: $first, after: $after) {
     edges {
       node {
         id
@@ -228,8 +228,8 @@ export const HomePage_ListTasksDocument = gql`
       }
     }
     pageInfo {
-      endCursor
       hasNextPage
+      endCursor
     }
   }
 }
