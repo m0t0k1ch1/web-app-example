@@ -1,5 +1,5 @@
-query HomePage_ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
-  tasks(status: $status, after: $after, first: $first) {
+query HomePage_ListTasks($status: TaskStatus!, $first: Int32!, $after: String) {
+  tasks(status: $status, first: $first, after: $after) {
     edges {
       node {
         id
@@ -8,8 +8,8 @@ query HomePage_ListTasks($status: TaskStatus!, $after: String, $first: Int32!) {
       }
     }
     pageInfo {
-      endCursor
       hasNextPage
+      endCursor
     }
   }
 }
