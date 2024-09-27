@@ -11,7 +11,9 @@ export function apolloOptionsFactory(): ApolloClientOptions<any> {
   const httpLink = inject(HttpLink);
 
   return {
-    link: httpLink.create({ uri: environment.backend.url }),
+    link: httpLink.create({
+      uri: environment.backend.url,
+    }),
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
@@ -24,7 +26,7 @@ export function apolloOptionsFactory(): ApolloClientOptions<any> {
   };
 }
 
-export const graphqlProvider: ApplicationConfig['providers'] = [
+export const gqlProvider: ApplicationConfig['providers'] = [
   Apollo,
   {
     provide: APOLLO_OPTIONS,
