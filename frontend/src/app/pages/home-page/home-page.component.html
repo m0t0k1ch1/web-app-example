@@ -1,14 +1,14 @@
-<div class="flex h-screen flex-col">
+<div class="flex h-dvh flex-col">
   <div
     class="flex items-center justify-center p-4 text-white"
     [ngStyle]="{ backgroundColor: 'var(--primary-500)' }"
   >
-    <h1 class="text-2xl font-bold">My Tasks</h1>
+    <span class="text-2xl font-bold">My Tasks</span>
   </div>
   @if (isTasksReady) {
     @if (tasks.length > 0) {
       <div
-        class="flex grow flex-col gap-4 overflow-y-auto p-4"
+        class="flex flex-grow flex-col gap-4 overflow-y-auto p-8"
         [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
       >
         <div
@@ -21,21 +21,22 @@
             [readonly]="isTaskCompleting"
             (onChange)="onChangeTaskCheckbox(task)"
           />
-          <p class="min-w-0 break-words text-lg leading-6">
+          <span class="min-w-0 break-words text-lg leading-6">
             {{ task.title }}
-          </p>
+          </span>
         </div>
       </div>
     } @else {
       <div
-        class="flex grow items-center justify-center"
+        class="flex flex-grow items-center justify-center"
         [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
       >
-        <p class="text-xl">No tasks! Happy!</p>
+        <span class="text-xl">No tasks! Happy!</span>
       </div>
     }
   }
 </div>
+
 <page-add-task-button
   class="absolute bottom-4 right-4 z-10"
   (complete)="onCompleteAddTask()"
