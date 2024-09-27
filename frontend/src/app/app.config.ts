@@ -5,7 +5,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 
 import { MessageService } from 'primeng/api';
 
-import { graphqlProvider } from './graphql.provider';
+import { gqlProvider } from './gql.provider';
 
 import { routes } from './app.routes';
 
@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withFetch()),
     MessageService,
-    graphqlProvider,
+    gqlProvider,
   ],
 };
