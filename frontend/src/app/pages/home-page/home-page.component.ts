@@ -42,8 +42,10 @@ export class HomePageComponent implements OnInit {
   private notificationService = inject(NotificationService);
 
   public tasks: Task[] = [];
-  public checkedTaskIDs: string[] = [];
   public isTasksReady: boolean = false;
+
+  public checkedTaskIDs: string[] = [];
+
   public isTaskCompleting: boolean = false;
 
   public ngOnInit(): void {
@@ -147,6 +149,7 @@ export class HomePageComponent implements OnInit {
   }
 
   public onCompleteAddTask(): void {
+    this.isTasksReady = false;
     this.initTasks(true);
   }
 }
