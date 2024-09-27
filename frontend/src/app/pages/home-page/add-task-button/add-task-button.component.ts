@@ -13,12 +13,8 @@ import { AddTaskFormDialogComponent } from '../add-task-form-dialog/add-task-for
   styleUrl: './add-task-button.component.css',
 })
 export class AddTaskButtonComponent {
-  @Output() complete = new EventEmitter<void>();
+  @Output() onComplete = new EventEmitter<void>();
 
   public isHovered = false;
   public isFormDialogVisible = false;
-
-  public onClick(): void {
-    this.isFormDialogVisible = true;
-  }
 }

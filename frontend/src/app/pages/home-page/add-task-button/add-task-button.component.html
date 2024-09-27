@@ -8,12 +8,12 @@
   "
   (mouseover)="isHovered = true"
   (mouseleave)="isHovered = false"
-  (click)="onClick()"
+  (click)="isFormDialogVisible = true"
 >
   <span class="text-4xl font-bold">＋</span>
 </div>
 
 <page-add-task-form-dialog
   [(isVisible)]="isFormDialogVisible"
-  (complete)="complete.emit()"
+  (onComplete)="onComplete.emit()"
 ></page-add-task-form-dialog>

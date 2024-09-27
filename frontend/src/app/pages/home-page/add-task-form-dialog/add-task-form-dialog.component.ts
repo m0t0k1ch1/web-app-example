@@ -39,7 +39,7 @@ import { NotificationService } from '../../../services/notification.service';
 export class AddTaskFormDialogComponent {
   @Input() isVisible!: boolean;
   @Output() isVisibleChange = new EventEmitter<boolean>();
-  @Output() complete = new EventEmitter<void>();
+  @Output() onComplete = new EventEmitter<void>();
 
   private createTaskGQL = inject(HomePage_CreateTaskGQL);
 
@@ -108,7 +108,7 @@ export class AddTaskFormDialogComponent {
       }
     }
 
-    this.complete.emit();
+    this.onComplete.emit();
     this.hide();
   }
 
