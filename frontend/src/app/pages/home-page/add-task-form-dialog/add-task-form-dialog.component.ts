@@ -73,6 +73,7 @@ export class AddTaskFormDialogComponent {
 
   public async onSubmit(): Promise<void> {
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
