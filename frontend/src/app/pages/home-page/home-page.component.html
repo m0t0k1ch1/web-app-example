@@ -1,7 +1,7 @@
 <div class="flex h-dvh flex-col">
   <div
     class="flex items-center justify-center p-4 text-white"
-    [ngStyle]="{ backgroundColor: 'var(--primary-500)' }"
+    [style]="{ backgroundColor: 'var(--primary-500)' }"
   >
     <span class="text-2xl font-bold">My Tasks</span>
   </div>
@@ -9,7 +9,7 @@
     @if (tasks.length > 0) {
       <div
         class="flex flex-grow flex-col gap-4 overflow-y-auto p-8"
-        [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
+        [style]="{ backgroundColor: 'var(--surface-100)' }"
       >
         <div
           *ngFor="let task of tasks"
@@ -29,7 +29,7 @@
     } @else {
       <div
         class="flex flex-grow items-center justify-center"
-        [ngStyle]="{ backgroundColor: 'var(--surface-100)' }"
+        [style]="{ backgroundColor: 'var(--surface-100)' }"
       >
         <span class="text-xl">No tasks! Happy!</span>
       </div>

@@ -7,19 +7,18 @@
 >
   <form [formGroup]="form" (submit)="onSubmit()">
     <div class="flex flex-col gap-6">
-      <div class="flex flex-col items-end">
+      <div class="flex flex-col gap-1">
         <input
           type="text"
           pInputText
           formControlName="title"
-          class="w-full"
-          [ngClass]="shouldShowTitleError ? 'ng-invalid ng-dirty' : ''"
+          [class]="shouldShowTitleError ? 'ng-invalid ng-dirty' : ''"
         />
-        @if (shouldShowTitleError) {
-          <span class="text-sm" [ngStyle]="{ color: 'var(--red-500)' }">
+        <span class="h-5 text-sm" [style]="{ color: 'var(--red-500)' }">
+          @if (shouldShowTitleError) {
             {{ titleError }}
-          </span>
-        }
+          }
+        </span>
       </div>
       <div class="flex flex-row justify-end gap-4">
         <p-button label="Cancel" severity="secondary" (click)="onCancel()" />
