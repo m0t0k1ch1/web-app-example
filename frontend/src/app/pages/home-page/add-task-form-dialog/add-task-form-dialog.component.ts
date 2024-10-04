@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormControl,
@@ -26,13 +25,7 @@ import { NotificationService } from '../../../services/notification.service';
 @Component({
   selector: 'page-add-task-form-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-  ],
+  imports: [ReactiveFormsModule, ButtonModule, DialogModule, InputTextModule],
   templateUrl: './add-task-form-dialog.component.html',
   styleUrl: './add-task-form-dialog.component.css',
 })
