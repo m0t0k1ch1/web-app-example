@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { RippleModule } from 'primeng/ripple';
 
@@ -8,7 +7,7 @@ import { AddTaskFormDialogComponent } from '../add-task-form-dialog/add-task-for
 @Component({
   selector: 'page-add-task-button',
   standalone: true,
-  imports: [CommonModule, RippleModule, AddTaskFormDialogComponent],
+  imports: [RippleModule, AddTaskFormDialogComponent],
   templateUrl: './add-task-button.component.html',
   styleUrl: './add-task-button.component.css',
 })
