@@ -135,7 +135,7 @@ export class HomePageComponent implements OnInit {
             this.notificationService.badRequest(err.message);
             break;
           default:
-            this.errorService.handle(new Error(err.message));
+            this.notificationService.unexpectedError(err.message);
         }
         this.isTaskCompleting = false;
         return;
