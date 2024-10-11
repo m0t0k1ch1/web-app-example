@@ -96,7 +96,7 @@ export class AddTaskFormDialogComponent {
             this.notificationService.badRequest(err.message);
             break;
           default:
-            this.errorService.handle(new Error(err.message));
+            this.notificationService.unexpectedError(err.message);
         }
         return;
       }
