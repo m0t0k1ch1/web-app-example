@@ -13,10 +13,10 @@ const (
 )
 
 func NewBadUserInputError(ctx context.Context, err error) error {
-	return newErrorWithStatusCode(ctx, err, CodeBadUserInput)
+	return newErrorWithCode(ctx, err, CodeBadUserInput)
 }
 
-func newErrorWithStatusCode(ctx context.Context, err error, code string) error {
+func newErrorWithCode(ctx context.Context, err error, code string) error {
 	return &gqlerror.Error{
 		Err:     err,
 		Message: err.Error(),
