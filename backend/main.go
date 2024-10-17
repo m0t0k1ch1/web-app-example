@@ -25,12 +25,12 @@ func main() {
 
 	appConf, err := core.LoadAppConfig(*confPath)
 	if err != nil {
-		fatal(oops.Wrapf(err, "failed to load app config"))
+		fatal(ctx, oops.Wrapf(err, "failed to load app config"))
 	}
 
 	app, err := core.InitializeApp(ctx, appConf)
 	if err != nil {
-		fatal(oops.Wrapf(err, "failed to initialize app"))
+		fatal(ctx, oops.Wrapf(err, "failed to initialize app"))
 	}
 
 	sigCh := make(chan os.Signal, 1)
@@ -42,25 +42,25 @@ func main() {
 	go func() {
 		defer close(appErrCh)
 
-		slog.Info("start app")
+		slog.InfoContext(ctx, "start app")
 		appErrCh <- app.Start()
 	}()
 
 	select {
 	case err := <-appErrCh:
-		fatal(oops.Wrapf(err, "failed to start app"))
+		fatal(ctx, oops.Wrapf(err, "failed to start app"))
 	case <-sigCh:
 	}
 
-	slog.Info("stop app")
+	slog.InfoContext(ctx, "stop app")
 	if err := app.Stop(ctx); err != nil {
-		fatal(oops.Wrapf(err, "failed to stop app"))
+		fatal(ctx, oops.Wrapf(err, "failed to stop app"))
 	}
 
 	<-appErrCh // wait http.ErrServerClosed
 }
 
-func fatal(err error) {
-	slog.Error(err.Error())
+func fatal(ctx context.Context, err error) {
+	slog.ErrorContext(ctx, err.Error())
 	os.Exit(1)
 }
