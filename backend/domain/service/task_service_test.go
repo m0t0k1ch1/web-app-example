@@ -11,7 +11,6 @@ import (
 	"app/domain/model"
 	"app/domain/service"
 	"app/gen/gqlgen"
-	"app/internal/testutil"
 )
 
 func setUpTaskService(t *testing.T, _ *gomock.Controller) (*service.TaskService, *Mocks) {
@@ -102,7 +101,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -149,7 +148,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -193,7 +192,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -259,7 +258,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -312,7 +311,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{},
 				PageInfo: &gqlgen.PageInfo{
 					EndCursor:   nil,
@@ -344,7 +343,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -391,7 +390,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -435,7 +434,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -501,7 +500,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -544,7 +543,7 @@ func TestTaskService(t *testing.T) {
 			)
 			require.Nil(t, err)
 
-			testutil.Equal(t, &gqlgen.TaskConnection{
+			require.Equal(t, &gqlgen.TaskConnection{
 				Edges: []*gqlgen.TaskEdge{
 					{
 						Cursor: encodePaginationCursor(t, model.PaginationCursor{
@@ -581,8 +580,8 @@ func testTaskServiceCreateSuccess(t *testing.T, ctx context.Context, input gqlge
 	payload, err := taskService.Create(ctx, input)
 	require.Nil(t, err)
 
-	testutil.Equal(t, input.Title, payload.Task.Title)
-	testutil.Equal(t, gqlgen.TaskStatusUncompleted, payload.Task.Status)
+	require.Equal(t, input.Title, payload.Task.Title)
+	require.Equal(t, gqlgen.TaskStatusUncompleted, payload.Task.Status)
 
 	return payload
 }
@@ -595,8 +594,8 @@ func testTaskServiceCompleteSuccess(t *testing.T, ctx context.Context, input gql
 	payload, err := taskService.Complete(ctx, input)
 	require.Nil(t, err)
 
-	testutil.Equal(t, input.Id, payload.Task.Id)
-	testutil.Equal(t, gqlgen.TaskStatusCompleted, payload.Task.Status)
+	require.Equal(t, input.Id, payload.Task.Id)
+	require.Equal(t, gqlgen.TaskStatusCompleted, payload.Task.Status)
 
 	return payload
 }
