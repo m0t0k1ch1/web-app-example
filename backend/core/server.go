@@ -69,23 +69,39 @@ func NewServer(
 				})
 
 				h.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
-					var gqlErr *gqlerror.Error
-					if errors.As(err, &gqlErr) {
-						if code, ok := gqlErr.Extensions["code"]; ok && code != gqlerrutil.CodeInternalServerError {
-							return gqlErr
+					var (
+						isUnexpectedErr bool = false
+						gqlErr          *gqlerror.Error
+					)
+					{
+						if errors.As(err, &gqlErr) {
+							code, ok := gqlErr.Extensions["code"]
+							if ok {
+								if code == gqlerrutil.CodeInternalServerError {
+									isUnexpectedErr = true
+								}
+							} else {
+								isUnexpectedErr = true
+								gqlErr.Extensions["code"] = gqlerrutil.CodeInternalServerError
+							}
+						} else {
+							isUnexpectedErr = true
+							gqlErr = &gqlerror.Error{
+								Err:     err,
+								Message: "something went wrong",
+								Path:    graphql.GetPath(ctx),
+								Extensions: map[string]any{
+									"code": gqlerrutil.CodeInternalServerError,
+								},
+							}
 						}
 					}
 
-					slog.Error(err.Error(), slog.Any("error", oops.Wrap(err)))
-
-					return &gqlerror.Error{
-						Err:     err,
-						Message: "something went wrong",
-						Path:    graphql.GetPath(ctx),
-						Extensions: map[string]any{
-							"code": gqlerrutil.CodeInternalServerError,
-						},
+					if isUnexpectedErr {
+						slog.ErrorContext(ctx, err.Error(), slog.Any("error", oops.Wrap(err)))
 					}
+
+					return gqlErr
 				})
 			}
 
