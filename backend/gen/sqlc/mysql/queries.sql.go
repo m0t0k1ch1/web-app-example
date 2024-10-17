@@ -48,7 +48,7 @@ func (q *Queries) CountTasks(ctx context.Context, arg CountTasksParams) (int64, 
 }
 
 const createTask = `-- name: CreateTask :execlastid
-INSERT INTO task (title, updated_at, created_at) VALUES (?, ?, ?)
+INSERT INTO task (title, updated_at, created_at) VALUE (?, ?, ?)
 `
 
 type CreateTaskParams struct {
