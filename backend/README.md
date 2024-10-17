@@ -2,6 +2,12 @@
 
 [![backend-test](https://github.com/m0t0k1ch1/web-app-example/actions/workflows/backend-test.yaml/badge.svg)](https://github.com/m0t0k1ch1/web-app-example/actions/workflows/backend-test.yaml)
 
+## Prerequisites
+
+```
+make install
+```
+
 ## Code generation
 
 ```

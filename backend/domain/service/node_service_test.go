@@ -2,10 +2,8 @@ package service_test
 
 import (
 	"context"
-	"os"
 	"testing"
 
-	"github.com/m0t0k1ch1-go/sqlutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
@@ -35,23 +33,11 @@ func TestNodeService(t *testing.T) {
 	var (
 		task1ID = nodeid.Encode(1, nodeid.TypeTask)
 	)
+
 	{
-		var f *os.File
-		{
-			var err error
-
-			f, err = os.CreateTemp(t.TempDir(), "")
-			require.Nil(t, err)
-
-			_, err = f.WriteString(`
-				INSERT INTO task (id, title, updated_at, created_at) VALUES (1, 'task1.title', 0, 0);
-			`)
-			require.Nil(t, err)
-
-			require.Nil(t, f.Close())
-		}
-
-		require.Nil(t, sqlutil.ExecFile(ctx, mysqlCtr.App, f.Name()))
+		testutil.ExecSQL(t, ctx, mysqlCtr.App, `
+			INSERT INTO task (id, title, updated_at, created_at) VALUES (1, 'task1.title', 0, 0);
+		`)
 	}
 
 	t.Run("success: get task1", func(t *testing.T) {
@@ -61,7 +47,7 @@ func TestNodeService(t *testing.T) {
 			node, err := nodeService.Get(ctx, task1ID)
 			require.Nil(t, err)
 
-			testutil.Equal(t, task1ID, node.GetId())
+			require.Equal(t, task1ID, node.GetId())
 		}
 	})
 }

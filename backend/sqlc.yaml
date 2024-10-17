@@ -1,24 +1,24 @@
 version: 2
 sql:
-  - engine: "mysql"
+  - engine: mysql
     schema:
-      - "_schema/sql/app.sql"
+      - _schema/sql/app.sql
     queries:
-      - "_sql/queries.sql"
+      - _sql/queries.sql
     gen:
       go:
-        package: "mysql"
-        out: "gen/sqlc/mysql"
+        package: mysql
+        out: gen/sqlc/mysql
         overrides:
-          - column: "task.status"
-            go_type: "app/gen/gqlgen.TaskStatus"
+          - column: task.status
+            go_type: app/gen/gqlgen.TaskStatus
           - column: "*.updated_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v4"
-              package: "timeutil"
-              type: "Timestamp"
+              import: github.com/m0t0k1ch1-go/timeutil/v4
+              package: timeutil
+              type: Timestamp
           - column: "*.created_at"
             go_type:
-              import: "github.com/m0t0k1ch1-go/timeutil/v4"
-              package: "timeutil"
-              type: "Timestamp"
+              import: github.com/m0t0k1ch1-go/timeutil/v4
+              package: timeutil
+              type: Timestamp

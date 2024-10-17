@@ -1,5 +1,5 @@
 -- name: CreateTask :execlastid
-INSERT INTO task (title, updated_at, created_at) VALUES (?, ?, ?);
+INSERT INTO task (title, updated_at, created_at) VALUE (?, ?, ?);
 
 -- name: CountTasks :one
 SELECT COUNT(*) FROM task
@@ -19,7 +19,7 @@ SELECT * FROM task WHERE id = ? FOR UPDATE;
 SELECT * FROM task
 WHERE
   CASE WHEN CAST(sqlc.arg(set_status) AS UNSIGNED) > 0
-    THEN status = sqlc.arg(status)
+    THEN status = ?
     ELSE 1
   END
 ORDER BY id LIMIT ? OFFSET ?;
