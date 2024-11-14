@@ -8,10 +8,10 @@ import (
 	"github.com/samber/oops"
 
 	"app/container"
+	"app/domain/e"
 	"app/domain/nodeid"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
-	"app/library/gqlerrutil"
 )
 
 type NodeService struct {
@@ -37,7 +37,7 @@ func (s *NodeService) Get(ctx context.Context, id string) (gqlgen.Node, error) {
 
 			idInDB, nodeIDType, err = nodeid.Decode(id)
 			if err != nil {
-				return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("invalid id"))
+				return nil, e.NewGQLError(ctx, oops.Errorf("invalid id"), gqlgen.ErrorCodeBadUserInput)
 			}
 		}
 	}
@@ -59,6 +59,6 @@ func (s *NodeService) Get(ctx context.Context, id string) (gqlgen.Node, error) {
 		return ConvertIntoTask(taskInDB), nil
 
 	default:
-		return nil, gqlerrutil.NewBadUserInputError(ctx, oops.Errorf("unexpected node id type: %s", nodeIDType))
+		return nil, e.NewGQLError(ctx, oops.Errorf("unexpected node id type: %s", nodeIDType), gqlgen.ErrorCodeBadUserInput)
 	}
 }

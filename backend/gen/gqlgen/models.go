@@ -110,6 +110,47 @@ type TaskEdge struct {
 	Node   *Task  `json:"node"`
 }
 
+type ErrorCode string
+
+const (
+	ErrorCodeBadUserInput        ErrorCode = "BAD_USER_INPUT"
+	ErrorCodeInternalServerError ErrorCode = "INTERNAL_SERVER_ERROR"
+)
+
+var AllErrorCode = []ErrorCode{
+	ErrorCodeBadUserInput,
+	ErrorCodeInternalServerError,
+}
+
+func (e ErrorCode) IsValid() bool {
+	switch e {
+	case ErrorCodeBadUserInput, ErrorCodeInternalServerError:
+		return true
+	}
+	return false
+}
+
+func (e ErrorCode) String() string {
+	return string(e)
+}
+
+func (e *ErrorCode) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ErrorCode(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ErrorCode", str)
+	}
+	return nil
+}
+
+func (e ErrorCode) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 type TaskStatus string
 
 const (
