@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/99designs/gqlgen/graphql"
 	graphqlerrcode "github.com/99designs/gqlgen/graphql/errcode"
 	graphqlhandler "github.com/99designs/gqlgen/graphql/handler"
 	graphqlplayground "github.com/99designs/gqlgen/graphql/playground"
@@ -17,9 +16,9 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"app/config"
+	"app/domain/e"
 	"app/domain/resolver"
 	"app/gen/gqlgen"
-	"app/library/gqlerrutil"
 )
 
 var (
@@ -77,23 +76,16 @@ func NewServer(
 						if errors.As(err, &gqlErr) {
 							code, ok := gqlErr.Extensions["code"]
 							if ok {
-								if code == gqlerrutil.CodeInternalServerError {
+								if code == gqlgen.ErrorCodeInternalServerError {
 									isUnexpectedErr = true
 								}
 							} else {
 								isUnexpectedErr = true
-								gqlErr.Extensions["code"] = gqlerrutil.CodeInternalServerError
+								gqlErr.Extensions["code"] = gqlgen.ErrorCodeInternalServerError
 							}
 						} else {
 							isUnexpectedErr = true
-							gqlErr = &gqlerror.Error{
-								Err:     err,
-								Message: "something went wrong",
-								Path:    graphql.GetPath(ctx),
-								Extensions: map[string]any{
-									"code": gqlerrutil.CodeInternalServerError,
-								},
-							}
+							gqlErr = e.NewUnexpectedGQLError(ctx, err)
 						}
 					}
 

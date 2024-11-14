@@ -423,6 +423,19 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../../_schema/gql/error.gql", Input: `enum ErrorCode {
+  BAD_USER_INPUT
+  INTERNAL_SERVER_ERROR
+}
+
+interface Error {
+  message: String!
+}
+
+type BadRequestError implements Error {
+  message: String!
+}
+`, BuiltIn: false},
 	{Name: "../../_schema/gql/schema.gql", Input: `scalar Int32
 
 scalar Int64
@@ -456,14 +469,6 @@ input NoopInput {
 
 type NoopPayload {
   clientMutationId: String
-}
-
-interface Error {
-  message: String!
-}
-
-type BadRequestError implements Error {
-  message: String!
 }
 
 type Query {

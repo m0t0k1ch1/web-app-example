@@ -12,12 +12,12 @@ import (
 	"github.com/samber/oops"
 
 	"app/container"
+	"app/domain/e"
 	"app/domain/model"
 	"app/domain/nodeid"
 	"app/domain/validation"
 	"app/gen/gqlgen"
 	"app/gen/sqlc/mysql"
-	"app/library/gqlerrutil"
 )
 
 type TaskService struct {
@@ -48,10 +48,10 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 				)
 
 				if afterCursor, err = model.DecodePaginationCursor(*after); err != nil {
-					return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
+					return nil, e.NewGQLError(ctx, errInvalidAfter, gqlgen.ErrorCodeBadUserInput)
 				}
 				if !cmp.Equal(afterCursor.Params.TaskStatus, status) {
-					return nil, gqlerrutil.NewBadUserInputError(ctx, errInvalidAfter)
+					return nil, e.NewGQLError(ctx, errInvalidAfter, gqlgen.ErrorCodeBadUserInput)
 				}
 			}
 		}
@@ -61,7 +61,7 @@ func (s *TaskService) List(ctx context.Context, status *gqlgen.TaskStatus, after
 			}{
 				First: first,
 			}); err != nil {
-				return nil, gqlerrutil.NewBadUserInputError(ctx, err)
+				return nil, e.NewGQLError(ctx, err, gqlgen.ErrorCodeBadUserInput)
 			}
 		}
 	}
