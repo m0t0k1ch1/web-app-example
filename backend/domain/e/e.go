@@ -19,14 +19,3 @@ func NewGQLError(ctx context.Context, err error, code gqlgen.ErrorCode) *gqlerro
 		},
 	}
 }
-
-func NewUnexpectedGQLError(ctx context.Context, err error) *gqlerror.Error {
-	return &gqlerror.Error{
-		Err:     err,
-		Message: "something went wrong",
-		Path:    graphql.GetPath(ctx),
-		Extensions: map[string]any{
-			"code": gqlgen.ErrorCodeInternalServerError,
-		},
-	}
-}
