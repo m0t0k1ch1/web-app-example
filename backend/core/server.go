@@ -58,10 +58,10 @@ func NewServer(
 				Resolvers: resolver,
 			}))
 			{
-				h.SetRecoverFunc(func(ctx context.Context, panicErr any) error {
-					err, ok := panicErr.(error)
+				h.SetRecoverFunc(func(ctx context.Context, r any) error {
+					err, ok := r.(error)
 					if !ok {
-						err = fmt.Errorf("%v", panicErr)
+						err = fmt.Errorf("%v", r)
 					}
 
 					return err
