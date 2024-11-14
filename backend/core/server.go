@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql"
 	graphqlerrcode "github.com/99designs/gqlgen/graphql/errcode"
 	graphqlhandler "github.com/99designs/gqlgen/graphql/handler"
 	graphqlplayground "github.com/99designs/gqlgen/graphql/playground"
@@ -16,7 +17,6 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"app/config"
-	"app/domain/e"
 	"app/domain/resolver"
 	"app/gen/gqlgen"
 )
@@ -64,36 +64,25 @@ func NewServer(
 						err = fmt.Errorf("%v", panicErr)
 					}
 
-					return err
+					return oops.Wrap(err)
 				})
 
 				h.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
-					var (
-						isUnexpectedErr bool = false
-						gqlErr          *gqlerror.Error
-					)
-					{
-						if errors.As(err, &gqlErr) {
-							code, ok := gqlErr.Extensions["code"]
-							if ok {
-								if code == gqlgen.ErrorCodeInternalServerError {
-									isUnexpectedErr = true
-								}
-							} else {
-								isUnexpectedErr = true
-								gqlErr.Extensions["code"] = gqlgen.ErrorCodeInternalServerError
-							}
-						} else {
-							isUnexpectedErr = true
-							gqlErr = e.NewUnexpectedGQLError(ctx, err)
-						}
+					var gqlErr *gqlerror.Error
+					if errors.As(err, &gqlErr) {
+						return gqlErr
 					}
 
-					if isUnexpectedErr {
-						slog.ErrorContext(ctx, err.Error(), slog.Any("error", oops.Wrap(err)))
-					}
+					slog.ErrorContext(ctx, err.Error(), slog.Any("error", err))
 
-					return gqlErr
+					return &gqlerror.Error{
+						Err:     err,
+						Message: "something went wrong",
+						Path:    graphql.GetPath(ctx),
+						Extensions: map[string]any{
+							"code": gqlgen.ErrorCodeInternalServerError,
+						},
+					}
 				})
 			}
 
