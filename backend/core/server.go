@@ -70,7 +70,11 @@ func NewServer(
 				h.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
 					var gqlErr *gqlerror.Error
 					if errors.As(err, &gqlErr) {
-						return gqlErr
+						if code, ok := gqlErr.Extensions["code"]; ok && code != gqlgen.ErrorCodeInternalServerError {
+							return gqlErr
+						}
+
+						err = oops.Wrapf(gqlErr.Err, gqlErr.Path.String())
 					}
 
 					slog.ErrorContext(ctx, err.Error(), slog.Any("error", err))
