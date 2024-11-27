@@ -70,9 +70,7 @@ func teardown(t *testing.T) {
 
 	ctx := context.Background()
 
-	if err := sqlutil.TruncateAll(ctx, mysqlCtr.App); err != nil {
-		t.Fatal(err)
-	}
+	require.Nil(t, sqlutil.TruncateAll(ctx, mysqlCtr.App))
 }
 
 func encodePaginationCursor(t *testing.T, cursor model.PaginationCursor) string {
