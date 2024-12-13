@@ -1,5 +1,4 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
@@ -30,7 +29,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, CheckboxModule, AddTaskButtonComponent],
+  imports: [FormsModule, CheckboxModule, AddTaskButtonComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
