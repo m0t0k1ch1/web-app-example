@@ -11,20 +11,19 @@
         class="flex flex-grow flex-col gap-4 overflow-y-auto p-8"
         [style]="{ backgroundColor: 'var(--surface-100)' }"
       >
-        <div
-          *ngFor="let task of tasks"
-          class="flex flex-row items-start gap-4 rounded-xl bg-white p-4"
-        >
-          <p-checkbox
-            [(ngModel)]="checkedTaskIDs"
-            [value]="task.id"
-            [readonly]="isTaskCompleting"
-            (onChange)="onChangeTaskCheckbox(task)"
-          />
-          <span class="min-w-0 break-words text-lg leading-6">
-            {{ task.title }}
-          </span>
-        </div>
+        @for (task of tasks; track task.id) {
+          <div class="flex flex-row items-start gap-4 rounded-xl bg-white p-4">
+            <p-checkbox
+              [(ngModel)]="checkedTaskIDs"
+              [value]="task.id"
+              [readonly]="isTaskCompleting"
+              (onChange)="onChangeTaskCheckbox(task)"
+            />
+            <span class="min-w-0 break-words text-lg leading-6">
+              {{ task.title }}
+            </span>
+          </div>
+        }
       </div>
     } @else {
       <div
